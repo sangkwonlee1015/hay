@@ -6,6 +6,7 @@ import com.a603.hay.db.repository.CategoryRepository;
 import java.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class CategoryService {
@@ -13,7 +14,7 @@ public class CategoryService {
   @Autowired
   CategoryRepository categoryRepository;
 
-
+  @Transactional
   public void createCategory(CreateCategoryRequest createCategoryRequest) {
     Category newCategory = new Category();
     newCategory.setName(createCategoryRequest.getName());
