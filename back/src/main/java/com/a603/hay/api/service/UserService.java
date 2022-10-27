@@ -1,5 +1,7 @@
 package com.a603.hay.api.service;
 
+import com.a603.hay.api.dto.UserDto;
+import com.a603.hay.api.dto.UserDto.Token;
 import com.a603.hay.db.entity.User;
 import com.a603.hay.db.repository.UserRepository;
 import com.google.gson.JsonElement;
@@ -27,8 +29,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
   private final UserRepository userRepository;
+  private final JwtService jwtService;
 
-  public void loginUser(String code) {
+  public void joinUser(String code) {
     String kaKaoAccessToken = getKaKaoAccessToken(code);
     Map<String, Object> userInfo = getUserInfo(kaKaoAccessToken);
     String email = (String) userInfo.get("email");
@@ -36,17 +39,35 @@ public class UserService {
     if (email != null) {
       Optional<User> userOptional = userRepository.findByEmail(email);
       User user = userOptional.orElse(null);
-      if (user == null) {
-        user = registerUser(userInfo);
+      if (user != null) {
+        //TODO 에러처리 이미 존재하는 유저
       }
-      //TODO 추가 정보 입력
-      //TODO 로그인
-    }
-    for (String key : userInfo.keySet()) {
-      System.out.println(key + " " + userInfo.get(key));
-
+      user = registerUser(userInfo);
     }
   }
+
+  public Token loginUser(String code) {
+    String kaKaoAccessToken = getKaKaoAccessToken(code);
+    Map<String, Object> userInfo = getUserInfo(kaKaoAccessToken);
+    String email = (String) userInfo.get("email");
+
+    if (email == null) {
+      //TODO 에러 처리
+      throw new RuntimeException();
+    }
+
+    Optional<User> userOptional = userRepository.findByEmail(email);
+    User user = userOptional.orElse(null);
+    if (user != null) {
+      return new Token(jwtService.generateAccessToken(user.getEmail()),
+          jwtService.generateRefreshToken(user.getEmail()));
+    } else {
+      //TODO 에러 처리
+      throw new RuntimeException();
+    }
+
+  }
+
 
   @Transactional
   protected User registerUser(Map<String, Object> userInfo) {
