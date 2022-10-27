@@ -6,8 +6,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Index;
-import javax.persistence.Table;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.DynamicInsert;
@@ -19,6 +19,7 @@ import org.hibernate.annotations.DynamicUpdate;
 @Getter
 @Setter
 public class Vote {
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(updatable = false)
@@ -56,4 +57,13 @@ public class Vote {
 
   @Column
   private LocalDateTime updatedAt;
+
+  @ManyToOne
+  @JoinColumn(name = "category_id")
+  private Category category;
+
+  @ManyToOne
+  @JoinColumn(name = "user_id")
+  private User user;
+
 }
