@@ -35,7 +35,18 @@ public class VoteDto {
   @Builder
   @AllArgsConstructor
   @NoArgsConstructor
-  public  static class VoteListResponse {
+  public static class VoteOneRequest {
+
+    private long voteItemId;
+  }
+
+  @Getter
+  @Setter
+  @Builder
+  @AllArgsConstructor
+  @NoArgsConstructor
+  public static class VoteListResponse {
+
     private String title;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
