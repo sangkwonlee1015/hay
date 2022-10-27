@@ -30,4 +30,17 @@ public class VoteDto {
     private List<String> voteItemContents;
   }
 
+  @Getter
+  @Setter
+  @Builder
+  @AllArgsConstructor
+  @NoArgsConstructor
+  public  static class VoteListResponse {
+    private String title;
+    private LocalDateTime startDate;
+    private LocalDateTime endDate;
+    private boolean isEnded;
+    private int voteCount;
+  }
+
 }
