@@ -102,13 +102,26 @@ public class VoteService {
   }
 
   public List<VoteListResponse> getVoteList(String search, Long categoryId, boolean myVote,
-      boolean done, String order, User user) {
+      boolean participated, boolean done, String order, User user) {
 
     if (myVote) {
       Specification<Vote> spec = Specification.where(VoteSpecification.equalUser(user));
       List<VoteListResponse> voteList = new ArrayList<>();
       voteRepository.findAll(spec).forEach(vote -> {
         VoteListResponse voteListResponse = new VoteListResponse();
+        voteList.add(
+            VoteListResponse.builder().title(vote.getTitle()).startDate(vote.getStartDate())
+                .endDate(vote.getEndDate()).isEnded(vote.isEnded()).voteCount(vote.getVoteCount())
+                .build());
+      });
+      return voteList;
+    }
+
+    if (participated) {
+      List<VoteLog> voteLogs = voteLogRepository.findAllByUser(user);
+      List<VoteListResponse> voteList = new ArrayList<>();
+      voteLogs.forEach(voteLog -> {
+        Vote vote = voteLog.getVote();
         voteList.add(
             VoteListResponse.builder().title(vote.getTitle()).startDate(vote.getStartDate())
                 .endDate(vote.getEndDate()).isEnded(vote.isEnded()).voteCount(vote.getVoteCount())
