@@ -6,8 +6,10 @@ import com.a603.hay.db.entity.Category;
 import com.a603.hay.db.entity.Location;
 import com.a603.hay.db.entity.User;
 import com.a603.hay.db.entity.Vote;
+import com.a603.hay.db.entity.VoteItem;
 import com.a603.hay.db.repository.CategoryRepository;
 import com.a603.hay.db.repository.LocationRepository;
+import com.a603.hay.db.repository.VoteItemRepository;
 import com.a603.hay.db.repository.VoteRepository;
 import com.a603.hay.db.specification.VoteSpecification;
 import com.a603.hay.exception.CustomException;
@@ -26,6 +28,9 @@ public class VoteService {
 
   @Autowired
   VoteRepository voteRepository;
+
+  @Autowired
+  VoteItemRepository voteItemRepository;
 
   @Autowired
   CategoryRepository categoryRepository;
@@ -53,11 +58,24 @@ public class VoteService {
     newVote.setVoteCount(0);
     newVote.setCreatedAt(LocalDateTime.now());
     newVote.setUpdatedAt(LocalDateTime.now());
+    Vote vote = voteRepository.save(newVote);
+    createVoteRequest.getVoteItemContents().forEach(content -> {
+      VoteItem voteItem = new VoteItem();
+      voteItem.setContent(content);
+      voteItem.setVoteCount(0);
+      voteItem.setCreatedAt(LocalDateTime.now());
+      voteItem.setUpdatedAt(LocalDateTime.now());
+      voteItem.setVote(vote);
+      voteItemRepository.save(voteItem);
+    });
   }
 
+  @Transactional
   public void endVote(long voteId, User user) {
     Vote vote = voteRepository.findById(voteId)
         .orElseThrow(() -> new CustomException(ErrorCode.VOTE_NOT_FOUND));
+
+    // 투표 작성자인지 검사
     if (vote.getUser().getId() != user.getId()) {
       throw new CustomException(ErrorCode.FORBIDDEN);
     }
@@ -67,6 +85,20 @@ public class VoteService {
 
   public List<VoteListResponse> getVoteList(String search, Long categoryId, boolean myVote,
       boolean done, String order, User user) {
+
+    if (myVote) {
+      Specification<Vote> spec = Specification.where(VoteSpecification.equalUser(user));
+      List<VoteListResponse> voteList = new ArrayList<>();
+      voteRepository.findAll(spec).forEach(vote -> {
+        VoteListResponse voteListResponse = new VoteListResponse();
+        voteList.add(
+            VoteListResponse.builder().title(vote.getTitle()).startDate(vote.getStartDate())
+                .endDate(vote.getEndDate()).isEnded(vote.isEnded()).voteCount(vote.getVoteCount())
+                .build());
+      });
+      return voteList;
+    }
+
     if (order == null) {
       throw new CustomException(ErrorCode.BAD_REQUEST);
     }
@@ -82,19 +114,6 @@ public class VoteService {
         throw new CustomException(ErrorCode.BAD_REQUEST);
     }
     Sort sort = Sort.by(properties);
-
-    if (myVote) {
-      Specification<Vote> spec = Specification.where(VoteSpecification.equalUser(user));
-      List<VoteListResponse> voteList = new ArrayList<>();
-      voteRepository.findAll(spec, sort).forEach(vote -> {
-        VoteListResponse voteListResponse = new VoteListResponse();
-        voteList.add(
-            VoteListResponse.builder().title(vote.getTitle()).startDate(vote.getStartDate())
-                .endDate(vote.getEndDate()).isEnded(vote.isEnded()).voteCount(vote.getVoteCount())
-                .build());
-      });
-      return voteList;
-    }
 
     Specification<Vote> spec = null;
     if (!done) {
