@@ -1,6 +1,5 @@
 package com.a603.hay.api.service;
 
-import com.a603.hay.api.dto.UserDto;
 import com.a603.hay.api.dto.UserDto.Token;
 import com.a603.hay.db.entity.User;
 import com.a603.hay.db.repository.UserRepository;
@@ -32,7 +31,7 @@ public class UserService {
   private final JwtService jwtService;
 
   public void joinUser(String code) {
-    String kaKaoAccessToken = getKaKaoAccessToken(code);
+    String kaKaoAccessToken = getKaKaoAccessToken(code, "http://localhost:8080/api/user/join");
     Map<String, Object> userInfo = getUserInfo(kaKaoAccessToken);
     String email = (String) userInfo.get("email");
 
@@ -47,7 +46,7 @@ public class UserService {
   }
 
   public Token loginUser(String code) {
-    String kaKaoAccessToken = getKaKaoAccessToken(code);
+    String kaKaoAccessToken = getKaKaoAccessToken(code, "http://localhost:8080/api/user/login");
     Map<String, Object> userInfo = getUserInfo(kaKaoAccessToken);
     String email = (String) userInfo.get("email");
 
@@ -83,7 +82,7 @@ public class UserService {
   }
 
 
-  private String getKaKaoAccessToken(String code) {
+  private String getKaKaoAccessToken(String code, String redirectUri) {
     String access_Token = "";
     String refresh_Token = "";
     String reqURL = "https://kauth.kakao.com/oauth/token";
@@ -103,7 +102,7 @@ public class UserService {
       sb.append("&client_id=2cc38f3feb14c46b190ca5fe77598eb6");
       // TODO REST_API_KEY 입력
       sb.append(
-          "&redirect_uri=http://localhost:8080/api/user/callback");
+          "&redirect_uri=" + redirectUri);
       // TODO 인가코드 받은 redirect_uri 입력
       sb.append("&code=" + code);
       bw.write(sb.toString());

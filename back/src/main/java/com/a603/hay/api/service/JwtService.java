@@ -3,7 +3,9 @@ package com.a603.hay.api.service;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import java.util.Date;
+import org.springframework.stereotype.Service;
 
+@Service
 public class JwtService {
 
   private static final int REFRESH_EXPIRE_MINUTES = 1000 * 60 * 60 * 24 * 7;
