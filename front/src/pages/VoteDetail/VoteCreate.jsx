@@ -8,3 +8,13 @@
 //   항목 입력 min:2, 항목 추가하기
 // 댓글 허용 스위치
 // 만들기
+
+import React from 'react'
+
+function VoteCreate() {
+  return (
+    <div>VoteCreate</div>
+  )
+}
+
+export default VoteCreate

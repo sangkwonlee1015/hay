@@ -6,3 +6,13 @@
 // 동네 1과 거리
 // 선택한 범위의 게시물만 볼 수 있어요
 // 막대 컨트롤러
+
+import React from 'react'
+
+function MyLocationSetting() {
+  return (
+    <div>MyLocationSetting</div>
+  )
+}
+
+export default MyLocationSetting
