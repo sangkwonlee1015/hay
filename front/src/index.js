@@ -1,17 +1,37 @@
 import React from 'react';
+import { Provider } from "react-redux";
 import ReactDOM from 'react-dom/client';
-import './index.css';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+import store from "./_store/store";
+
 import App from './App';
-import reportWebVitals from './reportWebVitals';
+import Login from './pages/User/Login';
+import SignUp from './pages/User/Signup';
+import LocationSetting from './pages/User/LocationSetting';
+import MainPage from './pages/MainPage/MainPage';
+import Mypage from './pages/MyPage/MyPage';
+import MyLocationSetting from './pages/MyPage/MyLocationSetting';
+import VoteDetail from './pages/VoteDetail/VoteDetail';
+import VoteCreate from './pages/VoteDetail/VoteCreate';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
+  <BrowserRouter>
+    <Provider store={store}>
+      <Routes>
+        <Route path="/" element={<App />}>
+          <Route path="" element={<Login />} /> 
+          <Route path="login" element={<Login />} />
+          <Route path="signup" element={<SignUp />} />
+          <Route path="locationsetting" element={<LocationSetting />} />
+          <Route path="main" element={<MainPage />} />
+          <Route path="mypage" element={<Mypage />} />
+          <Route path="mylocationsetting" element={<MyLocationSetting />} />
+          <Route path="votedetail/:voteId" element={<VoteDetail />} />
+          <Route path="votecreate" element={<VoteCreate />} />
+        </Route>
+      </Routes>
+    </Provider>
+  </BrowserRouter>
 );
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();

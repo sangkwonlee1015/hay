@@ -4,3 +4,13 @@
 
 // 로그아웃
 // 하단 바 (components에 있음)
+
+import React from 'react'
+
+function MyPage() {
+  return (
+    <div>MyPage</div>
+  )
+}
+
+export default MyPage
