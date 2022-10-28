@@ -42,11 +42,12 @@ public class VoteController {
   public ResponseEntity<ResponseDto> voteList(@RequestParam(required = false) String search,
       @RequestParam(required = false) Long category,
       @RequestParam(required = false, name = "my-vote") boolean myVote,
+      @RequestParam(required = false) boolean participated,
       @RequestParam(required = false) boolean done, @RequestParam(required = false) String order) {
     User user = new User(); // 로그인 유저 정보로 대체
     user = userRepository.findById(1L).get(); // 테스트
     return new ResponseEntity<>(new ResponseDto<List<VoteListResponse>>(
-        voteService.getVoteList(search, category, myVote, done, order, user)), HttpStatus.OK);
+        voteService.getVoteList(search, category, myVote, participated, done, order, user)), HttpStatus.OK);
   }
 
   @PostMapping("")
