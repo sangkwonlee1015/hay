@@ -11,3 +11,13 @@
 
 // 댓글 수, 공유하기
 // 댓글 리스트
+
+import React from 'react'
+
+function VoteDetail() {
+  return (
+    <div>VoteDetail</div>
+  )
+}
+
+export default VoteDetail
