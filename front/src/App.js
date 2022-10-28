@@ -9,13 +9,14 @@ import "./App.css";
 
 // 뷰포트 크기를 지정, flex 이용해서 중앙 정렬
 const Resolution = styled.div`
-  ${'' /* display: flex;
-  justify-content: center;
-  padding-bottom: 200px;
+  display: flex;
+  flex-direction: column;
+  ${'' /* justify-content: center; */}
+  align-items: center;
   > * {
     max-width: 1190px;
     flex-grow: 1;
-  } */}
+  }
 `;
 
 function App() {

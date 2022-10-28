@@ -3,88 +3,66 @@ import axios from 'axios';
 import api from '../api/api';
 
 
-const signin = createAsyncThunk('signin', async (payload, { rejectWithValue }) => {
-  try {
-    const res = await axios.post(api.signin(), payload, {});
-    return res.data;
-  } catch (err) {
-    return rejectWithValue(err.response.data);
+const nicknameDuplicateCheck = createAsyncThunk(
+  "nicknameDuplicateCheck",
+  async (payload, { rejectWithValue }) => {
+    try {
+      const res = await axios.post(api.nicknameDuplicateCheck(), payload, {});
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(err.response.data);
+    }
   }
-});
-
-// const fetchUser = createAsyncThunk('fetchUser', async (walletAddress, { rejectWithValue }) => {
-//   try {
-//     const res = await axios.get(api.fetchUser(walletAddress));
-//     console.log(res.data);
-//     return res.data;
-//   } catch (err) {
-//     return rejectWithValue(err.response.data);
-//   }
-// });
+);
 
 
 const initialState = {
-  currentUser: {
-    wallet_address: '',
-    nickname: '',
-    message: '',
-    joinDate: '',
-    ticket_count: 0,
-    profileImage: '',
-  },
+  nickname: '',
+  isNotDuplicate: true,
+  gender: 0,
+  birthyear: '2022',
+  latitude: '',
+  longitude: '',
 };
 
 export const UserSlice = createSlice({
-  name: 'user',
+  name: "user",
   initialState,
   reducers: {
-    getCurrentUser: state => {
-      const localUserData = window.localStorage.getItem('currentUser');
-      if (!localUserData) {
-        throw new Error('no local user data');
-      }
-      state.currentUser = JSON.parse(localUserData);
+    nickname(state, action) {
+      state.nickname = action.payload;
     },
-    checkLogin: state => {
-      if (window.localStorage.getItem('currentUser')) {
-        state.isLogin = true;
-      } else {
-        state.isLogin = false;
-      }
+    isNotDuplicate(state, action) {
+      state.isNotDuplicate = action.payload;
     },
-    logout: state => {
-      state.currentUser = {
-        wallet_address: '',
-        nickname: '',
-        message: '',
-        joinDate: '',
-        ticket_count: 0,
-        profileImage: '',
-      };
-      window.localStorage.removeItem('currentUser');
-      state.isLogin = false;
+    gender(state, action) {
+      state.gender = action.payload;
+    },
+    birthyear(state, action) {
+      state.birthyear = action.payload;
+    },
+    latitude(state, action) {
+      state.latitude = action.payload;
+    },
+    longitude(state, action) {
+      state.longitude = action.payload;
     },
   },
   extraReducers: {
-    [signin.fulfilled]: (state, action) => {
-      state.isLogin = true;
-      state.currentUser = action.payload;
-      window.localStorage.setItem('currentUser', JSON.stringify(state.currentUser));
+    [nicknameDuplicateCheck.fulfilled]: (state) => {
+      state.isNotDuplicate = true;
     },
-    [signin.rejected]: state => {
-      state.isLogin = false;
+    [nicknameDuplicateCheck.rejected]: (state) => {
+      state.isNotDuplicate = false;
     },
-    // [fetchUser.fulfilled]: (state, action) => {
-    //   state.searchedUser = action.payload;
-    // },
   },
 });
 
 export {
-  signin,
+  nicknameDuplicateCheck,
   // fetchUser,
 };
 
-export const { getCurrentUser, checkLogin, logout } = UserSlice.actions;
+export const userAction = UserSlice.actions;
 
 export default UserSlice.reducer;
