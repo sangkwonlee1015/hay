@@ -4,8 +4,11 @@ import com.a603.hay.api.dto.CommentDto.CreateCommentRequest;
 import com.a603.hay.api.dto.ResponseDto;
 import com.a603.hay.api.dto.VoteDto;
 import com.a603.hay.api.dto.VoteDto.CreateVoteRequest;
+import com.a603.hay.api.dto.VoteDto.VoteDetailResponse;
 import com.a603.hay.api.dto.VoteDto.VoteListResponse;
 import com.a603.hay.api.dto.VoteDto.VoteOneRequest;
+import com.a603.hay.api.dto.VoteDto.VoteResultResponse;
+import com.a603.hay.api.dto.VoteItemDto.VoteResultItem;
 import com.a603.hay.api.service.VoteService;
 import com.a603.hay.db.entity.User;
 import com.a603.hay.db.repository.UserRepository;
@@ -47,7 +50,8 @@ public class VoteController {
     User user = new User(); // 로그인 유저 정보로 대체
     user = userRepository.findById(1L).get(); // 테스트
     return new ResponseEntity<>(new ResponseDto<List<VoteListResponse>>(
-        voteService.getVoteList(search, category, myVote, participated, done, order, user)), HttpStatus.OK);
+        voteService.getVoteList(search, category, myVote, participated, done, order, user)),
+        HttpStatus.OK);
   }
 
   @PostMapping("")
@@ -59,6 +63,16 @@ public class VoteController {
     user = userRepository.findById(1L).get(); // 테스트
     voteService.createVote(createVoteRequest, user);
     return new ResponseEntity<>(new ResponseDto<String>("투표 생성 성공"), HttpStatus.OK);
+  }
+
+  @GetMapping("/{voteId}")
+  @ApiOperation(value = "투표 내용 조회", notes = "투표 내용 조회, 투표 했을 경우 투표 현황과 댓글까지 조회")
+  public ResponseEntity<ResponseDto> voteDetail(@PathVariable long voteId) {
+    User user = new User(); // 로그인 유저 정보로 대체
+    user = userRepository.findById(1L).get(); // 테스트
+    return new ResponseEntity<>(
+        new ResponseDto<VoteDetailResponse>(voteService.voteDetail(voteId, user)),
+        HttpStatus.OK);
   }
 
   @PostMapping("/{voteId}")
@@ -78,6 +92,16 @@ public class VoteController {
     user = userRepository.findById(1L).get(); // 테스트
     voteService.endVote(voteId, user);
     return new ResponseEntity<>(new ResponseDto<String>("투표 조기 종료"), HttpStatus.OK);
+  }
+
+  @GetMapping("/{voteId}/result")
+  @ApiOperation(value = "투표 결과 조회", notes = "투표 결과의 통계를 조회한다")
+  public ResponseEntity<ResponseDto> voteResult(@PathVariable long voteId) {
+    User user = new User(); // 로그인 유저 정보로 대체
+    user = userRepository.findById(1L).get(); // 테스트
+    return new ResponseEntity<>(
+        new ResponseDto<VoteResultResponse>(voteService.voteResult(voteId, user)),
+        HttpStatus.OK);
   }
 
   @PostMapping("/{voteId}/comment")
