@@ -18,6 +18,7 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler({Exception.class})
   protected ResponseEntity<ResponseDto> handleServerException(Exception ex) {
+    ex.printStackTrace(); //TODO 테스트 목적
     return new ResponseEntity<>(new ResponseDto<String>(INTERNAL_SERVER_ERROR.getMessage()),
         INTERNAL_SERVER_ERROR.getStatus());
   }

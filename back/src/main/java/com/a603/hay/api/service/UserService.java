@@ -1,6 +1,10 @@
 package com.a603.hay.api.service;
 
+import com.a603.hay.api.dto.ResponseDto;
+import com.a603.hay.api.dto.UserDto.DuplicateNicknameResponse;
+import com.a603.hay.api.dto.UserDto.ExtraDataResponse;
 import com.a603.hay.api.dto.UserDto.ExtraInfoRequest;
+import com.a603.hay.api.dto.UserDto.NicknameRequest;
 import com.a603.hay.api.dto.UserDto.TokenResponse;
 import com.a603.hay.common.util.JWTUtil;
 import com.a603.hay.db.entity.Location;
@@ -26,23 +30,31 @@ import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@PropertySources({
+    @PropertySource("classpath:application.properties"),
+})
 public class UserService {
 
   private final UserRepository userRepository;
   private final LocationRepository locationRepository;
   private final JWTUtil jwtUtil;
 
-  private static final String JOIN_REDIRECT_URI = "http://localhost:8080/api/user/join";
-  private static final String LOGIN_REDIRECT_URI = "http://localhost:8080/api/user/login";
+  @Value("${kakao.redirecturl}")
+  private String loginRedirectUrl;
 
-
-  public void joinUser(String code) {
-    String kaKaoAccessToken = getKaKaoAccessToken(code, JOIN_REDIRECT_URI);
+  @Transactional
+  public ResponseEntity<ResponseDto<?>> loginUser(String code) {
+    String kaKaoAccessToken = getKaKaoAccessToken(code, loginRedirectUrl + "/api/user/login");
     Map<String, Object> userInfo = getUserInfoFromKakao(kaKaoAccessToken);
     String email = (String) userInfo.get("email");
 
@@ -52,31 +64,20 @@ public class UserService {
 
     Optional<User> userOptional = userRepository.findByEmail(email);
     User user = userOptional.orElse(null);
+
     if (user != null) {
-      throw new CustomException(ErrorCode.USER_EXIST);
-    }
-    registerUser(userInfo);
-  }
-
-  public TokenResponse loginUser(String code) {
-    String kaKaoAccessToken = getKaKaoAccessToken(code, LOGIN_REDIRECT_URI);
-    Map<String, Object> userInfo = getUserInfoFromKakao(kaKaoAccessToken);
-    String email = (String) userInfo.get("email");
-
-    if (email == null) {
-      throw new CustomException(ErrorCode.KAKAO_EMAIL_NOT_FOUND);
-    }
-
-    Optional<User> userOptional = userRepository.findByEmail(email);
-    User user = userOptional.orElse(null);
-    if (user != null) {
-      if (user.getNickname() == null) { //TODO 추가정보 입력 확인 로직 개선 필요
-        throw new CustomException(ErrorCode.EXTRA_INFO_NOT_EXIST);
+      if (user.getNickname() != null) { //1. 회원가입된 유저 //TODO 추가정보 입력 유저 확인 로직 강화 필요
+        return new ResponseEntity<>(
+            new ResponseDto<>(new TokenResponse(jwtUtil.generateAccessToken(user),
+                jwtUtil.generateRefreshToken(user))), HttpStatus.OK);
+      } else { //2. 회원가입되었지만 추가 정보 없는 유저
+        return new ResponseEntity<>(
+            new ResponseDto<>(new ExtraDataResponse(false)), HttpStatus.OK);
       }
-      return new TokenResponse(jwtUtil.generateAccessToken(user.getEmail()),
-          jwtUtil.generateRefreshToken(user.getEmail()));
-    } else {
-      throw new CustomException(ErrorCode.USER_NOT_EXIST);
+    } else { //3. 처음 로그인한 유저
+      registerUser(userInfo);
+      return new ResponseEntity<>(
+          new ResponseDto<>(new ExtraDataResponse(false)), HttpStatus.OK);
     }
   }
 
@@ -118,6 +119,24 @@ public class UserService {
 
     userRepository.save(user);
   }
+
+  public DuplicateNicknameResponse checkDuplicateNickname(NicknameRequest nicknameRequest) {
+    User user = userRepository.findByNickname(nicknameRequest.getNickname()).orElse(null);
+    return new DuplicateNicknameResponse(user != null);
+  }
+
+  @Transactional
+  public void updateNickname(String userEmail, NicknameRequest nicknameRequest) {
+    User user = userRepository.findByEmail(userEmail).orElse(null);
+    if (user == null) {
+      throw new CustomException(ErrorCode.USER_NOT_EXIST);
+    }
+    if (userRepository.findByNickname(nicknameRequest.getNickname()).isPresent()) {
+      throw new CustomException(ErrorCode.NICKNAME_EXIST);
+    }
+    user.setNickname(nicknameRequest.getNickname());
+  }
+
 
   private String getKaKaoAccessToken(String code, String redirectUri) {
     String access_Token = "";
