@@ -1,6 +1,8 @@
 package com.a603.hay.api.service;
 
+import com.a603.hay.api.dto.UserDto.DuplicateNicknameResponse;
 import com.a603.hay.api.dto.UserDto.ExtraInfoRequest;
+import com.a603.hay.api.dto.UserDto.NicknameRequest;
 import com.a603.hay.api.dto.UserDto.TokenResponse;
 import com.a603.hay.common.util.JWTUtil;
 import com.a603.hay.db.entity.Location;
@@ -73,8 +75,8 @@ public class UserService {
       if (user.getNickname() == null) { //TODO 추가정보 입력 확인 로직 개선 필요
         throw new CustomException(ErrorCode.EXTRA_INFO_NOT_EXIST);
       }
-      return new TokenResponse(jwtUtil.generateAccessToken(user.getEmail()),
-          jwtUtil.generateRefreshToken(user.getEmail()));
+      return new TokenResponse(jwtUtil.generateAccessToken(user),
+          jwtUtil.generateRefreshToken(user));
     } else {
       throw new CustomException(ErrorCode.USER_NOT_EXIST);
     }
@@ -118,6 +120,24 @@ public class UserService {
 
     userRepository.save(user);
   }
+
+  public DuplicateNicknameResponse checkDuplicateNickname(NicknameRequest nicknameRequest) {
+    User user = userRepository.findByNickname(nicknameRequest.getNickname()).orElse(null);
+    return new DuplicateNicknameResponse(user != null);
+  }
+
+  @Transactional
+  public void updateNickname(String userEmail, NicknameRequest nicknameRequest) {
+    User user = userRepository.findByEmail(userEmail).orElse(null);
+    if (user == null) {
+      throw new CustomException(ErrorCode.USER_NOT_EXIST);
+    }
+    if (userRepository.findByNickname(nicknameRequest.getNickname()).isPresent()) {
+      throw new CustomException(ErrorCode.NICKNAME_EXIST);
+    }
+    user.setNickname(nicknameRequest.getNickname());
+  }
+
 
   private String getKaKaoAccessToken(String code, String redirectUri) {
     String access_Token = "";

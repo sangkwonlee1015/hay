@@ -1,9 +1,12 @@
 package com.a603.hay.api.controller;
 
 import com.a603.hay.api.dto.ResponseDto;
+import com.a603.hay.api.dto.UserDto.DuplicateNicknameResponse;
 import com.a603.hay.api.dto.UserDto.ExtraInfoRequest;
+import com.a603.hay.api.dto.UserDto.NicknameRequest;
 import com.a603.hay.api.dto.UserDto.TokenResponse;
 import com.a603.hay.api.service.UserService;
+import io.swagger.annotations.ApiOperation;
 import java.security.Principal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,21 +26,32 @@ public class UserController {
   private final UserService userService;
 
   @GetMapping("/login")
+  @ApiOperation(value = "로그인", notes = "로그인")
   public ResponseEntity<ResponseDto<TokenResponse>> loginUser(@RequestParam String code) {
     return new ResponseEntity<>(new ResponseDto<>(userService.loginUser(code)), HttpStatus.OK);
   }
 
   @GetMapping("/join")
+  @ApiOperation(value = "회원가입", notes = "로그인과 통합 예정")
   public ResponseEntity<ResponseDto<String>> joinUser(@RequestParam String code) {
     userService.joinUser(code);
     return new ResponseEntity<>(new ResponseDto<>("success"), HttpStatus.OK);
   }
 
   @PostMapping("/info")
+  @ApiOperation(value = "회원가입-추가정보 입력", notes = "회원가입-추가정보 입력")
   public ResponseEntity<ResponseDto<String>> registerUserInfo(
       @RequestBody ExtraInfoRequest extraInfo) {
     userService.registerUserInfo(extraInfo);
     return new ResponseEntity<>(new ResponseDto<>("success"), HttpStatus.OK);
+  }
+
+  @PostMapping("nickname/check")
+  @ApiOperation(value = "닉네임 중복 체크", notes = "닉네임 중복 체크")
+  public ResponseEntity<ResponseDto<DuplicateNicknameResponse>> checkDuplicateNickname(
+      @RequestBody NicknameRequest nicknameRequest) {
+    return new ResponseEntity<>(
+        new ResponseDto<>(userService.checkDuplicateNickname(nicknameRequest)), HttpStatus.OK);
   }
 
   @GetMapping("/test")

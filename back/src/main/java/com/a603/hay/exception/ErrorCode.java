@@ -15,6 +15,7 @@ public enum ErrorCode {
   USER_NOT_EXIST(HttpStatus.BAD_REQUEST, "해당 이메일을 사용하는 유저가 존재하지 않습니다."),
   EXTRA_INFO_EXIST(HttpStatus.BAD_REQUEST, "이미 추가 정보 입력이 완료된 유저입니다."),
   EXTRA_INFO_NOT_EXIST(HttpStatus.BAD_REQUEST, "회원가입후 추가 정보 입력이 필요합니다."),
+  NICKNAME_EXIST(HttpStatus.BAD_REQUEST, "해당 닉네임을 사용하는 유저가 존재합니다"),
 
   //403 FORBIDDEN : 권한이 없는 리소스에 접근
   FORBIDDEN(HttpStatus.FORBIDDEN, "권한이 없습니다."),
