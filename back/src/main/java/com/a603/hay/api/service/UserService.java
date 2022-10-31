@@ -30,6 +30,9 @@ import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -37,18 +40,21 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@PropertySources({
+    @PropertySource("classpath:application.properties"),
+})
 public class UserService {
 
   private final UserRepository userRepository;
   private final LocationRepository locationRepository;
   private final JWTUtil jwtUtil;
 
-  private static final String JOIN_REDIRECT_URI = "http://localhost:8080/api/user/join";
-  private static final String LOGIN_REDIRECT_URI = "http://localhost:8080/api/user/login";
+  @Value("${kakao.redirecturl}")
+  private String loginRedirectUrl;
 
   @Transactional
   public ResponseEntity<ResponseDto<?>> loginUser(String code) {
-    String kaKaoAccessToken = getKaKaoAccessToken(code, LOGIN_REDIRECT_URI);
+    String kaKaoAccessToken = getKaKaoAccessToken(code, loginRedirectUrl + "/api/user/login");
     Map<String, Object> userInfo = getUserInfoFromKakao(kaKaoAccessToken);
     String email = (String) userInfo.get("email");
 

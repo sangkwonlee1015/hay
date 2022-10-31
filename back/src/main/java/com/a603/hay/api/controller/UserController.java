@@ -4,10 +4,9 @@ import com.a603.hay.api.dto.ResponseDto;
 import com.a603.hay.api.dto.UserDto.DuplicateNicknameResponse;
 import com.a603.hay.api.dto.UserDto.ExtraInfoRequest;
 import com.a603.hay.api.dto.UserDto.NicknameRequest;
-import com.a603.hay.api.dto.UserDto.TokenResponse;
 import com.a603.hay.api.service.UserService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import java.security.Principal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+@Api(value = "회원 API", tags = {"User"})
 @RestController()
 @RequestMapping("/api/user")
 @RequiredArgsConstructor
@@ -47,8 +47,4 @@ public class UserController {
         new ResponseDto<>(userService.checkDuplicateNickname(nicknameRequest)), HttpStatus.OK);
   }
 
-  @GetMapping("/test")
-  public ResponseEntity<ResponseDto<String>> test(Principal principal) {
-    return new ResponseEntity<>(new ResponseDto<>(principal.getName()), HttpStatus.OK);
-  }
 }

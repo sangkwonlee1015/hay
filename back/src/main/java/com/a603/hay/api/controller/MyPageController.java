@@ -7,6 +7,7 @@ import com.a603.hay.api.dto.ResponseDto;
 import com.a603.hay.api.dto.UserDto.NicknameRequest;
 import com.a603.hay.api.service.LocationService;
 import com.a603.hay.api.service.UserService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import java.security.Principal;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Api(value = "마이페이지 API", tags = {"MyPage"})
 @RestController()
 @RequestMapping("/api/mypage")
 @RequiredArgsConstructor
@@ -61,7 +63,7 @@ public class MyPageController {
   }
 
   @PostMapping("location/current")
-  @ApiOperation(value = "현제 동네 설정", notes = "현제 동네 설정")
+  @ApiOperation(value = "현재 동네 설정", notes = "현재 동네 설정")
   public ResponseEntity<ResponseDto<?>> setCurrentLocation(Principal principal,
       @RequestBody LocationIdRequest locationIdRequest) {
     locationService.changeCurrentSeq(principal.getName(), locationIdRequest);

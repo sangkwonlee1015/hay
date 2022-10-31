@@ -20,7 +20,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
   private static final String[] Exclude_Paths =
       {"/swagger-ui.html/**", "/swagger-ui/**", "/swagger-resources/**", "/v2/**"
-          , "/api/user/login/**", "/api/user/join/**", "/api/user/info/**"};
+          , "/api/user/login/**", "/api/user/join/**", "/api/user/info/**", "/api/user/nickname/check"};
 
   private final AuthEntryPointJwt unauthorizedHandler;
   private final CustomAuthorizationFilter customAuthorizationFilter;
