@@ -19,7 +19,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
   private static final String[] Exclude_Paths =
-      {"/api/user/login/**", "/api/user/join/**", "/api/user/info/**"};
+      {"/swagger-ui.html/**", "/swagger-ui/**", "/swagger-resources/**", "/v2/**"
+          , "/api/user/login/**", "/api/user/join/**", "/api/user/info/**"};
 
   private final AuthEntryPointJwt unauthorizedHandler;
   private final CustomAuthorizationFilter customAuthorizationFilter;
