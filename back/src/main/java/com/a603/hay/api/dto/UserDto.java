@@ -8,6 +8,7 @@ public class UserDto {
   @AllArgsConstructor
   @NoArgsConstructor
   public static class ExtraInfoRequest {
+
     private String email;
     private String nickname;
     private int birthYear;
@@ -22,6 +23,7 @@ public class UserDto {
   @AllArgsConstructor
   @NoArgsConstructor
   public static class NicknameRequest {
+
     private String nickname;
   }
 
@@ -29,6 +31,7 @@ public class UserDto {
   @AllArgsConstructor
   @NoArgsConstructor
   public static class TokenResponse {
+
     private String accessToken;
     private String refreshToken;
   }
@@ -37,7 +40,15 @@ public class UserDto {
   @AllArgsConstructor
   @NoArgsConstructor
   public static class DuplicateNicknameResponse {
+
     private boolean isDuplicate;
   }
 
+  @Data
+  @AllArgsConstructor
+  @NoArgsConstructor
+  public static class ExtraDataResponse {
+
+    private boolean extraData;
+  }
 }
