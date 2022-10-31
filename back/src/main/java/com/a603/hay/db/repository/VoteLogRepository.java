@@ -18,4 +18,8 @@ public interface VoteLogRepository extends JpaRepository<VoteLog, Long> {
   int countByVote(Vote vote);
 
   List<VoteLog> findAllByUser(User user);
+
+  int countByUserAndVoteItem(User user, VoteItem voteItem);
+
+  List<VoteLog> findAllByVoteItem(VoteItem voteItem);
 }

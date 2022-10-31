@@ -71,6 +71,6 @@ public class Vote {
   private User user;
 
   @OneToMany(mappedBy = "vote")
-  List<VoteItem> voteItems = new ArrayList<>();
+  private List<VoteItem> voteItems = new ArrayList<>();
 
 }

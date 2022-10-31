@@ -1,9 +1,14 @@
 package com.a603.hay.api.service;
 
 import com.a603.hay.api.dto.CommentDto.CreateCommentRequest;
+import com.a603.hay.api.dto.CommentDto.VoteDetailComment;
 import com.a603.hay.api.dto.VoteDto.CreateVoteRequest;
+import com.a603.hay.api.dto.VoteDto.VoteDetailResponse;
 import com.a603.hay.api.dto.VoteDto.VoteListResponse;
 import com.a603.hay.api.dto.VoteDto.VoteOneRequest;
+import com.a603.hay.api.dto.VoteDto.VoteResultResponse;
+import com.a603.hay.api.dto.VoteItemDto.VoteDetailItem;
+import com.a603.hay.api.dto.VoteItemDto.VoteResultItem;
 import com.a603.hay.db.entity.Category;
 import com.a603.hay.db.entity.Comment;
 import com.a603.hay.db.entity.Likes;
@@ -22,9 +27,12 @@ import com.a603.hay.db.repository.VoteRepository;
 import com.a603.hay.db.specification.VoteSpecification;
 import com.a603.hay.exception.CustomException;
 import com.a603.hay.exception.ErrorCode;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -110,7 +118,8 @@ public class VoteService {
       voteRepository.findAll(spec).forEach(vote -> {
         VoteListResponse voteListResponse = new VoteListResponse();
         voteList.add(
-            VoteListResponse.builder().title(vote.getTitle()).startDate(vote.getStartDate())
+            VoteListResponse.builder().id(vote.getId()).title(vote.getTitle())
+                .startDate(vote.getStartDate())
                 .endDate(vote.getEndDate()).isEnded(vote.isEnded()).voteCount(vote.getVoteCount())
                 .build());
       });
@@ -123,7 +132,8 @@ public class VoteService {
       voteLogs.forEach(voteLog -> {
         Vote vote = voteLog.getVote();
         voteList.add(
-            VoteListResponse.builder().title(vote.getTitle()).startDate(vote.getStartDate())
+            VoteListResponse.builder().id(vote.getId()).title(vote.getTitle())
+                .startDate(vote.getStartDate())
                 .endDate(vote.getEndDate()).isEnded(vote.isEnded()).voteCount(vote.getVoteCount())
                 .build());
       });
@@ -165,7 +175,8 @@ public class VoteService {
       }
       VoteListResponse voteListResponse = new VoteListResponse();
       voteList.add(
-          VoteListResponse.builder().title(vote.getTitle()).startDate(vote.getStartDate())
+          VoteListResponse.builder().id(vote.getId()).title(vote.getTitle())
+              .startDate(vote.getStartDate())
               .endDate(vote.getEndDate()).isEnded(vote.isEnded()).voteCount(vote.getVoteCount())
               .build());
     });
@@ -253,6 +264,7 @@ public class VoteService {
     if (comment.getVote().getId() != voteId || comment.getUser().getId() != user.getId()) {
       throw new CustomException(ErrorCode.FORBIDDEN);
     }
+    comment.setUpdatedAt(LocalDateTime.now());
     comment.setDeleted(true);
     commentRepository.save(comment);
   }
@@ -279,6 +291,116 @@ public class VoteService {
       comment.setLikesCount(comment.getLikesCount() + 1);
       commentRepository.save(comment);
     }
+
+  }
+
+  public VoteDetailResponse voteDetail(long voteId, User user) {
+    VoteDetailResponse voteDetailResponse = new VoteDetailResponse();
+    Location location = locationRepository.findById(user.getCurrentLocation())
+        .orElseThrow(() -> new CustomException(ErrorCode.LOCATION_NOT_FOUND));
+
+    Vote vote = voteRepository.findById(voteId)
+        .orElseThrow(() -> new CustomException(ErrorCode.VOTE_NOT_FOUND));
+    voteDetailResponse.setTitle(vote.getTitle());
+    voteDetailResponse.setBody(vote.getBody());
+
+    double d = distance(location.getLat(), location.getLng(), vote.getLat(), vote.getLng());
+    voteDetailResponse.setDistanceLevel(d < 500 ? 0 : d < 1000 ? 1 : 2);
+    voteDetailResponse.setWriterNickname(vote.getUser().getNickname());
+    voteDetailResponse.setStartDate(vote.getStartDate());
+    voteDetailResponse.setEndDate(vote.getEndDate());
+    voteDetailResponse.setEnded(vote.isEnded());
+    voteDetailResponse.setVoteCount(vote.getVoteCount());
+
+    // 투표 참여 여부
+    boolean isVoted = (voteLogRepository.countByUserAndVote(user, vote) > 0) ? true : false;
+
+    voteDetailResponse.setVoted(isVoted);
+
+    List<VoteDetailItem> voteDetailItems = new ArrayList<>();
+    vote.getVoteItems().forEach(voteItem -> {
+      voteDetailItems.add(VoteDetailItem.builder()
+          .id(voteItem.getId())
+          .content(voteItem.getContent())
+          .voteCount(isVoted ? voteItem.getVoteCount() : 0)
+          .isVoted(isVoted ? (voteLogRepository.countByUserAndVoteItem(user, voteItem) > 0 ? true
+              : false) : false)
+          .build());
+    });
+    voteDetailResponse.setVoteItems(voteDetailItems);
+
+    List<VoteDetailComment> voteDetailComments = new ArrayList<>();
+    if (isVoted) {
+      List<Comment> comments = commentRepository.findAllByVote(vote);
+      comments.forEach(comment -> {
+        if (comment.getComment() != null) {
+          return;
+        }
+        List<VoteDetailComment> voteDetailReplies = new ArrayList<>();
+        comment.getReplies().forEach(reply -> {
+          voteDetailReplies.add(VoteDetailComment.builder()
+              .id(reply.getId())
+              .content(reply.getContent())
+              .likesCount(reply.getLikesCount())
+              .isDeleted(reply.isDeleted())
+              .createdAt(reply.getCreatedAt())
+              .updatedAt(reply.getUpdatedAt())
+              .writerNickname(reply.getUser().getNickname())
+              .build());
+        });
+        voteDetailComments.add(VoteDetailComment.builder()
+            .id(comment.getId())
+            .content(comment.getContent())
+            .likesCount(comment.getLikesCount())
+            .isDeleted(comment.isDeleted())
+            .createdAt(comment.getCreatedAt())
+            .updatedAt(comment.getUpdatedAt())
+            .writerNickname(comment.getUser().getNickname())
+            .replies(voteDetailReplies)
+            .build());
+      });
+    }
+    voteDetailResponse.setComments(voteDetailComments);
+
+    return voteDetailResponse;
+  }
+
+  public VoteResultResponse voteResult(long voteId, User user) {
+    Vote vote = voteRepository.findById(voteId)
+        .orElseThrow(() -> new CustomException(ErrorCode.VOTE_NOT_FOUND));
+    if (voteId != vote.getId() || voteLogRepository.countByUserAndVote(user, vote) == 0) {
+      throw new CustomException(ErrorCode.FORBIDDEN);
+    }
+
+    System.out.println("voteResult");
+
+    List<VoteResultItem> voteResultItems = new ArrayList<>();
+    vote.getVoteItems().toString();
+    vote.getVoteItems().forEach(voteItem -> {
+      VoteResultItem voteResultItem = new VoteResultItem();
+      voteResultItem.setId(voteItem.getId());
+      voteResultItem.setContent(voteItem.getContent());
+      voteResultItem.setVoteCount(voteItem.getVoteCount());
+
+      Map<String, Integer> statisticsGender = new HashMap<>();
+      Map<String, Integer> statisticsAgeGroup = new HashMap<>();
+      List<VoteLog> voteLogs = voteLogRepository.findAllByVoteItem(voteItem);
+      voteLogs.forEach(voteLog -> {
+        String gender = voteLog.getUser().getGender();
+        int age = LocalDate.now().getYear() - voteLog.getUser().getBirthYear();
+        String ageGroup = new StringBuilder().append(age / 10).append("0대").toString();
+        statisticsGender.put(gender,
+            statisticsGender.get(gender) == null ? 1 : statisticsGender.get(gender) + 1);
+        statisticsAgeGroup.put(ageGroup,
+            statisticsAgeGroup.get(ageGroup) == null ? 1 : statisticsAgeGroup.get(ageGroup) + 1);
+      });
+      voteResultItem.setStatisticsGender(statisticsGender);
+      voteResultItem.setStatisticsAgeGroup(statisticsAgeGroup);
+
+      voteResultItems.add(voteResultItem);
+    });
+
+    return new VoteResultResponse().builder().voteResultItems(voteResultItems).build();
 
   }
 }

@@ -1,5 +1,8 @@
 package com.a603.hay.api.dto;
 
+import com.a603.hay.api.dto.CommentDto.VoteDetailComment;
+import com.a603.hay.api.dto.VoteItemDto.VoteDetailItem;
+import com.a603.hay.api.dto.VoteItemDto.VoteResultItem;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -47,11 +50,42 @@ public class VoteDto {
   @NoArgsConstructor
   public static class VoteListResponse {
 
+    private Long id;
     private String title;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private boolean isEnded;
     private int voteCount;
+  }
+
+  @Getter
+  @Setter
+  @Builder
+  @AllArgsConstructor
+  @NoArgsConstructor
+  public static class VoteDetailResponse {
+
+    private boolean isVoted;
+    private String title;
+    private String body;
+    private int distanceLevel;
+    private String writerNickname;
+    private LocalDateTime startDate;
+    private LocalDateTime endDate;
+    private boolean isEnded;
+    private int voteCount;
+    private List<VoteDetailItem> voteItems;
+    private List<VoteDetailComment> comments;
+  }
+
+  @Getter
+  @Setter
+  @Builder
+  @AllArgsConstructor
+  @NoArgsConstructor
+  public static class VoteResultResponse {
+
+    private List<VoteResultItem> voteResultItems;
   }
 
 }
