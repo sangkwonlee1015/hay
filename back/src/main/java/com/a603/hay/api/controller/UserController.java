@@ -27,15 +27,8 @@ public class UserController {
 
   @GetMapping("/login")
   @ApiOperation(value = "로그인", notes = "로그인")
-  public ResponseEntity<ResponseDto<TokenResponse>> loginUser(@RequestParam String code) {
-    return new ResponseEntity<>(new ResponseDto<>(userService.loginUser(code)), HttpStatus.OK);
-  }
-
-  @GetMapping("/join")
-  @ApiOperation(value = "회원가입", notes = "로그인과 통합 예정")
-  public ResponseEntity<ResponseDto<String>> joinUser(@RequestParam String code) {
-    userService.joinUser(code);
-    return new ResponseEntity<>(new ResponseDto<>("success"), HttpStatus.OK);
+  public ResponseEntity<ResponseDto<?>> loginUser(@RequestParam String code) {
+    return userService.loginUser(code);
   }
 
   @PostMapping("/info")

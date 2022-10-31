@@ -56,7 +56,6 @@ public class MyPageController {
   @ApiOperation(value = "동네 삭제", notes = "저장된 위치정보 삭제")
   public ResponseEntity<ResponseDto<?>> deleteLocation(Principal principal,
       @PathVariable Long locationId) {
-    System.out.println("-------------" + locationId);
     locationService.deleteLocation(principal.getName(), locationId);
     return new ResponseEntity<>(new ResponseDto<>("success"), HttpStatus.OK);
   }
