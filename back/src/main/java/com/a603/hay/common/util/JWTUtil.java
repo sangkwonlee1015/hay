@@ -1,10 +1,10 @@
 package com.a603.hay.common.util;
 
+import com.a603.hay.db.entity.User;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import java.util.Base64;
 import java.util.Date;
-import javax.annotation.PostConstruct;
+import java.util.HashMap;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
@@ -21,21 +21,24 @@ public class JWTUtil {
   @Value("${jwt.secret}")
   private String secretKey;
 
-  public String generateAccessToken(String userEmail) {
+  public String generateAccessToken(User user) {
     Algorithm algorithm = Algorithm.HMAC256(secretKey.getBytes());
 
+    HashMap<String, String> payloads = new HashMap<String, String>();
+    payloads.put("nickname", user.getNickname());
     return JWT.create()
-        .withSubject(userEmail)
+        .withSubject(user.getEmail())
         .withExpiresAt(new Date(System.currentTimeMillis() + REFRESH_EXPIRE_MINUTES))
+        .withPayload(payloads)
         .withIssuer("hay")
         .sign(algorithm);
   }
 
-  public String generateRefreshToken(String userEmail) {
+  public String generateRefreshToken(User user) {
     Algorithm algorithm = Algorithm.HMAC256(secretKey.getBytes());
 
     return JWT.create()
-        .withSubject(userEmail)
+        .withSubject(user.getEmail())
         .withExpiresAt(new Date(System.currentTimeMillis() + REFRESH_EXPIRE_MINUTES))
         .withIssuer("hay")
         .sign(algorithm);
