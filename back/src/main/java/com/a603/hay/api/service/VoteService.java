@@ -23,6 +23,7 @@ import com.a603.hay.db.repository.CommentRepository;
 import com.a603.hay.db.repository.ImageRepository;
 import com.a603.hay.db.repository.LikesRepository;
 import com.a603.hay.db.repository.LocationRepository;
+import com.a603.hay.db.repository.UserRepository;
 import com.a603.hay.db.repository.VoteItemRepository;
 import com.a603.hay.db.repository.VoteLogRepository;
 import com.a603.hay.db.repository.VoteRepository;
@@ -45,6 +46,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class VoteService {
+
+  @Autowired
+  UserRepository userRepository;
 
   @Autowired
   VoteRepository voteRepository;
@@ -71,7 +75,9 @@ public class VoteService {
   ImageRepository imageRepository;
 
   @Transactional
-  public void createVote(CreateVoteRequest createVoteRequest, User user) {
+  public void createVote(CreateVoteRequest createVoteRequest, String userEmail) {
+    User user = userRepository.findByEmail(userEmail).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_EXIST));
+
     Vote newVote = new Vote();
     Category category = categoryRepository.findById(createVoteRequest.getCategoryId())
         .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
@@ -111,7 +117,9 @@ public class VoteService {
   }
 
   @Transactional
-  public void endVote(long voteId, User user) {
+  public void endVote(long voteId, String userEmail) {
+    User user = userRepository.findByEmail(userEmail).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_EXIST));
+
     Vote vote = voteRepository.findById(voteId)
         .orElseThrow(() -> new CustomException(ErrorCode.VOTE_NOT_FOUND));
 
@@ -124,7 +132,8 @@ public class VoteService {
   }
 
   public List<VoteListResponse> getVoteList(String search, Long categoryId, boolean myVote,
-      boolean participated, boolean done, String order, User user) {
+      boolean participated, boolean done, String order, String userEmail) {
+    User user = userRepository.findByEmail(userEmail).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_EXIST));
 
     if (myVote) {
       Specification<Vote> spec = Specification.where(VoteSpecification.equalUser(user));
@@ -221,7 +230,9 @@ public class VoteService {
     return (rad * 180 / Math.PI);
   }
 
-  public void voteOne(long voteId, VoteOneRequest voteOneRequest, User user) {
+  public void voteOne(long voteId, VoteOneRequest voteOneRequest, String userEmail) {
+    User user = userRepository.findByEmail(userEmail).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_EXIST));
+
     VoteItem voteItem = voteItemRepository.findById(voteOneRequest.getVoteItemId())
         .orElseThrow(() -> new CustomException(ErrorCode.VOTEITEM_NOT_FOUND));
     Vote vote = voteItem.getVote();
@@ -246,7 +257,8 @@ public class VoteService {
     voteRepository.save(vote);
   }
 
-  public void createComment(long voteId, CreateCommentRequest createCommentRequest, User user) {
+  public void createComment(long voteId, CreateCommentRequest createCommentRequest, String userEmail) {
+    User user = userRepository.findByEmail(userEmail).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_EXIST));
 
     Comment comment = new Comment();
     comment.setContent(createCommentRequest.getContent());
@@ -272,7 +284,9 @@ public class VoteService {
   }
 
   @Transactional
-  public void deleteComment(long voteId, long commentId, User user) {
+  public void deleteComment(long voteId, long commentId, String userEmail) {
+    User user = userRepository.findByEmail(userEmail).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_EXIST));
+
     Comment comment = commentRepository.findById(commentId)
         .orElseThrow(() -> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
     if (comment.getVote().getId() != voteId || comment.getUser().getId() != user.getId()) {
@@ -284,7 +298,9 @@ public class VoteService {
   }
 
   @Transactional
-  public void clickCommentLikes(long voteId, long commentId, User user) {
+  public void clickCommentLikes(long voteId, long commentId, String userEmail) {
+    User user = userRepository.findByEmail(userEmail).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_EXIST));
+
     Comment comment = commentRepository.findById(commentId)
         .orElseThrow(() -> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
     if (comment.getVote().getId() != voteId) {
@@ -308,7 +324,9 @@ public class VoteService {
 
   }
 
-  public VoteDetailResponse voteDetail(long voteId, User user) {
+  public VoteDetailResponse voteDetail(long voteId, String userEmail) {
+    User user = userRepository.findByEmail(userEmail).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_EXIST));
+
     VoteDetailResponse voteDetailResponse = new VoteDetailResponse();
     Location location = locationRepository.findById(user.getCurrentLocation())
         .orElseThrow(() -> new CustomException(ErrorCode.LOCATION_NOT_FOUND));
@@ -385,7 +403,9 @@ public class VoteService {
     return voteDetailResponse;
   }
 
-  public VoteResultResponse voteResult(long voteId, User user) {
+  public VoteResultResponse voteResult(long voteId, String userEmail) {
+    User user = userRepository.findByEmail(userEmail).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_EXIST));
+
     Vote vote = voteRepository.findById(voteId)
         .orElseThrow(() -> new CustomException(ErrorCode.VOTE_NOT_FOUND));
     if (voteId != vote.getId() || voteLogRepository.countByUserAndVote(user, vote) == 0) {
