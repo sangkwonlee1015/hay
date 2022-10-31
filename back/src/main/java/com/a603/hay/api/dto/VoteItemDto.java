@@ -1,6 +1,6 @@
 package com.a603.hay.api.dto;
 
-import java.util.Map;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -32,8 +32,8 @@ public class VoteItemDto {
     private Long id;
     private String content;
     private int voteCount;
-    private Map<String, Integer> statisticsGender;
-    private Map<String, Integer> statisticsAgeGroup;
+    private List<Integer> statisticsGender;
+    private List<Integer> statisticsAgeGroup;
   }
 
 }

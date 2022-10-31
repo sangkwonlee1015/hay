@@ -31,6 +31,7 @@ public class VoteDto {
     private boolean isCommentable;
     private long categoryId;
     private List<String> voteItemContents;
+    private List<String> imageUrls;
   }
 
   @Getter
@@ -76,6 +77,7 @@ public class VoteDto {
     private int voteCount;
     private List<VoteDetailItem> voteItems;
     private List<VoteDetailComment> comments;
+    private List<String> imageUrls;
   }
 
   @Getter

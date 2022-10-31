@@ -11,6 +11,7 @@ import com.a603.hay.api.dto.VoteItemDto.VoteDetailItem;
 import com.a603.hay.api.dto.VoteItemDto.VoteResultItem;
 import com.a603.hay.db.entity.Category;
 import com.a603.hay.db.entity.Comment;
+import com.a603.hay.db.entity.Image;
 import com.a603.hay.db.entity.Likes;
 import com.a603.hay.db.entity.Location;
 import com.a603.hay.db.entity.User;
@@ -19,6 +20,7 @@ import com.a603.hay.db.entity.VoteItem;
 import com.a603.hay.db.entity.VoteLog;
 import com.a603.hay.db.repository.CategoryRepository;
 import com.a603.hay.db.repository.CommentRepository;
+import com.a603.hay.db.repository.ImageRepository;
 import com.a603.hay.db.repository.LikesRepository;
 import com.a603.hay.db.repository.LocationRepository;
 import com.a603.hay.db.repository.VoteItemRepository;
@@ -30,6 +32,7 @@ import com.a603.hay.exception.ErrorCode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,6 +67,9 @@ public class VoteService {
   @Autowired
   LocationRepository locationRepository;
 
+  @Autowired
+  ImageRepository imageRepository;
+
   @Transactional
   public void createVote(CreateVoteRequest createVoteRequest, User user) {
     Vote newVote = new Vote();
@@ -93,6 +99,14 @@ public class VoteService {
       voteItem.setUpdatedAt(LocalDateTime.now());
       voteItem.setVote(vote);
       voteItemRepository.save(voteItem);
+    });
+    createVoteRequest.getImageUrls().forEach(url -> {
+      Image image = new Image();
+      image.setUrl(url);
+      image.setCreatedAt(LocalDateTime.now());
+      image.setUpdatedAt(LocalDateTime.now());
+      image.setVote(vote);
+      imageRepository.save(image);
     });
   }
 
@@ -312,6 +326,12 @@ public class VoteService {
     voteDetailResponse.setEnded(vote.isEnded());
     voteDetailResponse.setVoteCount(vote.getVoteCount());
 
+    List<String> imageUrls = new ArrayList<>();
+    vote.getImages().forEach(image -> {
+      imageUrls.add(image.getUrl());
+    });
+    voteDetailResponse.setImageUrls(imageUrls);
+
     // 투표 참여 여부
     boolean isVoted = (voteLogRepository.countByUserAndVote(user, vote) > 0) ? true : false;
 
@@ -382,17 +402,32 @@ public class VoteService {
       voteResultItem.setContent(voteItem.getContent());
       voteResultItem.setVoteCount(voteItem.getVoteCount());
 
-      Map<String, Integer> statisticsGender = new HashMap<>();
-      Map<String, Integer> statisticsAgeGroup = new HashMap<>();
+      List<Integer> statisticsGender = Arrays.asList(0, 0, 0);
+      List<Integer> statisticsAgeGroup = Arrays.asList(0, 0, 0, 0);
       List<VoteLog> voteLogs = voteLogRepository.findAllByVoteItem(voteItem);
       voteLogs.forEach(voteLog -> {
         String gender = voteLog.getUser().getGender();
-        int age = LocalDate.now().getYear() - voteLog.getUser().getBirthYear();
-        String ageGroup = new StringBuilder().append(age / 10).append("0대").toString();
-        statisticsGender.put(gender,
-            statisticsGender.get(gender) == null ? 1 : statisticsGender.get(gender) + 1);
-        statisticsAgeGroup.put(ageGroup,
-            statisticsAgeGroup.get(ageGroup) == null ? 1 : statisticsAgeGroup.get(ageGroup) + 1);
+        switch (gender) {
+          case "male":
+            statisticsGender.set(0, statisticsGender.get(0) + 1);
+            break;
+          case "female":
+            statisticsGender.set(1, statisticsGender.get(1) + 1);
+            break;
+          default:
+            statisticsGender.set(2, statisticsGender.get(2) + 1);
+        }
+
+        int age = LocalDate.now().getYear() - voteLog.getUser().getBirthYear() / 10;
+        if (age < 3) {
+          statisticsAgeGroup.set(0, statisticsAgeGroup.get(0) + 1);
+        } else if (age == 3) {
+          statisticsAgeGroup.set(1, statisticsAgeGroup.get(1) + 1);
+        } else if (age == 4) {
+          statisticsAgeGroup.set(2, statisticsAgeGroup.get(2) + 1);
+        } else {
+          statisticsAgeGroup.set(3, statisticsAgeGroup.get(3) + 1);
+        }
       });
       voteResultItem.setStatisticsGender(statisticsGender);
       voteResultItem.setStatisticsAgeGroup(statisticsAgeGroup);

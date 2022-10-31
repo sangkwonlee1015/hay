@@ -73,4 +73,7 @@ public class Vote {
   @OneToMany(mappedBy = "vote")
   private List<VoteItem> voteItems = new ArrayList<>();
 
+  @OneToMany(mappedBy = "vote")
+  private List<Image> images = new ArrayList<>();
+
 }
