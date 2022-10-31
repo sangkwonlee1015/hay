@@ -20,12 +20,13 @@ const initialState = {
   nickname: '',
   isNotDuplicate: true,
   gender: 0,
-  birthyear: '2022',
-  latitude: '',
-  longitude: '',
+  birthyear: 2022,
+  latitude: -1,
+  longitude: -1,
+  areaName: '',
 };
 
-export const UserSlice = createSlice({
+const UserSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
@@ -46,6 +47,9 @@ export const UserSlice = createSlice({
     },
     longitude(state, action) {
       state.longitude = action.payload;
+    },
+    areaName(state, action) {
+      state.areaName = action.payload;
     },
   },
   extraReducers: {

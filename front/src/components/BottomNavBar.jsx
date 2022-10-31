@@ -29,7 +29,7 @@ function BottomNavBar() {
   };
 
   return (
-    <Box sx={{ position: "fixed", bottom: 0, left: 0, right: 0 }} elevation={3}>
+    <Box sx={{ position: "fixed", bottom: 0, left: 0, right: 0, borderTop: '0.5px solid rgba(0, 0, 0, 0.25)' }} elevation={3}>
       <BottomNavigation
         showLabels
         value={bottomNavigate}
