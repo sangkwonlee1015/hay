@@ -143,7 +143,6 @@ public class VoteService {
       Specification<Vote> spec = Specification.where(VoteSpecification.equalUser(user));
       List<VoteListResponse> voteList = new ArrayList<>();
       voteRepository.findAll(spec).forEach(vote -> {
-        VoteListResponse voteListResponse = new VoteListResponse();
         voteList.add(
             VoteListResponse.builder().id(vote.getId()).title(vote.getTitle())
                 .startDate(vote.getStartDate())
@@ -181,7 +180,7 @@ public class VoteService {
       default:
         throw new CustomException(ErrorCode.BAD_REQUEST);
     }
-    Sort sort = Sort.by(properties);
+    Sort sort = Sort.by(properties).descending();
 
     Specification<Vote> spec = null;
     if (!done) {
@@ -197,13 +196,10 @@ public class VoteService {
     }
     Location location = locationRepository.findById(user.getCurrentLocation())
         .orElseThrow(() -> new CustomException(ErrorCode.LOCATION_NOT_FOUND));
-    spec = spec.and(VoteSpecification.withinRange(location.getLat(), location.getLng(), user.getCurrentRange()));
+    spec = spec.and(VoteSpecification.withinRange(location.getLat(), location.getLng(),
+        user.getCurrentRange()));
     List<VoteListResponse> voteList = new ArrayList<>();
     voteRepository.findAll(spec, sort).forEach(vote -> {
-//      if (distance(35.0001, 127.4999, vote.getLat(), vote.getLng()) > user.getCurrentRange()) {
-//        return;
-//      }
-      VoteListResponse voteListResponse = new VoteListResponse();
       voteList.add(
           VoteListResponse.builder().id(vote.getId()).title(vote.getTitle())
               .startDate(vote.getStartDate())
@@ -415,7 +411,17 @@ public class VoteService {
       });
     }
     voteDetailResponse.setComments(voteDetailComments);
-
+    Comment bestComment = commentRepository.findFirstByVoteAndIsDeletedOrderByLikesCountDesc(vote, false)
+        .orElseThrow(() -> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
+    voteDetailResponse.setBestComment(VoteDetailComment.builder()
+        .id(bestComment.getId())
+        .content(bestComment.getContent())
+        .likesCount(bestComment.getLikesCount())
+        .isDeleted(bestComment.isDeleted())
+        .createdAt(bestComment.getCreatedAt())
+        .updatedAt(bestComment.getUpdatedAt())
+        .writerNickname(bestComment.getUser().getNickname())
+        .build());
     return voteDetailResponse;
   }
 
