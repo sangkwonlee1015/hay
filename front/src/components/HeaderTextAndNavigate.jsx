@@ -17,7 +17,7 @@ const Header = styled.div`
   font-size: 16px;
 `;
 
-function HeaderOnlyText(props) {
+function HeaderTextAndNavigate(props) {
   const navigate = useNavigate();
 
   function handleButton(path) {
