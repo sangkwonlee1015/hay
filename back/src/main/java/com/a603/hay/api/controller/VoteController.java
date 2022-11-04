@@ -2,19 +2,16 @@ package com.a603.hay.api.controller;
 
 import com.a603.hay.api.dto.CommentDto.CreateCommentRequest;
 import com.a603.hay.api.dto.ResponseDto;
-import com.a603.hay.api.dto.VoteDto;
 import com.a603.hay.api.dto.VoteDto.CreateVoteRequest;
 import com.a603.hay.api.dto.VoteDto.VoteDetailResponse;
 import com.a603.hay.api.dto.VoteDto.VoteListResponse;
 import com.a603.hay.api.dto.VoteDto.VoteOneRequest;
 import com.a603.hay.api.dto.VoteDto.VoteResultResponse;
-import com.a603.hay.api.dto.VoteItemDto.VoteResultItem;
 import com.a603.hay.api.service.VoteService;
-import com.a603.hay.db.entity.User;
-import com.a603.hay.db.repository.UserRepository;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import java.security.Principal;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -37,100 +34,83 @@ public class VoteController {
   @Autowired
   VoteService voteService;
 
-  @Autowired
-  UserRepository userRepository;  // 테스트 용
 
   @GetMapping("")
   @ApiOperation(value = "투표 목록", notes = "투표 목록 보기")
-  public ResponseEntity<ResponseDto> voteList(@RequestParam(required = false) String search,
+  public ResponseEntity<ResponseDto> voteList(Principal principal,
+      @RequestParam(required = false) String search,
       @RequestParam(required = false) Long category,
       @RequestParam(required = false, name = "my-vote") boolean myVote,
       @RequestParam(required = false) boolean participated,
       @RequestParam(required = false) boolean done, @RequestParam(required = false) String order) {
-    User user = new User(); // 로그인 유저 정보로 대체
-    user = userRepository.findById(1L).get(); // 테스트
     return new ResponseEntity<>(new ResponseDto<List<VoteListResponse>>(
-        voteService.getVoteList(search, category, myVote, participated, done, order, user)),
+        voteService.getVoteList(search, category, myVote, participated, done, order,
+            principal.getName())),
         HttpStatus.OK);
   }
 
   @PostMapping("")
   @ApiOperation(value = "투표 생성", notes = "투표 생성")
-  public ResponseEntity<ResponseDto> createVote(
+  public ResponseEntity<ResponseDto> createVote(Principal principal,
       @RequestBody @ApiParam(value = "투표 정보", required = true)
       CreateVoteRequest createVoteRequest) {
-    User user = new User(); // 로그인 유저 정보로 대체
-    user = userRepository.findById(1L).get(); // 테스트
-    voteService.createVote(createVoteRequest, user);
+    voteService.createVote(createVoteRequest, principal.getName());
     return new ResponseEntity<>(new ResponseDto<String>("투표 생성 성공"), HttpStatus.OK);
   }
 
   @GetMapping("/{voteId}")
   @ApiOperation(value = "투표 내용 조회", notes = "투표 내용 조회, 투표 했을 경우 투표 현황과 댓글까지 조회")
-  public ResponseEntity<ResponseDto> voteDetail(@PathVariable long voteId) {
-    User user = new User(); // 로그인 유저 정보로 대체
-    user = userRepository.findById(1L).get(); // 테스트
+  public ResponseEntity<ResponseDto> voteDetail(Principal principal, @PathVariable long voteId) {
     return new ResponseEntity<>(
-        new ResponseDto<VoteDetailResponse>(voteService.voteDetail(voteId, user)),
+        new ResponseDto<VoteDetailResponse>(voteService.voteDetail(voteId, principal.getName())),
         HttpStatus.OK);
   }
 
   @PostMapping("/{voteId}")
   @ApiOperation(value = "투표 하기", notes = "투표 항목 선택하여 투표")
-  public ResponseEntity<ResponseDto> voteOne(@PathVariable long voteId,
+  public ResponseEntity<ResponseDto> voteOne(Principal principal, @PathVariable long voteId,
       @RequestBody @ApiParam(value = "투표 항목 정보", required = true) VoteOneRequest voteOneRequest) {
-    User user = new User(); // 로그인 유저 정보로 대체
-    user = userRepository.findById(1L).get(); // 테스트
-    voteService.voteOne(voteId, voteOneRequest, user);
+    voteService.voteOne(voteId, voteOneRequest, principal.getName());
     return new ResponseEntity<>(new ResponseDto<String>("투표 성공"), HttpStatus.OK);
   }
 
   @PutMapping("/{voteId}")
   @ApiOperation(value = "투표 종료", notes = "투표 종료")
-  public ResponseEntity<ResponseDto> endVote(@PathVariable long voteId) {
-    User user = new User(); // 로그인 유저 정보로 대체
-    user = userRepository.findById(1L).get(); // 테스트
-    voteService.endVote(voteId, user);
+  public ResponseEntity<ResponseDto> endVote(Principal principal, @PathVariable long voteId) {
+    voteService.endVote(voteId, principal.getName());
     return new ResponseEntity<>(new ResponseDto<String>("투표 조기 종료"), HttpStatus.OK);
   }
 
   @GetMapping("/{voteId}/result")
   @ApiOperation(value = "투표 결과 조회", notes = "투표 결과의 통계를 조회한다")
-  public ResponseEntity<ResponseDto> voteResult(@PathVariable long voteId) {
-    User user = new User(); // 로그인 유저 정보로 대체
-    user = userRepository.findById(1L).get(); // 테스트
+  public ResponseEntity<ResponseDto> voteResult(Principal principal, @PathVariable long voteId) {
     return new ResponseEntity<>(
-        new ResponseDto<VoteResultResponse>(voteService.voteResult(voteId, user)),
+        new ResponseDto<VoteResultResponse>(voteService.voteResult(voteId, principal.getName())),
         HttpStatus.OK);
   }
 
   @PostMapping("/{voteId}/comment")
   @ApiOperation(value = "댓글(대댓글) 작성", notes = "댓글(대댓글) 작성")
-  public ResponseEntity<ResponseDto> createComment(@PathVariable long voteId,
+  public ResponseEntity<ResponseDto> createComment(Principal principal, @PathVariable long voteId,
       @RequestBody @ApiParam(value = "댓글(대댓글) 정보", required = true) CreateCommentRequest createCommentRequest) {
-    User user = new User(); // 로그인 유저 정보로 대체
-    user = userRepository.findById(1L).get(); // 테스트
-    voteService.createComment(voteId, createCommentRequest, user);
+    voteService.createComment(voteId, createCommentRequest, principal.getName());
     return new ResponseEntity<>(new ResponseDto<String>("댓글 작성 성공"), HttpStatus.OK);
   }
 
   @DeleteMapping("/{voteId}/comment/{commentId}")
   @ApiOperation(value = "댓글(대댓글) 삭제", notes = "댓글(대댓글) 삭제")
-  public ResponseEntity<ResponseDto> deleteComment(@PathVariable long voteId,
+  public ResponseEntity<ResponseDto> deleteComment(Principal principal, @PathVariable long voteId,
       @PathVariable long commentId) {
-    User user = new User(); // 로그인 유저 정보로 대체
-    user = userRepository.findById(1L).get(); // 테스트
-    voteService.deleteComment(voteId, commentId, user);
+    voteService.deleteComment(voteId, commentId, principal.getName());
     return new ResponseEntity<>(new ResponseDto<String>("댓글 삭제 성공"), HttpStatus.OK);
   }
 
   @PostMapping("/{voteId}/comment/{commentId}/likes")
   @ApiOperation(value = "댓글(대댓글) 좋아요", notes = "댓글(대댓글) 좋아요 클릭(누른 상테일 경우 좋아요 해제")
-  public ResponseEntity<ResponseDto> clickCommentLikes(@PathVariable long voteId,
+  public ResponseEntity<ResponseDto> clickCommentLikes(Principal principal,
+      @PathVariable long voteId,
       @PathVariable long commentId) {
-    User user = new User(); // 로그인 유저 정보로 대체
-    user = userRepository.findById(1L).get(); // 테스트
-    voteService.clickCommentLikes(voteId, commentId, user);
+    voteService.clickCommentLikes(voteId, commentId, principal.getName());
     return new ResponseEntity<>(new ResponseDto<String>("좋아요 클릭 성공"), HttpStatus.OK);
   }
 

@@ -19,6 +19,7 @@ import org.hibernate.annotations.DynamicUpdate;
 @Entity
 @Getter
 @Setter
+@Table(indexes = {@Index(name = "idx_email", columnList = "email")})
 public class User {
 
   @Id
