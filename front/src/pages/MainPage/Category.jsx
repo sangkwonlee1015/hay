@@ -2,9 +2,10 @@
 
 import React from 'react'
 
-function Category() {
+function Category({props}) {
+
   return (
-    <div>Category</div>
+    <div>{props}</div>
   )
 }
 
