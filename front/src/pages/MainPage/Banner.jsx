@@ -3,10 +3,13 @@
 // 사진이 들어갈 경우, 배경을 어둡게 하고 흰색 글씨 사용
 
 import React from 'react'
+import Banner1 from '../../img/banner1.png'
 
 function Banner() {
   return (
-    <div>Banner</div>
+    <div>
+      <img src={Banner1} className="Banner1" alt="Banner" />
+    </div>
   )
 }
 
