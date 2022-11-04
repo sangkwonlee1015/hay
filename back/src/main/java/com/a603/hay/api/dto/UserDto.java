@@ -34,6 +34,8 @@ public class UserDto {
 
     private String accessToken;
     private String refreshToken;
+    private boolean extraData;
+
   }
 
   @Data
