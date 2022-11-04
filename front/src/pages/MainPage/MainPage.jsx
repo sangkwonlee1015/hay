@@ -6,10 +6,19 @@
 // 하단바 (components 폴더에 있음)
 
 import React from 'react'
+import Banner from './Banner'
+import Category from './Category'
+
 
 function MainPage() {
   return (
-    <div>MainPage</div>
+    <>
+      <div>MainPage</div>
+      <Category name="이야기" />
+      <Category name="먹자지껄" />
+      <Category name="매일매일" />
+      <Banner />
+    </>
   )
 }
 
