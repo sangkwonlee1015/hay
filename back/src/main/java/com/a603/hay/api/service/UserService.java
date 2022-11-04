@@ -54,7 +54,7 @@ public class UserService {
 
   @Transactional
   public ResponseEntity<ResponseDto<?>> loginUser(String code) {
-    String kaKaoAccessToken = getKaKaoAccessToken(code, loginRedirectUrl + "/api/user/login");
+    String kaKaoAccessToken = getKaKaoAccessToken(code, loginRedirectUrl + "/kakaologin");
     Map<String, Object> userInfo = getUserInfoFromKakao(kaKaoAccessToken);
     String email = (String) userInfo.get("email");
 
@@ -69,7 +69,7 @@ public class UserService {
       if (user.getNickname() != null) { //1. 회원가입된 유저 //TODO 추가정보 입력 유저 확인 로직 강화 필요
         return new ResponseEntity<>(
             new ResponseDto<>(new TokenResponse(jwtUtil.generateAccessToken(user),
-                jwtUtil.generateRefreshToken(user))), HttpStatus.OK);
+                jwtUtil.generateRefreshToken(user), true)), HttpStatus.OK);
       } else { //2. 회원가입되었지만 추가 정보 없는 유저
         return new ResponseEntity<>(
             new ResponseDto<>(new ExtraDataResponse(false)), HttpStatus.OK);
