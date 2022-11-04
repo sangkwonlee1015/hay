@@ -38,4 +38,4 @@ function HeaderOnlyText(props) {
   );
 }
 
-export default HeaderOnlyText;
+export default HeaderTextAndNavigate;
