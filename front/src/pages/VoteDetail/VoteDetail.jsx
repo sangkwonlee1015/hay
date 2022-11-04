@@ -12,37 +12,108 @@
 // 댓글 수, 공유하기
 // 댓글 리스트
 
+import { Details, DetailsSharp } from '@mui/icons-material'
 import React from 'react'
-import ReactVote from 'react-vote';
 
 function VoteDetail() {
-  const data = {
-    items: [
+  
+  const details = {
+    title: "여러분이 정해주신 곳으로 가겠습니다.",
+    작성자: "건설로봇",
+    distanceLevel: 0,
+    imageUrls: "",
+    body: "안녕하세요 저는 매일매일 노동력을 착취당하는 프롤레탈리아입니...",
+    voteCount: 10,
+    startDate: "2022-10-28 14:01:00.000000",
+    endDate: "2022-11-04 14:01:00.000000",
+    ended: false,
+    voted: true,
+    voteItems: [
+      {
+        id: 1,
+        content: "서플라이 국밥",
+        voteCount: 0,
+        voted: false,
+      },
+      {
+        id: 2,
+        content: "팩토리 분식",
+        voteCount: 3,
+        voted: true,
+      },
+      {
+        id: 3,
+        content: "스타포트 레스토랑",
+        voteCount: 7,
+        voted: false,
+      },
     ],
-    closed: false,
-    multiple: false,
-    expansion: false,
-    showTotal: true,
-    creator: "",
+    comments: [
+      {
+        id: 1,
+        content: "댓글내용1입니다",
+        likesCount: 0,
+        createdAt: "2022-11-04 17:06:12.000000",
+        writerNickname: "버뮤",
+        deleted: false, // true일 경우 삭제된 댓글입니다 표시
+        replies: [
+          {
+            // 객체 하나당 댓글or대댓글 한 개임
+          },
+          {
+            id: 2,
+            content: "댓글내용1의 대댓글1 내용입니다.",
+            likesCount: 0,
+            createdAt: "2022-11-14 17:09:28.000000",
+            writerNickname: "미온",
+          },
+        ],
+      },
+    ],
   }
-  const customStyles = {
 
+  /**
+   * 댓글별로 대댓글까지 순회하며 카운트해서 총 댓글 수를 반환하는 함수
+   * @returns number
+   */
+  const commentCount = () => {
+    let result = 0;
+    for (let comment of details.comments) {
+      if (comment.replies.length > 0) {
+        for (let tmp of comment.replies) {
+          result += !!tmp;
+        }
+      }
+      result += 1;
+    }
+    return result
   }
   
-  
-  
-  
-  
-  
-  
-  
+    
   return (
     <>
       <div>
-        VoteDetail
-        <ReactVote
-          data={data}
-        />
+        <div>{details.title}</div>
+        <div>{details.작성자}</div>
+        <div>{details.distanceLevel}</div>
+        <div>{details.startDate}</div>
+      </div>
+      <div>이미지</div>
+      <div>{details.body}</div>
+      <div>
+        투표
+      </div>
+      댓글 {commentCount()}      <div>공유하기</div>
+      <div>
+        <h2>베스트 댓글</h2>
+        <div></div>
+
+        <div>
+          <div>{details.comments[0].content}</div>
+          <div>{details.comments[0].writerNickname}</div>
+          <div>좋아요 {details.comments[0].likesCount}</div>
+          <div>{details.comments[0].createdAt}</div>
+        </div>
       </div>
     </>
   )
