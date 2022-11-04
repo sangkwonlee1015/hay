@@ -11,7 +11,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.format.annotation.DateTimeFormat;
 
 public class VoteDto {
 
@@ -76,6 +75,7 @@ public class VoteDto {
     private boolean isEnded;
     private int voteCount;
     private List<VoteDetailItem> voteItems;
+    private VoteDetailComment bestComment;
     private List<VoteDetailComment> comments;
     private List<String> imageUrls;
   }
