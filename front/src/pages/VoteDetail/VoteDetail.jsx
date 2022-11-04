@@ -13,7 +13,6 @@
 // 댓글 리스트
 
 import React from 'react'
-import ReactVote from 'react-vote';
 
 function VoteDetail() {
   const data = {
@@ -40,9 +39,6 @@ function VoteDetail() {
     <>
       <div>
         VoteDetail
-        <ReactVote
-          data={data}
-        />
       </div>
     </>
   )
