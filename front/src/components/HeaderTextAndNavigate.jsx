@@ -3,6 +3,7 @@ import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import React from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
+import { Button } from "@mui/material";
 
 const Header = styled.div`
   position: absolute;
@@ -25,7 +26,7 @@ function HeaderTextAndNavigate(props) {
   }
 
   return (
-    <div>
+    <Header>
       <IconButton
         onClick={() => {
           handleButton(props.path);
@@ -33,8 +34,8 @@ function HeaderTextAndNavigate(props) {
       >
         <ArrowBackIosIcon></ArrowBackIosIcon>
       </IconButton>
-      <Header>{props.text}</Header>
-    </div>
+      {props.text}
+    </Header>
   );
 }
 
