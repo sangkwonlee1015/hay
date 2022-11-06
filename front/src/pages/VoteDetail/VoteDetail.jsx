@@ -13,6 +13,7 @@
 // 댓글 리스트
 
 import { Details, DetailsSharp } from '@mui/icons-material'
+import { borderRadius } from '@mui/system';
 import React from 'react'
 import './VoteDetail.css';
 
@@ -90,23 +91,49 @@ function VoteDetail() {
     }
     return result
   }
+
+  /**
+   * 투표거리에 따른 단계(스타일 적용된)
+   */
+  let distanceLevel = null;
+  switch (details.distanceLevel) {
+    case 0: {
+      distanceLevel = <div style={{backgroundColor:'e7f3fe', fontSize:'12px', fontWeight:'bold', borderRadius:'4px'}}>{details.distanceLevel}</div>;
+      break;
+    }
+    case 1: {
+      distanceLevel = <div style={{backgroundColor:'cfe8fc', fontSize:'12px', fontWeight:'bold', borderRadius:'4px'}}>{details.distanceLevel}</div>;
+      break;
+    }
+    default: {
+      distanceLevel = <div style={{backgroundColor:'b6dcfb', fontSize:'12px', fontWeight:'bold', borderRadius:'4px'}}>{details.distanceLevel}</div>;
+    }
+  }
   
     
   return (
-    <>
+    <div className="contentAll">
       <div>
-        <h1>{details.title}</h1>
-        <div>{details.작성자}</div>
-        <div>{details.distanceLevel}</div>
-        <div>{details.startDate}</div>
+        <div className="title">{details.title}</div>
+        <div className="titleGroup">
+          <div className="writter">{details.작성자}</div>
+          {distanceLevel}
+          <div className="startDate">{details.startDate.substring(0,16)}</div>
+        </div>
       </div>
       <div>이미지</div>
-      <div>{details.body}</div>
-      <div>
-        <div>투표 {details.voteCount}명 참여</div>
-        <div>{남은날짜계산(details.endDate)}</div>
+      <div className="article">{details.body}</div>
+      <div className="vote">
+        <div className="voteTitle">
+          <div className="voteText">투표</div>
+          <div>{details.voteCount}명 참여</div>
+        </div>
+        <div className="remainDate">{남은날짜계산(details.endDate)}</div>
       </div>
-      댓글 {commentCount()}      <div>공유하기</div>
+      <div className="commentShare">
+        <div className="commentNav">댓글 {commentCount()}</div>
+        <div className="share">공유하기</div>
+      </div>
       <div>
         <h2>베스트 댓글</h2>
         <div></div>
@@ -117,11 +144,11 @@ function VoteDetail() {
             <div>{details.comments[0].content}</div>
             <div>{details.comments[0].writerNickname}</div>
             <div>좋아요 {details.comments[0].likesCount}</div>
-            <div>{details.comments[0].createdAt}</div>
+            <div>{details.comments[0].createdAt.substring(0,16)}</div>
           </div>
         }
       </div>
-    </>
+    </div>
   )
 }
 
