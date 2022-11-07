@@ -72,18 +72,18 @@ public class UserService {
                 jwtUtil.generateRefreshToken(user), true)), HttpStatus.OK);
       } else { //2. 회원가입되었지만 추가 정보 없는 유저
         return new ResponseEntity<>(
-            new ResponseDto<>(new ExtraDataResponse(false)), HttpStatus.OK);
+            new ResponseDto<>(new ExtraDataResponse(false, user.getKakao())), HttpStatus.OK);
       }
     } else { //3. 처음 로그인한 유저
-      registerUser(userInfo);
+      User registerUser = registerUser(userInfo);
       return new ResponseEntity<>(
-          new ResponseDto<>(new ExtraDataResponse(false)), HttpStatus.OK);
+          new ResponseDto<>(new ExtraDataResponse(false, registerUser.getKakao())), HttpStatus.OK);
     }
   }
 
   @Transactional
   public void registerUserInfo(ExtraInfoRequest extraInfo) {
-    User user = userRepository.findByEmail(extraInfo.getEmail()).orElse(null);
+    User user = userRepository.findByKakao(extraInfo.getKakaoId()).orElse(null);
     if (user == null) {
       throw new CustomException(ErrorCode.USER_NOT_EXIST);
     }
@@ -109,7 +109,7 @@ public class UserService {
   }
 
   @Transactional
-  protected void registerUser(Map<String, Object> userInfo) {
+  protected User registerUser(Map<String, Object> userInfo) {
     User user = new User();
     user.setKakao((String) userInfo.get("id"));
     user.setEmail((String) userInfo.get("email"));
@@ -118,6 +118,7 @@ public class UserService {
     user.setUpdatedAt(now);
 
     userRepository.save(user);
+    return user;
   }
 
   public DuplicateNicknameResponse checkDuplicateNickname(NicknameRequest nicknameRequest) {
