@@ -12,6 +12,7 @@ import {
   MenuItem,
 } from "@mui/material";
 import { userAction } from '../../_slice/UserSlice';
+import { useLocation } from "react-router";
 
 const Body = styled.div`
   height: 100%;
@@ -41,8 +42,10 @@ function Signup() {
     years.push(String(i));
   }
 
+  const  { state } = useLocation();
+
   function handleButton() {
-    navigate("/locationsetting");
+    navigate("/locationsetting", {state: {"kakaoId": state.kakaoId, "nickname": nickname, "gender": gender, "birthyear": birthyear}});
   }
   function handleNickname(e) {
     dispatch(userAction.nickname(e.target.value));
