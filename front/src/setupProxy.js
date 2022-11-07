@@ -1,11 +1,14 @@
-const { createPoxyMiddleware, createProxyMiddleware } = require('http-proxy-middleware');
+const {
+  createPoxyMiddleware,
+  createProxyMiddleware,
+} = require("http-proxy-middleware");
 
 //cors 때문에 설정함. 프론트와 논의 필요
 module.exports = function (app) {
   app.use(
-    '/api',
+    "/api",
     createProxyMiddleware({
-      target: 'http://localhost:8080',
+      target: "http://localhost:8080",
       changeOrigin: true,
     })
   );
