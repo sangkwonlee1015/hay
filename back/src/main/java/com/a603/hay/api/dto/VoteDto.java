@@ -50,6 +50,17 @@ public class VoteDto {
   @NoArgsConstructor
   public static class VoteListResponse {
 
+    private VoteListResponseVote bestVote;
+    private List<VoteListResponseVote> votes;
+  }
+
+  @Getter
+  @Setter
+  @Builder
+  @AllArgsConstructor
+  @NoArgsConstructor
+  public static class VoteListResponseVote {
+
     private Long id;
     private String title;
     private LocalDateTime startDate;
