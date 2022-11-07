@@ -2,10 +2,17 @@
 // 아이콘(베스트일 경우 왕관), 제목, 등록일자, 남은날짜, 참여자 수 포함
 
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 function VoteItem({ vote }) {
+  const navigate = useNavigate();
+
   return (
-    <div>
+    <div
+      onClick={() => {
+        navigate(`/votedetail/${vote.id}`);
+      }}
+    >
       {vote.title}
       <br />
       {vote.startDate}, {vote.endDate}
