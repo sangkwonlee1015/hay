@@ -7,6 +7,7 @@ import store from "./_store/store";
 
 import App from './App';
 import Login from './pages/User/Login';
+import KakaoLogin from './pages/User/KakaoLogin';
 import SignUp from './pages/User/Signup';
 import LocationSetting from './pages/User/LocationSetting';
 import MainPage from './pages/MainPage/MainPage';
@@ -23,6 +24,7 @@ root.render(
         <Route path="/" element={<App />}>
           <Route path="" element={<Login />} /> 
           <Route path="login" element={<Login />} />
+          <Route path="kakaologin" element={<KakaoLogin />} />
           <Route path="signup" element={<SignUp />} />
           <Route path="locationsetting" element={<LocationSetting />} />
           <Route path="main" element={<MainPage />} />
