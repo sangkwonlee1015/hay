@@ -5,6 +5,7 @@ import com.a603.hay.api.dto.CommentDto.VoteDetailComment;
 import com.a603.hay.api.dto.VoteDto.CreateVoteRequest;
 import com.a603.hay.api.dto.VoteDto.VoteDetailResponse;
 import com.a603.hay.api.dto.VoteDto.VoteListResponse;
+import com.a603.hay.api.dto.VoteDto.VoteListResponseVote;
 import com.a603.hay.api.dto.VoteDto.VoteOneRequest;
 import com.a603.hay.api.dto.VoteDto.VoteResultResponse;
 import com.a603.hay.api.dto.VoteItemDto.VoteDetailItem;
@@ -134,36 +135,36 @@ public class VoteService {
   }
 
   @Transactional(readOnly = true)
-  public List<VoteListResponse> getVoteList(String search, Long categoryId, boolean myVote,
+  public VoteListResponse getVoteList(String search, Long categoryId, boolean myVote,
       boolean participated, boolean done, String order, String userEmail) {
     User user = userRepository.findByEmail(userEmail)
         .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_EXIST));
 
     if (myVote) {
       Specification<Vote> spec = Specification.where(VoteSpecification.equalUser(user));
-      List<VoteListResponse> voteList = new ArrayList<>();
+      List<VoteListResponseVote> voteList = new ArrayList<>();
       voteRepository.findAll(spec).forEach(vote -> {
         voteList.add(
-            VoteListResponse.builder().id(vote.getId()).title(vote.getTitle())
+            VoteListResponseVote.builder().id(vote.getId()).title(vote.getTitle())
                 .startDate(vote.getStartDate())
                 .endDate(vote.getEndDate()).isEnded(vote.isEnded()).voteCount(vote.getVoteCount())
                 .build());
       });
-      return voteList;
+      return VoteListResponse.builder().votes(voteList).build();
     }
 
     if (participated) {
       List<VoteLog> voteLogs = voteLogRepository.findAllByUser(user);
-      List<VoteListResponse> voteList = new ArrayList<>();
+      List<VoteListResponseVote> voteList = new ArrayList<>();
       voteLogs.forEach(voteLog -> {
         Vote vote = voteLog.getVote();
         voteList.add(
-            VoteListResponse.builder().id(vote.getId()).title(vote.getTitle())
+            VoteListResponseVote.builder().id(vote.getId()).title(vote.getTitle())
                 .startDate(vote.getStartDate())
                 .endDate(vote.getEndDate()).isEnded(vote.isEnded()).voteCount(vote.getVoteCount())
                 .build());
       });
-      return voteList;
+      return VoteListResponse.builder().votes(voteList).build();
     }
 
     if (order == null) {
@@ -198,15 +199,27 @@ public class VoteService {
         .orElseThrow(() -> new CustomException(ErrorCode.LOCATION_NOT_FOUND));
     spec = spec.and(VoteSpecification.withinRange(location.getLat(), location.getLng(),
         user.getCurrentRange()));
-    List<VoteListResponse> voteList = new ArrayList<>();
-    voteRepository.findAll(spec, sort).forEach(vote -> {
+    List<VoteListResponseVote> voteList = new ArrayList<>();
+    List<Vote> votes = new ArrayList<>();
+    votes = voteRepository.findAll(spec, sort);
+    int maxCount = -1;
+    VoteListResponseVote bestVote = null;
+    for (int i = 0; i < votes.size(); i++) {
+      Vote vote = votes.get(i);
+      if (vote.getVoteCount() > maxCount) {
+        maxCount = vote.getVoteCount();
+        bestVote = VoteListResponseVote.builder().id(vote.getId()).title(vote.getTitle())
+            .startDate(vote.getStartDate())
+            .endDate(vote.getEndDate()).isEnded(vote.isEnded()).voteCount(vote.getVoteCount())
+            .build();
+      }
       voteList.add(
-          VoteListResponse.builder().id(vote.getId()).title(vote.getTitle())
+          VoteListResponseVote.builder().id(vote.getId()).title(vote.getTitle())
               .startDate(vote.getStartDate())
               .endDate(vote.getEndDate()).isEnded(vote.isEnded()).voteCount(vote.getVoteCount())
               .build());
-    });
-    return voteList;
+    }
+    return VoteListResponse.builder().bestVote(bestVote).votes(voteList).build();
   }
 
   // 두 좌표 사이의 거리를 구하는 함수
