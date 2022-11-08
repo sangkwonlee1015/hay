@@ -11,6 +11,9 @@ const VOTES_URL = "/votes";
 // User
 const INFOINPUT_URL = "/info";
 const DUPLICATECHECK_URL = "/nickname/check";
+const LOGIN_URL = "/login";
+
+const KAKAO_AUTH_URL = `https://kauth.kakao.com/oauth/authorize?client_id=2cc38f3feb14c46b190ca5fe77598eb6&redirect_uri=http://localhost:3000/kakaologin&response_type=code`;
 
 // Mypage
 const NICKNAME_URL = "/nickname";
@@ -27,7 +30,8 @@ const api = {
   // user
   signup: () => API_BASE_URL + USER_URL + INFOINPUT_URL,
   nicknameDuplicateCheck: () => API_BASE_URL + USER_URL + DUPLICATECHECK_URL,
-
+  login: () => API_BASE_URL + USER_URL + LOGIN_URL,
+  kakaoLogin: () => KAKAO_AUTH_URL,
   // mypage
   getNickname: () => API_BASE_URL + MYPAGE_URL + NICKNAME_URL,
   putNickname: () => API_BASE_URL + MYPAGE_URL + NICKNAME_URL,
