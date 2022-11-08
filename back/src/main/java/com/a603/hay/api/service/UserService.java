@@ -138,6 +138,15 @@ public class UserService {
     user.setNickname(nicknameRequest.getNickname());
   }
 
+  @Transactional
+  public String getNickname(String userEmail) {
+    User user = userRepository.findByEmail(userEmail).orElse(null);
+    if (user == null) {
+      throw new CustomException(ErrorCode.USER_NOT_EXIST);
+    }
+    return user.getNickname();
+  }
+
 
   private String getKaKaoAccessToken(String code, String redirectUri) {
     String access_Token = "";
