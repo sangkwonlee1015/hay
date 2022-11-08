@@ -24,7 +24,12 @@ function MainPage() {
 
   useEffect(() => {
     axios
-      .get(`api/votes?search=${keyword}&category=${category}&order=${order}`, {
+      .get(api.getVotes(), {
+        params: {
+          search: keyword,
+          category: category,
+          order: order,
+        },
         headers: {
           Authorization:
             "Bearer " +
