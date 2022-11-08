@@ -43,7 +43,7 @@ public class VoteController {
       @RequestParam(required = false, name = "my-vote") boolean myVote,
       @RequestParam(required = false) boolean participated,
       @RequestParam(required = false) boolean done, @RequestParam(required = false) String order) {
-    return new ResponseEntity<>(new ResponseDto<List<VoteListResponse>>(
+    return new ResponseEntity<>(new ResponseDto<VoteListResponse>(
         voteService.getVoteList(search, category, myVote, participated, done, order,
             principal.getName())),
         HttpStatus.OK);

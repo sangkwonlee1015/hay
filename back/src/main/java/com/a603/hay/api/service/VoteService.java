@@ -5,6 +5,7 @@ import com.a603.hay.api.dto.CommentDto.VoteDetailComment;
 import com.a603.hay.api.dto.VoteDto.CreateVoteRequest;
 import com.a603.hay.api.dto.VoteDto.VoteDetailResponse;
 import com.a603.hay.api.dto.VoteDto.VoteListResponse;
+import com.a603.hay.api.dto.VoteDto.VoteListResponseVote;
 import com.a603.hay.api.dto.VoteDto.VoteOneRequest;
 import com.a603.hay.api.dto.VoteDto.VoteResultResponse;
 import com.a603.hay.api.dto.VoteItemDto.VoteDetailItem;
@@ -74,9 +75,10 @@ public class VoteService {
   @Autowired
   ImageRepository imageRepository;
 
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   public void createVote(CreateVoteRequest createVoteRequest, String userEmail) {
-    User user = userRepository.findByEmail(userEmail).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_EXIST));
+    User user = userRepository.findByEmail(userEmail)
+        .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_EXIST));
 
     Vote newVote = new Vote();
     Category category = categoryRepository.findById(createVoteRequest.getCategoryId())
@@ -116,9 +118,10 @@ public class VoteService {
     });
   }
 
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   public void endVote(long voteId, String userEmail) {
-    User user = userRepository.findByEmail(userEmail).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_EXIST));
+    User user = userRepository.findByEmail(userEmail)
+        .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_EXIST));
 
     Vote vote = voteRepository.findById(voteId)
         .orElseThrow(() -> new CustomException(ErrorCode.VOTE_NOT_FOUND));
@@ -131,36 +134,37 @@ public class VoteService {
     voteRepository.save(vote);
   }
 
-  public List<VoteListResponse> getVoteList(String search, Long categoryId, boolean myVote,
+  @Transactional(readOnly = true)
+  public VoteListResponse getVoteList(String search, Long categoryId, boolean myVote,
       boolean participated, boolean done, String order, String userEmail) {
-    User user = userRepository.findByEmail(userEmail).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_EXIST));
+    User user = userRepository.findByEmail(userEmail)
+        .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_EXIST));
 
     if (myVote) {
       Specification<Vote> spec = Specification.where(VoteSpecification.equalUser(user));
-      List<VoteListResponse> voteList = new ArrayList<>();
+      List<VoteListResponseVote> voteList = new ArrayList<>();
       voteRepository.findAll(spec).forEach(vote -> {
-        VoteListResponse voteListResponse = new VoteListResponse();
         voteList.add(
-            VoteListResponse.builder().id(vote.getId()).title(vote.getTitle())
+            VoteListResponseVote.builder().id(vote.getId()).title(vote.getTitle())
                 .startDate(vote.getStartDate())
                 .endDate(vote.getEndDate()).isEnded(vote.isEnded()).voteCount(vote.getVoteCount())
                 .build());
       });
-      return voteList;
+      return VoteListResponse.builder().votes(voteList).build();
     }
 
     if (participated) {
       List<VoteLog> voteLogs = voteLogRepository.findAllByUser(user);
-      List<VoteListResponse> voteList = new ArrayList<>();
+      List<VoteListResponseVote> voteList = new ArrayList<>();
       voteLogs.forEach(voteLog -> {
         Vote vote = voteLog.getVote();
         voteList.add(
-            VoteListResponse.builder().id(vote.getId()).title(vote.getTitle())
+            VoteListResponseVote.builder().id(vote.getId()).title(vote.getTitle())
                 .startDate(vote.getStartDate())
                 .endDate(vote.getEndDate()).isEnded(vote.isEnded()).voteCount(vote.getVoteCount())
                 .build());
       });
-      return voteList;
+      return VoteListResponse.builder().votes(voteList).build();
     }
 
     if (order == null) {
@@ -177,7 +181,7 @@ public class VoteService {
       default:
         throw new CustomException(ErrorCode.BAD_REQUEST);
     }
-    Sort sort = Sort.by(properties);
+    Sort sort = Sort.by(properties).descending();
 
     Specification<Vote> spec = null;
     if (!done) {
@@ -191,19 +195,31 @@ public class VoteService {
     if (search != null) {
       spec = spec.and(VoteSpecification.likeTitle(search));
     }
-    List<VoteListResponse> voteList = new ArrayList<>();
-    voteRepository.findAll(spec, sort).forEach(vote -> {
-      if (distance(35.0001, 127.4999, vote.getLat(), vote.getLng()) > user.getCurrentRange()) {
-        return;
+    Location location = locationRepository.findById(user.getCurrentLocation())
+        .orElseThrow(() -> new CustomException(ErrorCode.LOCATION_NOT_FOUND));
+    spec = spec.and(VoteSpecification.withinRange(location.getLat(), location.getLng(),
+        user.getCurrentRange()));
+    List<VoteListResponseVote> voteList = new ArrayList<>();
+    List<Vote> votes = new ArrayList<>();
+    votes = voteRepository.findAll(spec, sort);
+    int maxCount = -1;
+    VoteListResponseVote bestVote = null;
+    for (int i = 0; i < votes.size(); i++) {
+      Vote vote = votes.get(i);
+      if (vote.getVoteCount() > maxCount) {
+        maxCount = vote.getVoteCount();
+        bestVote = VoteListResponseVote.builder().id(vote.getId()).title(vote.getTitle())
+            .startDate(vote.getStartDate())
+            .endDate(vote.getEndDate()).isEnded(vote.isEnded()).voteCount(vote.getVoteCount())
+            .build();
       }
-      VoteListResponse voteListResponse = new VoteListResponse();
       voteList.add(
-          VoteListResponse.builder().id(vote.getId()).title(vote.getTitle())
+          VoteListResponseVote.builder().id(vote.getId()).title(vote.getTitle())
               .startDate(vote.getStartDate())
               .endDate(vote.getEndDate()).isEnded(vote.isEnded()).voteCount(vote.getVoteCount())
               .build());
-    });
-    return voteList;
+    }
+    return VoteListResponse.builder().bestVote(bestVote).votes(voteList).build();
   }
 
   // 두 좌표 사이의 거리를 구하는 함수
@@ -230,8 +246,10 @@ public class VoteService {
     return (rad * 180 / Math.PI);
   }
 
+  @Transactional(rollbackFor = Exception.class)
   public void voteOne(long voteId, VoteOneRequest voteOneRequest, String userEmail) {
-    User user = userRepository.findByEmail(userEmail).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_EXIST));
+    User user = userRepository.findByEmail(userEmail)
+        .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_EXIST));
 
     VoteItem voteItem = voteItemRepository.findById(voteOneRequest.getVoteItemId())
         .orElseThrow(() -> new CustomException(ErrorCode.VOTEITEM_NOT_FOUND));
@@ -257,8 +275,11 @@ public class VoteService {
     voteRepository.save(vote);
   }
 
-  public void createComment(long voteId, CreateCommentRequest createCommentRequest, String userEmail) {
-    User user = userRepository.findByEmail(userEmail).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_EXIST));
+  @Transactional(rollbackFor = Exception.class)
+  public void createComment(long voteId, CreateCommentRequest createCommentRequest,
+      String userEmail) {
+    User user = userRepository.findByEmail(userEmail)
+        .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_EXIST));
 
     Comment comment = new Comment();
     comment.setContent(createCommentRequest.getContent());
@@ -283,9 +304,10 @@ public class VoteService {
     commentRepository.save(comment);
   }
 
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   public void deleteComment(long voteId, long commentId, String userEmail) {
-    User user = userRepository.findByEmail(userEmail).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_EXIST));
+    User user = userRepository.findByEmail(userEmail)
+        .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_EXIST));
 
     Comment comment = commentRepository.findById(commentId)
         .orElseThrow(() -> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
@@ -297,9 +319,10 @@ public class VoteService {
     commentRepository.save(comment);
   }
 
-  @Transactional
+  @Transactional(rollbackFor = Exception.class)
   public void clickCommentLikes(long voteId, long commentId, String userEmail) {
-    User user = userRepository.findByEmail(userEmail).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_EXIST));
+    User user = userRepository.findByEmail(userEmail)
+        .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_EXIST));
 
     Comment comment = commentRepository.findById(commentId)
         .orElseThrow(() -> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
@@ -324,8 +347,10 @@ public class VoteService {
 
   }
 
+  @Transactional(readOnly = true)
   public VoteDetailResponse voteDetail(long voteId, String userEmail) {
-    User user = userRepository.findByEmail(userEmail).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_EXIST));
+    User user = userRepository.findByEmail(userEmail)
+        .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_EXIST));
 
     VoteDetailResponse voteDetailResponse = new VoteDetailResponse();
     Location location = locationRepository.findById(user.getCurrentLocation())
@@ -399,12 +424,24 @@ public class VoteService {
       });
     }
     voteDetailResponse.setComments(voteDetailComments);
-
+    Comment bestComment = commentRepository.findFirstByVoteAndIsDeletedOrderByLikesCountDesc(vote, false)
+        .orElseThrow(() -> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
+    voteDetailResponse.setBestComment(VoteDetailComment.builder()
+        .id(bestComment.getId())
+        .content(bestComment.getContent())
+        .likesCount(bestComment.getLikesCount())
+        .isDeleted(bestComment.isDeleted())
+        .createdAt(bestComment.getCreatedAt())
+        .updatedAt(bestComment.getUpdatedAt())
+        .writerNickname(bestComment.getUser().getNickname())
+        .build());
     return voteDetailResponse;
   }
 
+  @Transactional(readOnly = true)
   public VoteResultResponse voteResult(long voteId, String userEmail) {
-    User user = userRepository.findByEmail(userEmail).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_EXIST));
+    User user = userRepository.findByEmail(userEmail)
+        .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_EXIST));
 
     Vote vote = voteRepository.findById(voteId)
         .orElseThrow(() -> new CustomException(ErrorCode.VOTE_NOT_FOUND));
@@ -438,7 +475,7 @@ public class VoteService {
             statisticsGender.set(2, statisticsGender.get(2) + 1);
         }
 
-        int age = LocalDate.now().getYear() - voteLog.getUser().getBirthYear() / 10;
+        int age = (LocalDate.now().getYear() - voteLog.getUser().getBirthYear()) / 10;
         if (age < 3) {
           statisticsAgeGroup.set(0, statisticsAgeGroup.get(0) + 1);
         } else if (age == 3) {
