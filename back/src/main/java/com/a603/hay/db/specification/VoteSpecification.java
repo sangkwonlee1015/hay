@@ -41,6 +41,25 @@ public class VoteSpecification {
     };
   }
 
+  public static Specification<Vote> withinRange(double lat, double lng, int range) {
+    return new Specification<Vote>() {
+      @Override
+      public Predicate toPredicate(Root<Vote> root, CriteriaQuery<?> query,
+          CriteriaBuilder criteriaBuilder) {
+        return criteriaBuilder.lessThanOrEqualTo(
+            criteriaBuilder.function("ST_Distance_Sphere", Long.class,
+                criteriaBuilder.function("Point", Long.class,
+                    criteriaBuilder.literal(lng),
+                    criteriaBuilder.literal(lat)
+                ),
+                criteriaBuilder.function("Point", Long.class,
+                    root.get("lng"),
+                    root.get("lat")
+                )), (long) range);
+      }
+    };
+  }
+
   public static Specification<Vote> likeTitle(String search) {
     return new Specification<Vote>() {
       @Override
