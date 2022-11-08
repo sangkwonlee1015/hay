@@ -1,4 +1,5 @@
-const API_BASE_URL = 'http://localhost:8080/api';
+const BASE_URL = "http://localhost:8080";
+const API_BASE_URL = "/api";
 // const API_BASE_URL = "https://k7a603.p.ssafy.io/api";
 
 // 경로
@@ -18,10 +19,9 @@ const LOCATION_URL = "/location";
 const LOCATION_SETTING_URL = "/location/current";
 
 // Votes
-const COMMENT_URL = '/comment';
-const LIKES_URL = '/likes';
-const RESULT_URL = '/result';
-
+const COMMENT_URL = "/comment";
+const LIKES_URL = "/likes";
+const RESULT_URL = "/result";
 
 const api = {
   // user
@@ -46,9 +46,15 @@ const api = {
   deleteComment: (voteId, commentId) =>
     API_BASE_URL + VOTES_URL + `/${voteId}` + COMMENT_URL + `/${commentId}`,
   likeComment: (voteId, commentId) =>
-    API_BASE_URL + VOTES_URL + `/${voteId}` + COMMENT_URL + `/${commentId}` + LIKES_URL,
+    API_BASE_URL +
+    VOTES_URL +
+    `/${voteId}` +
+    COMMENT_URL +
+    `/${commentId}` +
+    LIKES_URL,
   addVotes: () => API_BASE_URL + VOTES_URL,
-  getVotesResult: (voteId) => API_BASE_URL + VOTES_URL + `/${voteId}` + RESULT_URL,
+  getVotesResult: (voteId) =>
+    API_BASE_URL + VOTES_URL + `/${voteId}` + RESULT_URL,
   voteEarlyFinish: (voteId) => API_BASE_URL + VOTES_URL + `/${voteId}`,
 };
 
