@@ -18,6 +18,8 @@ function VoteItem({ vote }) {
       {vote.startDate}, {vote.endDate}
       <br />
       {vote.voteCount}
+      <br />
+      {vote.ended ? "true" : "false"}
     </div>
   );
 }

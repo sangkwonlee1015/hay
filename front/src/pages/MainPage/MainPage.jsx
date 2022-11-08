@@ -31,9 +31,7 @@ function MainPage() {
           order: order,
         },
         headers: {
-          Authorization:
-            "Bearer " +
-            "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzX2t6eGN2QG5hdmVyLmNvbSIsIm5pY2tuYW1lIjoi7J207IOB6raMIiwiaXNzIjoiaGF5IiwiZXhwIjoxNjY4MTQ5NjAzfQ.Livkg_-eWhsS-L00xGCSHLjMwuNEMNr2H2ZJnbAcsDo",
+          Authorization: "Bearer " + localStorage.getItem("jwtToken"),
         },
       })
       .then(({ data }) => {
