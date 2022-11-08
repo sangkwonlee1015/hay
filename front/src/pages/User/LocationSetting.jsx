@@ -9,6 +9,7 @@ import HeaderOnlyText from '../../components/HeaderOnlyText';
 import { userAction } from "../../_slice/UserSlice";
 import { useLocation } from "react-router";
 import axios from 'axios';
+import api from '../../api/api';
 
 function LocationSetting() {
   const navigate = useNavigate();
@@ -20,14 +21,13 @@ function LocationSetting() {
   const longitude = useSelector((state) => state.user.longitude);
   const areaName = useSelector((state) => state.user.areaName);
   const {state} = useLocation();
-
   function handleButton() {
     // 여기서 api 통신
-    axios.post(`api/user/info`,{
+    axios.post(api.signup(), {
       kakaoId: state.kakaoId,
       nickname: state.nickname,
-      birthYear :state.birthYear, 
-      gender : state.gender,
+      birthYear :state.birthyear, 
+      gender : (state.gender === 0 ? "male": "female"),
       lat: latitude,
       lng: longitude,
       address: areaName
