@@ -59,9 +59,15 @@ function VoteDetail() {
       {
         id: 0,
         content: "베스트 댓글 내용입니다.",
-        likesCount: 1,
+        likesCount: 4,
         createdAt: "2022-11-09 17:35:00.000000",
         writerNickname: "베댓사냥꾼",
+        deleted: false,
+        replies: [
+          {
+
+          },
+        ],
       },
       {
         id: 1,
@@ -78,6 +84,23 @@ function VoteDetail() {
             likesCount: 0,
             createdAt: "2022-11-14 17:09:28.000000",
             writerNickname: "미온",
+          },
+        ],
+      },
+      {
+        id: 3,
+        content: "댓글내용2입니다.",
+        likesCount: 2,
+        createdAt: "2022-11-10 08:48:00.000000",
+        writerNickname: "종환",
+        deleted: false,
+        replies: [
+          {
+            id: 4,
+            content: "댓글내용2의 대댓글1 내용입니다.",
+            likesCount: 0,
+            createdAt: "2022-11-10 08:50:00.000000",
+            writerNickname: "그레이스",
           },
         ],
       },
@@ -227,14 +250,14 @@ function VoteDetail() {
    * 댓글 표시
    */
   const comment = (comments) => {
-    let result = "";
+    let result = [];
     for (let i = 1; i < comments.length; i++) {
       result.push(
         <div className="comment">
           { comments[i].deleted
           ? <div>삭제된 댓글입니다.</div>
           : <div>
-              <div>div{comments[i].content}</div>
+              <div>{comments[i].content}</div>
               <div className="commentInfor">
                 <div className="commentBy">{comments[i].writerNickname}</div>
                 { 1 ? <FavoriteIcon /> : <FavoriteBorderIcon /> }
