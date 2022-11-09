@@ -17,8 +17,12 @@ import VoteDetail from './pages/VoteDetail/VoteDetail';
 import VoteCreate from './pages/VoteDetail/VoteCreate';
 import MyVotePage from './pages/MyPage/MyVotePage';
 import MyParticipatedPage from './pages/MyPage/MyParticipatedPage';
+import setAuthorizationToken from './pages/User/AuthorizationToken';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
+
+setAuthorizationToken(localStorage.jwtToken);
+
 root.render(
   <BrowserRouter>
     <Provider store={store}>

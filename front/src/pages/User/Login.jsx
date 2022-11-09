@@ -1,14 +1,9 @@
-// 그림
-// 너는어때?
-// 카카오 로그인
-
 import React from 'react'
 import logo from '../../img/logo.png';
 import kakao_login from '../../img/kakao_login.png'
 import api from '../../api/api';
 
 function Login() {
-  console.log(api)
   return (
     <>
       <img src={logo} alt='너는어때 로고' width='300px'/>
