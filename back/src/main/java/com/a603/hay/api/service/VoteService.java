@@ -190,15 +190,19 @@ public class VoteService {
     if (categoryId != null) {
       Category category = categoryRepository.findById(categoryId)
           .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
-      spec = spec.and(VoteSpecification.equalCategory(category));
+      spec = (spec == null ? Specification.where(VoteSpecification.equalCategory(category))
+          : spec.and(VoteSpecification.equalCategory(category)));
     }
     if (search != null) {
-      spec = spec.and(VoteSpecification.likeTitle(search));
+      spec = (spec == null ? Specification.where(VoteSpecification.likeTitle(search))
+          : spec.and(VoteSpecification.likeTitle(search)));
     }
     Location location = locationRepository.findById(user.getCurrentLocation())
         .orElseThrow(() -> new CustomException(ErrorCode.LOCATION_NOT_FOUND));
-    spec = spec.and(VoteSpecification.withinRange(location.getLat(), location.getLng(),
-        user.getCurrentRange()));
+    spec = (spec == null ? Specification.where(
+        VoteSpecification.withinRange(location.getLat(), location.getLng(), user.getCurrentRange()))
+        : spec.and(VoteSpecification.withinRange(location.getLat(), location.getLng(),
+            user.getCurrentRange())));
     List<VoteListResponseVote> voteList = new ArrayList<>();
     List<Vote> votes = new ArrayList<>();
     votes = voteRepository.findAll(spec, sort);
@@ -424,7 +428,8 @@ public class VoteService {
       });
     }
     voteDetailResponse.setComments(voteDetailComments);
-    Comment bestComment = commentRepository.findFirstByVoteAndIsDeletedOrderByLikesCountDesc(vote, false)
+    Comment bestComment = commentRepository.findFirstByVoteAndIsDeletedOrderByLikesCountDesc(vote,
+            false)
         .orElseThrow(() -> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
     voteDetailResponse.setBestComment(VoteDetailComment.builder()
         .id(bestComment.getId())
