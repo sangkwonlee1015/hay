@@ -30,9 +30,6 @@ function MainPage() {
           category: category,
           order: order,
         },
-        headers: {
-          Authorization: "Bearer " + localStorage.getItem("jwtToken"),
-        },
       })
       .then(({ data }) => {
         setBestVote(data.response.bestVote);
