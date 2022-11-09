@@ -8,6 +8,10 @@ import lombok.NoArgsConstructor;
 
 public class LocationDto {
 
+  private LocationDto() {
+    throw new IllegalStateException("Utility class");
+  }
+
   @Data
   @AllArgsConstructor
   @NoArgsConstructor

@@ -12,6 +12,10 @@ import lombok.Setter;
 
 public class CommentDto {
 
+  private CommentDto() {
+    throw new IllegalStateException("Utility class");
+  }
+
   @Getter
   @Setter
   @Builder
