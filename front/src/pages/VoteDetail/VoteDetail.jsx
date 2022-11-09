@@ -15,6 +15,9 @@
 import HowToVoteIcon from '@mui/icons-material/HowToVote';
 import RadioButtonCheckedIcon from '@mui/icons-material/RadioButtonChecked';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
 import CheckIcon from '@mui/icons-material/Check';
 import React from "react";
 import "./VoteDetail.css";
@@ -54,6 +57,13 @@ function VoteDetail() {
     ],
     comments: [
       {
+        id: 0,
+        content: "베스트 댓글 내용입니다.",
+        likesCount: 1,
+        createdAt: "2022-11-09 17:35:00.000000",
+        writerNickname: "베댓사냥꾼",
+      },
+      {
         id: 1,
         content: "댓글내용1입니다",
         likesCount: 0,
@@ -61,9 +71,7 @@ function VoteDetail() {
         writerNickname: "버뮤",
         deleted: false, // true일 경우 삭제된 댓글입니다 표시
         replies: [
-          {
-            // 객체 하나당 댓글or대댓글 한 개임
-          },
+          // 객체 하나당 댓글or대댓글 한 개임
           {
             id: 2,
             content: "댓글내용1의 대댓글1 내용입니다.",
@@ -215,6 +223,48 @@ function VoteDetail() {
     }
   }
 
+  /** 
+   * 댓글 표시
+   */
+  const comment = (comments) => {
+    let result = "";
+    for (let i = 1; i < comments.length; i++) {
+      result.push(
+        <div className="comment">
+          { comments[i].deleted
+          ? <div>삭제된 댓글입니다.</div>
+          : <div>
+              <div>div{comments[i].content}</div>
+              <div className="commentInfor">
+                <div className="commentBy">{comments[i].writerNickname}</div>
+                { 1 ? <FavoriteIcon /> : <FavoriteBorderIcon /> }
+                { comments[i].likesCount ? <div>{comments[i].likesCount}</div> : <></> }
+                <div className="commentCreatedAt">{comments[i].createdAt.substring(0, 16)}</div>
+              </div>
+            </div>
+          }
+        </div>
+      )
+      for (let j = 0; j < comments[i].replies.length; j++) {
+        result.push(
+          <div className="reply">
+            <ArrowRightAltIcon />
+            <div>
+              <div>{comments[i].replies[j].content}</div>
+              <div>
+                <div className="commentBy">{comments[i].replies[j].writerNickname}</div>
+                { 1 ? <FavoriteIcon /> : <FavoriteBorderIcon /> }
+                { comments[i].replies[j].likesCount ? <div>{comments[i].replies[j].likesCount}</div> : <></> }
+                <div className="commentCreatedAt">{comments[i].replies[j].createdAt.substring(0, 16)}</div>
+              </div>
+            </div>
+          </div>
+        )
+      }
+    }
+    return result;
+  }
+
   return (
     <div className="contentAll">
       <div>
@@ -238,23 +288,15 @@ function VoteDetail() {
         <div>{gotoVote(details.ended, details.voted, details.voteItems)}</div>
       </div>
       <div className="commentShare">
-        <div className="commentNav">댓글 {commentCount()}</div>
+        <div>댓글 {commentCount()}</div>
         <div className="share">공유하기</div>
       </div>
-      <div>
-        <h2>베스트 댓글</h2>
-        <div></div>
-
-        {details.comments[0].deleted ? (
-          <div>삭제된 댓글입니다.</div>
-        ) : (
-          <div>
-            <div>{details.comments[0].content}</div>
-            <div>{details.comments[0].writerNickname}</div>
-            <div>좋아요 {details.comments[0].likesCount}</div>
-            <div>{details.comments[0].createdAt.substring(0, 16)}</div>
-          </div>
-        )}
+      <div className="commentAll">
+        <div className="bestComment">
+          <div>베스트 댓글</div>
+          <div>{details.comments[0].content}</div>
+        </div>
+        {comment(details.comments)}
       </div>
     </div>
   );

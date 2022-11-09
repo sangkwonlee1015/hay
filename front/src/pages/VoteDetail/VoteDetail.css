@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
 .contentAll {
-  margin: 30px;
+  margin: 30px 30px 100px 30px;
   font-family: 'Roboto', sans-serif;
 }
 .title {
@@ -118,5 +118,22 @@
   margin-bottom: 32px;
 }
 .share {
+  margin-left: auto;
+}
+.comment {
+  padding: 12px;
+}
+.reply {
+  padding: 12px;
+  display: flex;
+}
+.commentInfor {
+  display: flex;
+}
+.commentBy {
+  font-weight: bold;
+  color: #3f51b5;
+}
+.commentCreatedAt {
   margin-left: auto;
 }
