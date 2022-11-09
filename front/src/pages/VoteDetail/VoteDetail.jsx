@@ -162,6 +162,30 @@ function VoteDetail() {
       </div>
     )
   }
+  /**
+   * 조건 분기에 따른 투표하기 버튼 표시
+   */
+  const gotoVote = (ended, voted, voteItems) => {
+    let selected = 0;
+    voteItems.forEach(element => {
+      selected += !!element.voted
+    });
+    // 투표가 종료된 경우 -> 아무것도 표시x
+    if (!ended) {
+      // 이미 선택 완료한 경우 + 투표가 진행중인 경우 -> 다시 투표하기 표시
+      if (voted) {
+        return (
+          <div className="gotoReVote">다시 투표하기</div>
+        )
+      } else if (selected) {
+      // 선택한 경우 -> 투표하기
+        return (
+          <div className="gotoVote">투표하기</div>
+        )
+      }
+      // 선택한 것이 아무것도 없는 경우 -> 아무것도 표시x
+    }
+  }
 
   return (
     <div className="contentAll">
@@ -183,6 +207,7 @@ function VoteDetail() {
         </div>
         <div className="remainDate">{남은날짜계산(details.endDate)}</div>
         <div className="selectionGroup">{selectionGroup()}</div>
+        <div>{gotoVote(details.ended, details.voted, details.voteItems)}</div>
       </div>
       <div className="commentShare">
         <div className="commentNav">댓글 {commentCount()}</div>

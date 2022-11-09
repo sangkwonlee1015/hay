@@ -80,3 +80,15 @@
 .selectContent {
   order: 2;
 }
+.gotoVote {
+  padding: 24px;
+  text-align: center;
+  background-color: #064579;
+  color: #fff;
+}
+.gotoReVote {
+  padding: 24px;
+  text-align: center;
+  background-color: #064579;
+  color: #fff;
+}
