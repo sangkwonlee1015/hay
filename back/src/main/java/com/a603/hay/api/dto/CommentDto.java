@@ -41,6 +41,8 @@ public class CommentDto {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private String writerNickname;
+    private boolean writtenByMe;
+    private boolean likedByMe;
     private List<VoteDetailComment> replies = new ArrayList<>();
   }
 
