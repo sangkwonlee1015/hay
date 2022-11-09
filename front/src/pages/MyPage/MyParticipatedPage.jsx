@@ -14,9 +14,6 @@ function MyParticipatedPage() {
         params: {
           participated: true,
         },
-        headers: {
-          Authorization: "Bearer " + localStorage.getItem("jwtToken"),
-        },
       })
       .then(({ data }) => {
         setVoteList(data.response.votes);
