@@ -95,51 +95,57 @@ function VoteDetail() {
   /**
    * 투표거리에 따른 단계(스타일 적용된)
    */
-  let distanceLevel = null;
-  switch (details.distanceLevel) {
-    case 0: {
-      distanceLevel = (
-        <div
-          style={{
-            backgroundColor: "e7f3fe",
-            fontSize: "12px",
-            fontWeight: "bold",
-            borderRadius: "4px",
-          }}
-        >
-          {details.distanceLevel}
-        </div>
-      );
-      break;
-    }
-    case 1: {
-      distanceLevel = (
-        <div
-          style={{
-            backgroundColor: "cfe8fc",
-            fontSize: "12px",
-            fontWeight: "bold",
-            borderRadius: "4px",
-          }}
-        >
-          {details.distanceLevel}
-        </div>
-      );
-      break;
-    }
-    default: {
-      distanceLevel = (
-        <div
-          style={{
-            backgroundColor: "b6dcfb",
-            fontSize: "12px",
-            fontWeight: "bold",
-            borderRadius: "4px",
-          }}
-        >
-          {details.distanceLevel}
-        </div>
-      );
+  const distanceLevel = (distanceLevel) => {
+    let result = "";
+    switch (distanceLevel) {
+      case 0: {
+        result = "0.5km 이내"
+        return (
+          <div
+            style={{
+              backgroundColor: "#e7f3fe",
+              padding: "6px",
+              fontSize: "12px",
+              fontWeight: "bold",
+              borderRadius: "4px",
+            }}
+          >
+            {result}
+          </div>
+        );
+      }
+      case 1: {
+        result = "1km 이내"
+        return (
+          <div
+            style={{
+              backgroundColor: "#cfe8fc",
+              padding: "6px",
+              fontSize: "12px",
+              fontWeight: "bold",
+              borderRadius: "4px",
+            }}
+          >
+            {result}
+          </div>
+        );
+      }
+      default: {
+        result = "2km 이내"
+        return (
+          <div
+            style={{
+              backgroundColor: "#b6dcfb",
+              padding: "6px",
+              fontSize: "12px",
+              fontWeight: "bold",
+              borderRadius: "4px",
+            }}
+          >
+            {result}
+          </div>
+        );
+      }
     }
   }
 
@@ -193,7 +199,7 @@ function VoteDetail() {
         <div className="title">{details.title}</div>
         <div className="titleGroup">
           <div className="writter">{details.작성자}</div>
-          {distanceLevel}
+          {distanceLevel(details.distanceLevel)}
           <div className="startDate">{details.startDate.substring(0, 16)}</div>
         </div>
       </div>

@@ -10,13 +10,14 @@
 }
 .titleGroup {
   display: flex;
+  align-items: center;
   margin-bottom: 40px;
 }
 .writter {
   font-size: 14px;
   font-weight: bold;
   color: #3f51b5;
-  margin-right: 12px;
+  margin-right: 16px;
 }
 .startDate {
   font-size: 12px;
