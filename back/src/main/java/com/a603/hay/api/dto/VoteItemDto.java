@@ -9,6 +9,10 @@ import lombok.Setter;
 
 public class VoteItemDto {
 
+  private VoteItemDto() {
+    throw new IllegalStateException("Utility class");
+  }
+
   @Getter
   @Setter
   @Builder

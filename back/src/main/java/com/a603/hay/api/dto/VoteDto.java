@@ -14,6 +14,10 @@ import lombok.Setter;
 
 public class VoteDto {
 
+  private VoteDto() {
+    throw new IllegalStateException("Utility class");
+  }
+
   @Getter
   @Setter
   @Builder

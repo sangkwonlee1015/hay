@@ -204,8 +204,7 @@ public class VoteService {
         : spec.and(VoteSpecification.withinRange(location.getLat(), location.getLng(),
             user.getCurrentRange())));
     List<VoteListResponseVote> voteList = new ArrayList<>();
-    List<Vote> votes = new ArrayList<>();
-    votes = voteRepository.findAll(spec, sort);
+    List<Vote> votes = voteRepository.findAll(spec, sort);
     int maxCount = -1;
     VoteListResponseVote bestVote = null;
     for (int i = 0; i < votes.size(); i++) {
@@ -453,8 +452,6 @@ public class VoteService {
     if (voteId != vote.getId() || voteLogRepository.countByUserAndVote(user, vote) == 0) {
       throw new CustomException(ErrorCode.FORBIDDEN);
     }
-
-    System.out.println("voteResult");
 
     List<VoteResultItem> voteResultItems = new ArrayList<>();
     vote.getVoteItems().toString();
