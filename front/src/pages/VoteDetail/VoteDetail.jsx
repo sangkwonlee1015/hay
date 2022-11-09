@@ -15,6 +15,7 @@
 import HowToVoteIcon from '@mui/icons-material/HowToVote';
 import RadioButtonCheckedIcon from '@mui/icons-material/RadioButtonChecked';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
+import CheckIcon from '@mui/icons-material/Check';
 import React from "react";
 import "./VoteDetail.css";
 
@@ -151,22 +152,43 @@ function VoteDetail() {
 
   /**
    * 투표 선택지 반복랜더링
+   * 1. 종료된 투표 또는 조회자가 선택 완료한 투표일 경우 - 막대그래프 result
+   * 2. 재투표중 또는 미투표 상태 - 라디오버튼 + 선택
    */
-  const selectionGroup = () => {
-    return (
-      <div>
-        {details.voteItems.map((selection)=>(
-          <div className={ selection.voted ? "selected" : "selection" }>
-            <div className="votedIcon">
-              {selection.voted ? <RadioButtonCheckedIcon color='primary'/> : <RadioButtonUncheckedIcon/>}
+  const selectionGroup = (details) => {
+    if (details.ended || details.voted) {
+      return (
+        <div>
+          {details.voteItems.map((selection)=>(
+            <div className="votedSelection">
+              <div className="checkSelection">
+                { selection.voted ? <CheckIcon color='primary' className="checkIcon" /> : <></> }
+                <div>{selection.content}</div>
+                <div className="votedCount">{selection.voteCount}명</div>
+              </div>
+              <div className="voteGraph">
+                <div className="voteGraphRatio" style={{ width: Math.round(selection.voteCount / details.voteCount * 100) + "%" }}></div>
+              </div>
             </div>
-            <div className="selectContent">
-              {selection.content}
+          ))}
+        </div>
+      )
+    } else {
+      return (
+        <div>
+          {details.voteItems.map((selection)=>(
+            <div className={ selection.voted ? "unvotedSelected" : "unvotedSelection" }>
+              <div className="votedIcon">
+                {selection.voted ? <RadioButtonCheckedIcon color='primary'/> : <RadioButtonUncheckedIcon/>}
+              </div>
+              <div className="selectContent">
+                {selection.content}
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
     )
+    }
   }
   /**
    * 조건 분기에 따른 투표하기 버튼 표시
@@ -212,7 +234,7 @@ function VoteDetail() {
           <div>{details.voteCount}명 참여</div>
         </div>
         <div className="remainDate">{남은날짜계산(details.endDate)}</div>
-        <div className="selectionGroup">{selectionGroup()}</div>
+        <div className="selectionGroup">{selectionGroup(details)}</div>
         <div>{gotoVote(details.ended, details.voted, details.voteItems)}</div>
       </div>
       <div className="commentShare">

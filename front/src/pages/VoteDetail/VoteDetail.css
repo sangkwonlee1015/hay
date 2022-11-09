@@ -50,14 +50,34 @@
   color: #7e7e7e;
   margin-bottom: 32px;
 }
-.commentShare {
+.selectionGroup {
+  margin-bottom: 40px;
+}
+.votedSelection {
+  margin-bottom: 16px;
+}
+.checkSelection {
   display: flex;
-  margin-bottom: 32px;
+  align-items: center;
+  margin-bottom: 12px;
 }
-.share {
+.checkIcon {
+  margin-right: 10px;
+}
+.votedCount {
   margin-left: auto;
+  color: #7e7e7e;
 }
-.selection {
+.voteGraph {
+  width: 100%;
+  height: 4px;
+  background-color: #e7f3fe;
+}
+.voteGraphRatio {
+  height: 4px;
+  background-color: #1976d2;
+}
+.unvotedSelection {
   padding: 20px 16px;
   margin: 10px 0;
   border-style: solid;
@@ -67,7 +87,7 @@
   display: flex;
   align-items: center;
 }
-.selected {
+.unvotedSelected {
   padding: 20px 16px;
   margin: 10px 0;
   background-color: #e7f3fe;
@@ -92,4 +112,11 @@
   text-align: center;
   background-color: #064579;
   color: #fff;
+}
+.commentShare {
+  display: flex;
+  margin-bottom: 32px;
+}
+.share {
+  margin-left: auto;
 }
