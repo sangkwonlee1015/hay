@@ -63,9 +63,20 @@
   border-width: 1px;
   border-color: #d1d1d1;
   border-radius: 4px;
+  display: flex;
+  align-items: center;
 }
 .selected {
   padding: 20px 16px;
   margin: 10px 0;
   background-color: #e7f3fe;
+  display: flex;
+  align-items: center;
+}
+.votedIcon {
+  order: 1;
+  margin-right: 10px;
+}
+.selectContent {
+  order: 2;
 }

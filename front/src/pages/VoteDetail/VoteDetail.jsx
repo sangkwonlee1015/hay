@@ -150,7 +150,14 @@ function VoteDetail() {
     return (
       <div>
         {details.voteItems.map((selection)=>(
-          <div className={ selection.voted ? "selected" : "selection" }>{selection.voted ? <RadioButtonCheckedIcon color='primary'/> : <RadioButtonUncheckedIcon/>}{selection.content}</div>
+          <div className={ selection.voted ? "selected" : "selection" }>
+            <div className="votedIcon">
+              {selection.voted ? <RadioButtonCheckedIcon color='primary'/> : <RadioButtonUncheckedIcon/>}
+            </div>
+            <div className="selectContent">
+              {selection.content}
+            </div>
+          </div>
         ))}
       </div>
     )
