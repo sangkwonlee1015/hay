@@ -3,6 +3,8 @@ import { useEffect } from 'react';
 import axios from 'axios';
 import {useNavigate} from 'react-router-dom';
 import api from '../../api/api';
+import jwt_decode from "jwt-decode";
+import setAuthorizationToken from './AuthorizationToken';
 
 function KakaoLogin() {
     const PARAMS = new URL(document.location).searchParams;
@@ -17,7 +19,16 @@ function KakaoLogin() {
             if (result) {
                 //로그인 정보 저장
                 console.log("로그인 성공")
-                localStorage.setItem('jwtToken' , Response.data.response.accessToken);
+                const token = Response.data.response.accessToken;
+                localStorage.setItem('jwtToken' , token);
+
+                //axios 헤더 설정 
+                setAuthorizationToken(token);
+                
+                //유저 정보 추출
+                const decode = jwt_decode(token);
+                console.log(decode)
+                
                 navigate('/main');
             } else{
                 //추가 정보 입력 페이지 이동
