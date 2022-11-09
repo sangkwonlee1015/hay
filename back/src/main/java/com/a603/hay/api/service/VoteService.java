@@ -412,6 +412,9 @@ public class VoteService {
               .createdAt(reply.getCreatedAt())
               .updatedAt(reply.getUpdatedAt())
               .writerNickname(reply.getUser().getNickname())
+              .writtenByMe(reply.getUser().getId() == user.getId() ? true : false)
+              .likedByMe(
+                  likesRepository.findByUserAndComment(user, reply).isPresent() ? true : false)
               .build());
         });
         voteDetailComments.add(VoteDetailComment.builder()
@@ -422,6 +425,9 @@ public class VoteService {
             .createdAt(comment.getCreatedAt())
             .updatedAt(comment.getUpdatedAt())
             .writerNickname(comment.getUser().getNickname())
+            .writtenByMe(comment.getUser().getId() == user.getId() ? true : false)
+            .likedByMe(
+                likesRepository.findByUserAndComment(user, comment).isPresent() ? true : false)
             .replies(voteDetailReplies)
             .build());
       });
