@@ -8,6 +8,10 @@ import lombok.NoArgsConstructor;
 
 public class LocationDto {
 
+  private LocationDto() {
+    throw new IllegalStateException("Utility class");
+  }
+
   @Data
   @AllArgsConstructor
   @NoArgsConstructor
@@ -50,6 +54,7 @@ public class LocationDto {
     private String address;
     private int seq;
     private LocalDateTime endDate;
+    private boolean isCurrent;
   }
 
 

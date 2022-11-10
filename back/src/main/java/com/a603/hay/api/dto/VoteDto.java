@@ -11,9 +11,12 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.format.annotation.DateTimeFormat;
 
 public class VoteDto {
+
+  private VoteDto() {
+    throw new IllegalStateException("Utility class");
+  }
 
   @Getter
   @Setter
@@ -24,8 +27,6 @@ public class VoteDto {
 
     private String title;
     private String body;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
-    private LocalDateTime startDate;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime endDate;
     private boolean isCommentable;
@@ -50,6 +51,17 @@ public class VoteDto {
   @AllArgsConstructor
   @NoArgsConstructor
   public static class VoteListResponse {
+
+    private VoteListResponseVote bestVote;
+    private List<VoteListResponseVote> votes;
+  }
+
+  @Getter
+  @Setter
+  @Builder
+  @AllArgsConstructor
+  @NoArgsConstructor
+  public static class VoteListResponseVote {
 
     private Long id;
     private String title;
@@ -76,6 +88,7 @@ public class VoteDto {
     private boolean isEnded;
     private int voteCount;
     private List<VoteDetailItem> voteItems;
+    private VoteDetailComment bestComment;
     private List<VoteDetailComment> comments;
     private List<String> imageUrls;
   }

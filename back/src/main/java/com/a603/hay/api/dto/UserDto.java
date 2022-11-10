@@ -4,12 +4,16 @@ import lombok.*;
 
 public class UserDto {
 
+  private UserDto() {
+    throw new IllegalStateException("Utility class");
+  }
+
   @Data
   @AllArgsConstructor
   @NoArgsConstructor
   public static class ExtraInfoRequest {
 
-    private String email;
+    private String kakaoId;
     private String nickname;
     private int birthYear;
     private String gender;
@@ -34,6 +38,8 @@ public class UserDto {
 
     private String accessToken;
     private String refreshToken;
+    private boolean extraData;
+
   }
 
   @Data
@@ -50,5 +56,6 @@ public class UserDto {
   public static class ExtraDataResponse {
 
     private boolean extraData;
+    private String kakaoId;
   }
 }

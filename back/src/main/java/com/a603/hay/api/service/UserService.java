@@ -54,7 +54,7 @@ public class UserService {
 
   @Transactional
   public ResponseEntity<ResponseDto<?>> loginUser(String code) {
-    String kaKaoAccessToken = getKaKaoAccessToken(code, loginRedirectUrl + "/api/user/login");
+    String kaKaoAccessToken = getKaKaoAccessToken(code, loginRedirectUrl + "/kakaologin");
     Map<String, Object> userInfo = getUserInfoFromKakao(kaKaoAccessToken);
     String email = (String) userInfo.get("email");
 
@@ -69,21 +69,21 @@ public class UserService {
       if (user.getNickname() != null) { //1. 회원가입된 유저 //TODO 추가정보 입력 유저 확인 로직 강화 필요
         return new ResponseEntity<>(
             new ResponseDto<>(new TokenResponse(jwtUtil.generateAccessToken(user),
-                jwtUtil.generateRefreshToken(user))), HttpStatus.OK);
+                jwtUtil.generateRefreshToken(user), true)), HttpStatus.OK);
       } else { //2. 회원가입되었지만 추가 정보 없는 유저
         return new ResponseEntity<>(
-            new ResponseDto<>(new ExtraDataResponse(false)), HttpStatus.OK);
+            new ResponseDto<>(new ExtraDataResponse(false, user.getKakao())), HttpStatus.OK);
       }
     } else { //3. 처음 로그인한 유저
-      registerUser(userInfo);
+      User registerUser = registerUser(userInfo);
       return new ResponseEntity<>(
-          new ResponseDto<>(new ExtraDataResponse(false)), HttpStatus.OK);
+          new ResponseDto<>(new ExtraDataResponse(false, registerUser.getKakao())), HttpStatus.OK);
     }
   }
 
   @Transactional
   public void registerUserInfo(ExtraInfoRequest extraInfo) {
-    User user = userRepository.findByEmail(extraInfo.getEmail()).orElse(null);
+    User user = userRepository.findByKakao(extraInfo.getKakaoId()).orElse(null);
     if (user == null) {
       throw new CustomException(ErrorCode.USER_NOT_EXIST);
     }
@@ -95,6 +95,7 @@ public class UserService {
     user.setNickname(extraInfo.getNickname());
     user.setBirthYear(extraInfo.getBirthYear());
     user.setGender(extraInfo.getGender());
+    user.setCurrentRange(500);
 
     Location location = new Location();
     location.setLat(extraInfo.getLat());
@@ -105,11 +106,12 @@ public class UserService {
     location.setEndDate(now.plusDays(30));
     location.setUser(user);
 
-    locationRepository.save(location);
+    Location saved = locationRepository.save(location);
+    user.setCurrentLocation(saved.getId());
   }
 
   @Transactional
-  protected void registerUser(Map<String, Object> userInfo) {
+  protected User registerUser(Map<String, Object> userInfo) {
     User user = new User();
     user.setKakao((String) userInfo.get("id"));
     user.setEmail((String) userInfo.get("email"));
@@ -118,6 +120,7 @@ public class UserService {
     user.setUpdatedAt(now);
 
     userRepository.save(user);
+    return user;
   }
 
   public DuplicateNicknameResponse checkDuplicateNickname(NicknameRequest nicknameRequest) {
@@ -135,6 +138,15 @@ public class UserService {
       throw new CustomException(ErrorCode.NICKNAME_EXIST);
     }
     user.setNickname(nicknameRequest.getNickname());
+  }
+
+  @Transactional
+  public String getNickname(String userEmail) {
+    User user = userRepository.findByEmail(userEmail).orElse(null);
+    if (user == null) {
+      throw new CustomException(ErrorCode.USER_NOT_EXIST);
+    }
+    return user.getNickname();
   }
 
 
