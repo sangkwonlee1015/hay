@@ -139,7 +139,9 @@ function MyLocationSetting() {
       <div></div>
       <Button
         variant="test01"
-        onClick={getMyLocations()}
+        onClick={() => {
+          getMyLocations()
+        }}
       >
         getMyLocations
       </Button>

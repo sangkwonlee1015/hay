@@ -6,9 +6,18 @@
 // 하단 바 (components에 있음)
 
 import React from 'react'
+import { Button } from "@mui/material";
 import HeaderOnlyText from '../../components/HeaderOnlyText';
+import setAuthorizationToken from '../User/AuthorizationToken';
 
 function MyPage() {
+
+  function logout() {
+    console.log("logout");
+    setAuthorizationToken(null);
+    localStorage.removeItem('jwtToken')
+  }
+
   return (
     <>
       <div>
@@ -27,7 +36,15 @@ function MyPage() {
         <button className="myLocation">{'>'}</button><br></br>
       </div>
       <div>
-        <button className="log-out">로그아웃</button>
+        <Button
+          variant="test02"
+          // onClick={logout()}
+          onClick={() => {
+            logout()
+          }}
+        >
+          로그아웃
+        </Button>
       </div>
     </>
   )
