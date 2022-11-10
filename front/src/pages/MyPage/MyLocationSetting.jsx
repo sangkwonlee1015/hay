@@ -176,7 +176,7 @@ function MyLocationSetting() {
   }
   
   return (
-    <div className="myPage">
+    <div className="myLocationSettingPage">
       <HeaderTextAndNavigate path="/mypage" text="내 동네 설정" />
       <Map />
       <div>{`위도 ${latitude}   경도 ${longitude}`}</div>
