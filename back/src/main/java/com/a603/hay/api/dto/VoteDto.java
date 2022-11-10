@@ -14,6 +14,10 @@ import lombok.Setter;
 
 public class VoteDto {
 
+  private VoteDto() {
+    throw new IllegalStateException("Utility class");
+  }
+
   @Getter
   @Setter
   @Builder
@@ -49,6 +53,17 @@ public class VoteDto {
   @AllArgsConstructor
   @NoArgsConstructor
   public static class VoteListResponse {
+
+    private VoteListResponseVote bestVote;
+    private List<VoteListResponseVote> votes;
+  }
+
+  @Getter
+  @Setter
+  @Builder
+  @AllArgsConstructor
+  @NoArgsConstructor
+  public static class VoteListResponseVote {
 
     private Long id;
     private String title;

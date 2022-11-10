@@ -5,6 +5,7 @@ import com.a603.hay.api.dto.CommentDto.VoteDetailComment;
 import com.a603.hay.api.dto.VoteDto.CreateVoteRequest;
 import com.a603.hay.api.dto.VoteDto.VoteDetailResponse;
 import com.a603.hay.api.dto.VoteDto.VoteListResponse;
+import com.a603.hay.api.dto.VoteDto.VoteListResponseVote;
 import com.a603.hay.api.dto.VoteDto.VoteOneRequest;
 import com.a603.hay.api.dto.VoteDto.VoteResultResponse;
 import com.a603.hay.api.dto.VoteItemDto.VoteDetailItem;
@@ -134,36 +135,36 @@ public class VoteService {
   }
 
   @Transactional(readOnly = true)
-  public List<VoteListResponse> getVoteList(String search, Long categoryId, boolean myVote,
+  public VoteListResponse getVoteList(String search, Long categoryId, boolean myVote,
       boolean participated, boolean done, String order, String userEmail) {
     User user = userRepository.findByEmail(userEmail)
         .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_EXIST));
 
     if (myVote) {
       Specification<Vote> spec = Specification.where(VoteSpecification.equalUser(user));
-      List<VoteListResponse> voteList = new ArrayList<>();
+      List<VoteListResponseVote> voteList = new ArrayList<>();
       voteRepository.findAll(spec).forEach(vote -> {
         voteList.add(
-            VoteListResponse.builder().id(vote.getId()).title(vote.getTitle())
+            VoteListResponseVote.builder().id(vote.getId()).title(vote.getTitle())
                 .startDate(vote.getStartDate())
                 .endDate(vote.getEndDate()).isEnded(vote.isEnded()).voteCount(vote.getVoteCount())
                 .build());
       });
-      return voteList;
+      return VoteListResponse.builder().votes(voteList).build();
     }
 
     if (participated) {
       List<VoteLog> voteLogs = voteLogRepository.findAllByUser(user);
-      List<VoteListResponse> voteList = new ArrayList<>();
+      List<VoteListResponseVote> voteList = new ArrayList<>();
       voteLogs.forEach(voteLog -> {
         Vote vote = voteLog.getVote();
         voteList.add(
-            VoteListResponse.builder().id(vote.getId()).title(vote.getTitle())
+            VoteListResponseVote.builder().id(vote.getId()).title(vote.getTitle())
                 .startDate(vote.getStartDate())
                 .endDate(vote.getEndDate()).isEnded(vote.isEnded()).voteCount(vote.getVoteCount())
                 .build());
       });
-      return voteList;
+      return VoteListResponse.builder().votes(voteList).build();
     }
 
     if (order == null) {
@@ -189,24 +190,39 @@ public class VoteService {
     if (categoryId != null) {
       Category category = categoryRepository.findById(categoryId)
           .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
-      spec = spec.and(VoteSpecification.equalCategory(category));
+      spec = (spec == null ? Specification.where(VoteSpecification.equalCategory(category))
+          : spec.and(VoteSpecification.equalCategory(category)));
     }
     if (search != null) {
-      spec = spec.and(VoteSpecification.likeTitle(search));
+      spec = (spec == null ? Specification.where(VoteSpecification.likeTitle(search))
+          : spec.and(VoteSpecification.likeTitle(search)));
     }
     Location location = locationRepository.findById(user.getCurrentLocation())
         .orElseThrow(() -> new CustomException(ErrorCode.LOCATION_NOT_FOUND));
-    spec = spec.and(VoteSpecification.withinRange(location.getLat(), location.getLng(),
-        user.getCurrentRange()));
-    List<VoteListResponse> voteList = new ArrayList<>();
-    voteRepository.findAll(spec, sort).forEach(vote -> {
+    spec = (spec == null ? Specification.where(
+        VoteSpecification.withinRange(location.getLat(), location.getLng(), user.getCurrentRange()))
+        : spec.and(VoteSpecification.withinRange(location.getLat(), location.getLng(),
+            user.getCurrentRange())));
+    List<VoteListResponseVote> voteList = new ArrayList<>();
+    List<Vote> votes = voteRepository.findAll(spec, sort);
+    int maxCount = -1;
+    VoteListResponseVote bestVote = null;
+    for (int i = 0; i < votes.size(); i++) {
+      Vote vote = votes.get(i);
+      if (vote.getVoteCount() > maxCount) {
+        maxCount = vote.getVoteCount();
+        bestVote = VoteListResponseVote.builder().id(vote.getId()).title(vote.getTitle())
+            .startDate(vote.getStartDate())
+            .endDate(vote.getEndDate()).isEnded(vote.isEnded()).voteCount(vote.getVoteCount())
+            .build();
+      }
       voteList.add(
-          VoteListResponse.builder().id(vote.getId()).title(vote.getTitle())
+          VoteListResponseVote.builder().id(vote.getId()).title(vote.getTitle())
               .startDate(vote.getStartDate())
               .endDate(vote.getEndDate()).isEnded(vote.isEnded()).voteCount(vote.getVoteCount())
               .build());
-    });
-    return voteList;
+    }
+    return VoteListResponse.builder().bestVote(bestVote).votes(voteList).build();
   }
 
   // 두 좌표 사이의 거리를 구하는 함수
@@ -396,6 +412,9 @@ public class VoteService {
               .createdAt(reply.getCreatedAt())
               .updatedAt(reply.getUpdatedAt())
               .writerNickname(reply.getUser().getNickname())
+              .writtenByMe(reply.getUser().getId() == user.getId() ? true : false)
+              .likedByMe(
+                  likesRepository.findByUserAndComment(user, reply).isPresent() ? true : false)
               .build());
         });
         voteDetailComments.add(VoteDetailComment.builder()
@@ -406,12 +425,16 @@ public class VoteService {
             .createdAt(comment.getCreatedAt())
             .updatedAt(comment.getUpdatedAt())
             .writerNickname(comment.getUser().getNickname())
+            .writtenByMe(comment.getUser().getId() == user.getId() ? true : false)
+            .likedByMe(
+                likesRepository.findByUserAndComment(user, comment).isPresent() ? true : false)
             .replies(voteDetailReplies)
             .build());
       });
     }
     voteDetailResponse.setComments(voteDetailComments);
-    Comment bestComment = commentRepository.findFirstByVoteAndIsDeletedOrderByLikesCountDesc(vote, false)
+    Comment bestComment = commentRepository.findFirstByVoteAndIsDeletedOrderByLikesCountDesc(vote,
+            false)
         .orElseThrow(() -> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
     voteDetailResponse.setBestComment(VoteDetailComment.builder()
         .id(bestComment.getId())
@@ -435,8 +458,6 @@ public class VoteService {
     if (voteId != vote.getId() || voteLogRepository.countByUserAndVote(user, vote) == 0) {
       throw new CustomException(ErrorCode.FORBIDDEN);
     }
-
-    System.out.println("voteResult");
 
     List<VoteResultItem> voteResultItems = new ArrayList<>();
     vote.getVoteItems().toString();
