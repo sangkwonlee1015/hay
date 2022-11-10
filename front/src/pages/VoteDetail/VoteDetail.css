@@ -1,5 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
 .contentAll {
-  margin: 30px;
+  margin: 30px 30px 100px 30px;
+  font-family: 'Roboto', sans-serif;
+  font-size: 16px;
 }
 .title {
   font-size: 20px;
@@ -7,15 +10,15 @@
   margin-bottom: 16px;
 }
 .titleGroup {
-  font-family: Arial, Helvetica, sans-serif;
   display: flex;
+  align-items: center;
   margin-bottom: 40px;
 }
 .writter {
   font-size: 14px;
   font-weight: bold;
-  color: blue;
-  margin-right: 12px;
+  color: #3f51b5;
+  margin-right: 16px;
 }
 .startDate {
   font-size: 12px;
@@ -40,11 +43,76 @@
   margin-bottom: 16px;
 }
 .voteText {
-  color: blue;
+  color: #3f51b5;
+  margin-left: 10px;
   margin-right: 40px;
 }
 .remainDate {
   color: #7e7e7e;
+  margin-bottom: 32px;
+}
+.selectionGroup {
+  margin-bottom: 40px;
+}
+.votedSelection {
+  margin-bottom: 16px;
+}
+.checkSelection {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.checkIcon {
+  margin-right: 10px;
+}
+.votedCount {
+  margin-left: auto;
+  color: #7e7e7e;
+}
+.voteGraph {
+  width: 100%;
+  height: 4px;
+  background-color: #e7f3fe;
+}
+.voteGraphRatio {
+  height: 4px;
+  background-color: #1976d2;
+}
+.unvotedSelection {
+  padding: 20px 16px;
+  margin: 10px 0;
+  border-style: solid;
+  border-width: 1px;
+  border-color: #d1d1d1;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+}
+.unvotedSelected {
+  padding: 20px 16px;
+  margin: 10px 0;
+  background-color: #e7f3fe;
+  display: flex;
+  align-items: center;
+}
+.votedIcon {
+  order: 1;
+  margin-right: 10px;
+}
+.selectContent {
+  order: 2;
+}
+.gotoVote {
+  padding: 24px;
+  text-align: center;
+  background-color: #064579;
+  color: #fff;
+}
+.gotoReVote {
+  padding: 24px;
+  text-align: center;
+  background-color: #064579;
+  color: #fff;
 }
 .commentShare {
   display: flex;
@@ -52,4 +120,45 @@
 }
 .share {
   margin-left: auto;
+}
+.bestCommentTitle {
+  font-size: 20px;
+  font-weight: bold;
+  color: #6EB9F7;
+  margin-bottom: 10px;
+  padding-left: 16px;
+}
+.bestComment {
+  border-color: #6EB9F7;
+  border-width: 6px;
+  border-style: solid;
+  margin-bottom: 40px;
+}
+.comment {
+  padding: 12px;
+}
+.reply {
+  padding: 12px;
+  display: flex;
+}
+.replyDiv {
+  width: 100%
+}
+.commentInfor {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+}
+.commentBy {
+  font-weight: bold;
+  color: #3f51b5;
+  margin-right: 8px;
+}
+.good {
+  margin-left: 4px;
+  margin-right: 4px;
+}
+.commentCreatedAt {
+  margin-left: auto;
+  color: #7e7e7e;
 }
