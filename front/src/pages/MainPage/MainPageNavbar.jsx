@@ -1,9 +1,11 @@
-import React from 'react'
+import React, {useState, useEffect} from 'react'
+import axios from 'axios';
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import SearchIcon from "@mui/icons-material/Search";
 import styled from "styled-components";
 import { Button, Input } from "@mui/material";
 import { useSelector } from 'react-redux/es/exports';
+import api from '../../api/api'
 
 
 const MainHeader = styled.div`
@@ -32,9 +34,20 @@ const AreaCoordinates = styled.div`
 `;
 
 function MainPageHeader(props) {
-  const areaName = useSelector((state) => state.user.areaName);
-  const latitude = useSelector((state) => state.user.latitude);
-  const longitude = useSelector((state) => state.user.longitude);
+  const [areaName, setAreaName] = useState('');
+  const [latitude, setLatitude] = useState("");
+  const [longitude, setLongitutde] = useState("");
+
+  useEffect(() => {
+    axios.get(api.getCurrentLocation())
+      .then((Response) => {
+        const result = Response.data.response;
+
+        setAreaName(result.address);
+        setLatitude(result.lat);
+        setLongitutde(result.lng);
+      });
+  }, []);
 
   return (
     <>

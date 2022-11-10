@@ -17,21 +17,6 @@ function KakaoLogin() {
 
     const navigate = useNavigate();
 
-    function getCurrentLocation() {
-        axios.get(api.getCurrentLocation())
-        .then((Response) => {
-          const result = Response.data.response;
-        //   console.log(result);
-
-          // nickname, location 정보 store에 저장
-          dispatch(userAction.latitude(result.lat));
-          dispatch(userAction.longitude(result.lng));
-          dispatch(userAction.areaName(result.address));
-
-          navigate("/main");
-        })
-    }
-
     useEffect(() => {
         axios.get(api.login(), {params:{code:KAKAO_CODE}})
         .then((Response)=> {
@@ -50,10 +35,8 @@ function KakaoLogin() {
 
                 // 닉네임 저장
                 dispatch(userAction.nickname(decode.nickname));
-
-                // console.log(decode)
                 
-                getCurrentLocation();
+                navigate("/main");
             } else{
                 //추가 정보 입력 페이지 이동
                 console.log("추가정보 페이지 이동")

@@ -25,7 +25,7 @@ const Orders = styled.div`
   justify-content: flex-end;
   height: 40px;
   line-height: 40px;
-  border-bottom: 0.5px solid rgba(0, 0, 0, 0.15);
+  border-bottom: 0.25px solid #6EB9F7;
   margin-right: 5px;
 `;
 
@@ -90,11 +90,9 @@ function MainPage() {
           참여자순
         </Button>
       </Orders>
-      {bestVote ? <VoteItem vote={bestVote}></VoteItem> : null}
+      {bestVote ? <VoteItem vote={bestVote} best={true}/> : null}
       {voteList.map((vote, index) =>
-        bestVote?.id === vote.id ? null : (
-          <VoteItem vote={vote} key={index}></VoteItem>
-        )
+        bestVote?.id === vote.id ? null : <VoteItem vote={vote} best={false} key={index} />
       )}
     </>
   );
