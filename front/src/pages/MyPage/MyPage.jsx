@@ -7,15 +7,29 @@
 
 import React from 'react'
 import { Button } from "@mui/material";
+import {useNavigate} from 'react-router-dom';
 import HeaderOnlyText from '../../components/HeaderOnlyText';
 import setAuthorizationToken from '../User/AuthorizationToken';
 
 function MyPage() {
+  const navigate = useNavigate();
 
   function logout() {
     console.log("logout");
     setAuthorizationToken(null);
     localStorage.removeItem('jwtToken')
+  }
+
+  function moveToLocationSetting() {
+    navigate("/mylocationsetting");
+  }
+
+  function moveToMyParticipated() {
+    navigate("/myparticipated");
+  }
+
+  function moveToMyVote() {
+    navigate("/myvote");
   }
 
   return (
@@ -29,16 +43,30 @@ function MyPage() {
       </div>
       <div className="myInfoList">
         내가 생성한 투표
-        <button className="myCreateVote">{'>'}</button><br></br>
+        <button 
+          className="myCreateVote"
+          onClick={() => {
+            moveToMyVote()
+          }}
+          >{'>'}</button><br></br>
         내가 참여한 투표
-        <button className="myJoinVote">{'>'}</button><br></br>
+        <button 
+          className="myJoinVote"
+          onClick={() => {
+            moveToMyParticipated()
+          }}
+          >{'>'}</button><br></br>
         내 동네 설정
-        <button className="myLocation">{'>'}</button><br></br>
+        <button 
+          className="myLocation"
+          onClick={() => {
+            moveToLocationSetting()
+          }}
+          >{'>'}</button><br></br>
       </div>
       <div>
         <Button
-          variant="test02"
-          // onClick={logout()}
+          variant="log-out"
           onClick={() => {
             logout()
           }}
