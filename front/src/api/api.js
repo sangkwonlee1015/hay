@@ -1,4 +1,5 @@
-const API_BASE_URL = 'http://localhost:8080/api';
+const BASE_URL = "http://localhost:8080";
+const API_BASE_URL = "/api";
 // const API_BASE_URL = "https://k7a603.p.ssafy.io/api";
 
 // 경로
@@ -10,6 +11,9 @@ const VOTES_URL = "/votes";
 // User
 const INFOINPUT_URL = "/info";
 const DUPLICATECHECK_URL = "/nickname/check";
+const LOGIN_URL = "/login";
+
+const KAKAO_AUTH_URL = `https://kauth.kakao.com/oauth/authorize?client_id=2cc38f3feb14c46b190ca5fe77598eb6&redirect_uri=http://localhost:3000/kakaologin&response_type=code`;
 
 // Mypage
 const NICKNAME_URL = "/nickname";
@@ -18,16 +22,16 @@ const LOCATION_URL = "/location";
 const LOCATION_SETTING_URL = "/location/current";
 
 // Votes
-const COMMENT_URL = '/comment';
-const LIKES_URL = '/likes';
-const RESULT_URL = '/result';
-
+const COMMENT_URL = "/comment";
+const LIKES_URL = "/likes";
+const RESULT_URL = "/result";
 
 const api = {
   // user
   signup: () => API_BASE_URL + USER_URL + INFOINPUT_URL,
   nicknameDuplicateCheck: () => API_BASE_URL + USER_URL + DUPLICATECHECK_URL,
-
+  login: () => API_BASE_URL + USER_URL + LOGIN_URL,
+  kakaoLogin: () => KAKAO_AUTH_URL,
   // mypage
   getNickname: () => API_BASE_URL + MYPAGE_URL + NICKNAME_URL,
   putNickname: () => API_BASE_URL + MYPAGE_URL + NICKNAME_URL,
@@ -46,9 +50,15 @@ const api = {
   deleteComment: (voteId, commentId) =>
     API_BASE_URL + VOTES_URL + `/${voteId}` + COMMENT_URL + `/${commentId}`,
   likeComment: (voteId, commentId) =>
-    API_BASE_URL + VOTES_URL + `/${voteId}` + COMMENT_URL + `/${commentId}` + LIKES_URL,
+    API_BASE_URL +
+    VOTES_URL +
+    `/${voteId}` +
+    COMMENT_URL +
+    `/${commentId}` +
+    LIKES_URL,
   addVotes: () => API_BASE_URL + VOTES_URL,
-  getVotesResult: (voteId) => API_BASE_URL + VOTES_URL + `/${voteId}` + RESULT_URL,
+  getVotesResult: (voteId) =>
+    API_BASE_URL + VOTES_URL + `/${voteId}` + RESULT_URL,
   voteEarlyFinish: (voteId) => API_BASE_URL + VOTES_URL + `/${voteId}`,
 };
 
