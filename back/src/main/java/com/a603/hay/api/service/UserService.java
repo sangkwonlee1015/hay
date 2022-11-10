@@ -106,7 +106,8 @@ public class UserService {
     location.setEndDate(now.plusDays(30));
     location.setUser(user);
 
-    locationRepository.save(location);
+    Location saved = locationRepository.save(location);
+    user.setCurrentLocation(saved.getId());
   }
 
   @Transactional
