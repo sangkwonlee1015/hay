@@ -31,12 +31,20 @@ public class LocationService {
     }
     List<Location> locations = locationRepository.findAllByUser(user);
     List<UserLocationResponse> userLocationResponses = new ArrayList<>();
+    userLocationResponses.add(
+        UserLocationResponse.builder().isCurrent(false).seq(0).build());
+    userLocationResponses.add(
+        UserLocationResponse.builder().isCurrent(false).seq(1).build());
     long currentLocationId = user.getCurrentLocation();
+
     locations.forEach(location -> {
-      userLocationResponses.add(
-          new UserLocationResponse(location.getId(), location.getLat(), location.getLng(),
-              location.getAddress(),
-              location.getSeq(), location.getEndDate(), location.getId() == currentLocationId));
+      UserLocationResponse ulr = userLocationResponses.get(location.getSeq());
+      ulr.setId(location.getId());
+      ulr.setLat(location.getLat());
+      ulr.setLng(location.getLng());
+      ulr.setAddress(location.getAddress());
+      ulr.setEndDate(location.getEndDate());
+      ulr.setIsCurrent(location.getId() == currentLocationId);
     });
     return userLocationResponses;
   }

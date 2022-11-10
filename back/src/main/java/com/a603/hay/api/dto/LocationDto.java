@@ -48,13 +48,13 @@ public class LocationDto {
   @Builder
   public static class UserLocationResponse {
 
-    private long id;
-    private double lat;
-    private double lng;
+    private Long id;
+    private Double lat;
+    private Double lng;
     private String address;
-    private int seq;
+    private Integer seq;
     private LocalDateTime endDate;
-    private boolean isCurrent;
+    private Boolean isCurrent;
   }
 
 
