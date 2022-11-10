@@ -34,11 +34,13 @@ function MyLocationSetting() {
   const longitude = useSelector((state) => state.user.longitude);
   const areaName = useSelector((state) => state.user.areaName);
 
+  const [locations, setLocations] = useState([]);
   //api 통신들
   //등록된 동네 조회
   function getMyLocations() {
     axios.get(api.getLocation())
     .then(({ data }) => {
+      setLocations(data.response);
       console.log(data);
     })
     .catch((Error) => {
@@ -46,12 +48,12 @@ function MyLocationSetting() {
     })
   }
   //동네 추가
-  function addMyLocation() {
+  function addMyLocation(seq) {
     axios.post(api.addLocation(), {
-      //lat
-      //lng
-      //address
-      //seq
+      lat : latitude,
+      lng : longitude,
+      address : areaName,
+      seq : seq
     })
     .then((Response)=>{
       const result = Response.data.response
@@ -61,6 +63,8 @@ function MyLocationSetting() {
   }
   //동네 삭제
   function deleteMyLocation(locationId) {
+    //if(locations.length == 1) { 다메요 }
+    //else {}
     axios.delete(api.deleteLocation(locationId))
     .then((Response)=>{
       const result = Response.data.response
@@ -69,15 +73,18 @@ function MyLocationSetting() {
     .catch((Error)=>{console.log(Error)})
   }
   //현재 동네 설정
-  function setCurrentLocation() {
-    axios.post(api.setCurrentLocation(), {
-      //locationId
-    })
-    .then((Response)=>{
-      const result = Response.data.response
-      console.log(result);
-    })
-    .catch((Error)=>{console.log(Error)})
+  function setCurrentLocation(locationId, seq) {
+    if(!locationId) { addMyLocation(seq) }
+    else {
+      axios.post(api.setCurrentLocation(), {
+        locationId: locationId,
+      })
+      .then((Response)=>{
+        const result = Response.data.response
+        console.log(result);
+      })
+      .catch((Error)=>{console.log(Error)})
+    }
   }
   //동네 범위 설정
   function setLocationRange() {
@@ -95,6 +102,10 @@ function MyLocationSetting() {
   function handleRenew() {
     setRenew(!renew)
   }
+
+  useEffect(() => {
+    getMyLocations();
+  }, []);
 
   useEffect(() => {
     async function getLocation() {
@@ -133,19 +144,13 @@ function MyLocationSetting() {
 
   const 동네이름 = [
     {
-      name: "삼선동 5가",
-      location: {
-        x: 127.0396789,
-        y: 37.5013305,
-      },
-      isSelected: true,
+      name: "선택하여 설정",
+      locationId: null,
+      isSelected: false,
     },
     {
       name: "선택하여 설정",
-      location: {
-        x: 0,
-        y: 0,
-      },
+      locationId: null,
       isSelected: false,
     },
   ]
@@ -179,14 +184,14 @@ function MyLocationSetting() {
       <Stack direction="row" spacing={2} justifyContent="center">
         <Chip
           label={동네이름[0].name}
-          onClick={setCurrentLocation}
+          onClick={setCurrentLocation(동네이름[0].locationId, 0)}
           onDelete={deleteMyLocation}
           color="primary"
           variant={ 동네이름[0].isSelected ? "filled" : "outlined" }
         />
         <Chip
           label={동네이름[1].name}
-          onClick={setCurrentLocation}
+          onClick={setCurrentLocation(동네이름[1].locationId, 1)}
           onDelete={deleteMyLocation}
           color="primary"
           variant={ 동네이름[1].isSelected ? "filled" : "outlined" }
