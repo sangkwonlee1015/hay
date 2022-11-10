@@ -7,6 +7,7 @@ import com.a603.hay.api.dto.ResponseDto;
 import com.a603.hay.api.dto.UserDto.NicknameRequest;
 import com.a603.hay.api.service.LocationService;
 import com.a603.hay.api.service.UserService;
+import com.a603.hay.db.entity.Location;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import java.security.Principal;
@@ -76,6 +77,13 @@ public class MyPageController {
       @RequestBody LocationIdRequest locationIdRequest) {
     locationService.changeCurrentSeq(principal.getName(), locationIdRequest);
     return new ResponseEntity<>(new ResponseDto<>("success"), HttpStatus.OK);
+  }
+
+  @GetMapping("location/current")
+  @ApiOperation(value = "현재 동네 조회", notes = "현재 동네 조회")
+  public ResponseEntity<ResponseDto<?>> getCurrentLocation(Principal principal) {
+    return new ResponseEntity<>(
+        new ResponseDto<>(locationService.getCurrentLocation(principal.getName())), HttpStatus.OK);
   }
 
   @PostMapping("location/range")

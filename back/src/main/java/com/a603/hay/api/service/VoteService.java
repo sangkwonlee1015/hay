@@ -87,7 +87,9 @@ public class VoteService {
     newVote.setUser(user);
     newVote.setTitle(createVoteRequest.getTitle());
     newVote.setBody(createVoteRequest.getBody());
-    newVote.setStartDate(createVoteRequest.getStartDate());
+    LocalDateTime nowTime = LocalDateTime.now();
+    newVote.setStartDate(LocalDateTime.of(nowTime.getYear(), nowTime.getMonth(), nowTime.getDayOfMonth(),
+        nowTime.getHour(), nowTime.getMinute(), nowTime.getSecond()));
     newVote.setEndDate(createVoteRequest.getEndDate());
     newVote.setCommentable(createVoteRequest.isCommentable());
     newVote.setEnded(false);
