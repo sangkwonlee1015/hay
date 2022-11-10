@@ -54,6 +54,7 @@ public class LocationDto {
     private String address;
     private int seq;
     private LocalDateTime endDate;
+    private boolean isCurrent;
   }
 
 

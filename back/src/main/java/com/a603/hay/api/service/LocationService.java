@@ -31,11 +31,12 @@ public class LocationService {
     }
     List<Location> locations = locationRepository.findAllByUser(user);
     List<UserLocationResponse> userLocationResponses = new ArrayList<>();
+    long currentLocationId = user.getCurrentLocation();
     locations.forEach(location -> {
       userLocationResponses.add(
           new UserLocationResponse(location.getId(), location.getLat(), location.getLng(),
               location.getAddress(),
-              location.getSeq(), location.getEndDate()));
+              location.getSeq(), location.getEndDate(), location.getId() == currentLocationId));
     });
     return userLocationResponses;
   }
@@ -78,7 +79,20 @@ public class LocationService {
     if (findLocation == null) {
       throw new CustomException(ErrorCode.LOCATION_NOT_FOUND);
     }
-    user.setCurrentLocation(findLocation.getSeq());
+    user.setCurrentLocation(findLocation.getId());
+  }
+
+  public UserLocationResponse getCurrentLocation(String userEmail) {
+    User user = userRepository.findByEmail(userEmail).orElse(null);
+    if (user == null) {
+      throw new CustomException(ErrorCode.USER_NOT_EXIST);
+    }
+    Location location = locationRepository.findById(user.getCurrentLocation()).orElse(null);
+    if (location == null) {
+      throw new CustomException(ErrorCode.LOCATION_NOT_FOUND);
+    }
+    return new UserLocationResponse(location.getId(), location.getLat(), location.getLng(),
+        location.getAddress(), location.getSeq(), location.getEndDate(), true);
   }
 
   @Transactional
