@@ -21,6 +21,8 @@ function LocationSetting() {
   const longitude = useSelector((state) => state.user.longitude);
   const areaName = useSelector((state) => state.user.areaName);
   const {state} = useLocation();
+
+
   function handleButton() {
     // 여기서 api 통신
     axios.post(api.signup(), {
@@ -77,7 +79,8 @@ function LocationSetting() {
     }
     getLocation();
   }, [renew]);
-
+  
+  console.log(position);
   dispatch(userAction.latitude(position.latitude));
   dispatch(userAction.longitude(position.longitude));
 

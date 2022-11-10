@@ -1,6 +1,6 @@
 const BASE_URL = "http://localhost:8080";
+// const BASE_URL = "https://k7a603.p.ssafy.io";
 const API_BASE_URL = "/api";
-// const API_BASE_URL = "https://k7a603.p.ssafy.io/api";
 
 // 경로
 const USER_URL = "/user";
@@ -32,6 +32,7 @@ const api = {
   nicknameDuplicateCheck: () => API_BASE_URL + USER_URL + DUPLICATECHECK_URL,
   login: () => API_BASE_URL + USER_URL + LOGIN_URL,
   kakaoLogin: () => KAKAO_AUTH_URL,
+  
   // mypage
   getNickname: () => API_BASE_URL + MYPAGE_URL + NICKNAME_URL,
   putNickname: () => API_BASE_URL + MYPAGE_URL + NICKNAME_URL,
@@ -41,6 +42,7 @@ const api = {
   deleteLocation: (locationId) =>
     API_BASE_URL + MYPAGE_URL + LOCATION_URL + `/${locationId}`,
   setCurrentLocation: () => API_BASE_URL + MYPAGE_URL + LOCATION_SETTING_URL,
+  getCurrentLocation: () => API_BASE_URL + MYPAGE_URL + LOCATION_SETTING_URL,
 
   // votes
   getVotes: () => API_BASE_URL + VOTES_URL,
