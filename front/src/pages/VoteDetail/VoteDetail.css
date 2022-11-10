@@ -2,6 +2,7 @@
 .contentAll {
   margin: 30px 30px 100px 30px;
   font-family: 'Roboto', sans-serif;
+  font-size: 16px;
 }
 .title {
   font-size: 20px;
@@ -120,6 +121,19 @@
 .share {
   margin-left: auto;
 }
+.bestCommentTitle {
+  font-size: 20px;
+  font-weight: bold;
+  color: #6EB9F7;
+  margin-bottom: 10px;
+  padding-left: 16px;
+}
+.bestComment {
+  border-color: #6EB9F7;
+  border-width: 6px;
+  border-style: solid;
+  margin-bottom: 40px;
+}
 .comment {
   padding: 12px;
 }
@@ -127,13 +141,24 @@
   padding: 12px;
   display: flex;
 }
+.replyDiv {
+  width: 100%
+}
 .commentInfor {
+  margin-top: 10px;
   display: flex;
+  align-items: center;
 }
 .commentBy {
   font-weight: bold;
   color: #3f51b5;
+  margin-right: 8px;
+}
+.good {
+  margin-left: 4px;
+  margin-right: 4px;
 }
 .commentCreatedAt {
   margin-left: auto;
+  color: #7e7e7e;
 }

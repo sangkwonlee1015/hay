@@ -260,7 +260,8 @@ function VoteDetail() {
               <div>{comments[i].content}</div>
               <div className="commentInfor">
                 <div className="commentBy">{comments[i].writerNickname}</div>
-                { 1 ? <FavoriteIcon /> : <FavoriteBorderIcon /> }
+                { 0 ? <FavoriteIcon color="primary" /> : <FavoriteBorderIcon /> }
+                <div className="good">좋아요</div>
                 { comments[i].likesCount ? <div>{comments[i].likesCount}</div> : <></> }
                 <div className="commentCreatedAt">{comments[i].createdAt.substring(0, 16)}</div>
               </div>
@@ -272,11 +273,12 @@ function VoteDetail() {
         result.push(
           <div className="reply">
             <ArrowRightAltIcon />
-            <div>
+            <div className="replyDiv">
               <div>{comments[i].replies[j].content}</div>
-              <div>
+              <div className="commentInfor">
                 <div className="commentBy">{comments[i].replies[j].writerNickname}</div>
-                { 1 ? <FavoriteIcon /> : <FavoriteBorderIcon /> }
+                { 0 ? <FavoriteIcon color="primary" /> : <FavoriteBorderIcon /> }
+                <div className="good">좋아요</div>
                 { comments[i].replies[j].likesCount ? <div>{comments[i].replies[j].likesCount}</div> : <></> }
                 <div className="commentCreatedAt">{comments[i].replies[j].createdAt.substring(0, 16)}</div>
               </div>
@@ -315,9 +317,18 @@ function VoteDetail() {
         <div className="share">공유하기</div>
       </div>
       <div className="commentAll">
+        <div className="bestCommentTitle">베스트 댓글</div>
         <div className="bestComment">
-          <div>베스트 댓글</div>
-          <div>{details.comments[0].content}</div>
+          <div className="comment">
+            <div>{details.comments[0].content}</div>
+            <div className="commentInfor">
+              <div className="commentBy">{details.comments[0].writerNickname}</div>
+              { 0 ? <FavoriteIcon color="primary" /> : <FavoriteBorderIcon /> }
+              <div className="good">좋아요</div>
+              { details.comments[0].likesCount ? <div>{details.comments[0].likesCount}</div> : <></> }
+              <div className="commentCreatedAt">{details.comments[0].createdAt.substring(0,16)}</div>
+            </div>
+          </div>
         </div>
         {comment(details.comments)}
       </div>
