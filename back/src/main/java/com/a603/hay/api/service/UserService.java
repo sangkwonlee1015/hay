@@ -95,6 +95,7 @@ public class UserService {
     user.setNickname(extraInfo.getNickname());
     user.setBirthYear(extraInfo.getBirthYear());
     user.setGender(extraInfo.getGender());
+    user.setCurrentRange(500);
 
     Location location = new Location();
     location.setLat(extraInfo.getLat());
@@ -136,6 +137,15 @@ public class UserService {
       throw new CustomException(ErrorCode.NICKNAME_EXIST);
     }
     user.setNickname(nicknameRequest.getNickname());
+  }
+
+  @Transactional
+  public String getNickname(String userEmail) {
+    User user = userRepository.findByEmail(userEmail).orElse(null);
+    if (user == null) {
+      throw new CustomException(ErrorCode.USER_NOT_EXIST);
+    }
+    return user.getNickname();
   }
 
 

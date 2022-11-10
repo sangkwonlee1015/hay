@@ -39,6 +39,14 @@ public class MyPageController {
     return new ResponseEntity<>(new ResponseDto<>("success"), HttpStatus.OK);
   }
 
+  @GetMapping("nickname")
+  @ApiOperation(value = "닉네임 조회", notes = "닉네임 조회")
+  public ResponseEntity<ResponseDto<String>> getNickname(
+      Principal principal) {
+    return new ResponseEntity<>(new ResponseDto<>(userService.getNickname(principal.getName())),
+        HttpStatus.OK);
+  }
+
   @GetMapping("location")
   @ApiOperation(value = "등록된 동네 조회", notes = "저장된 위치정보 조회")
   public ResponseEntity<ResponseDto<?>> getLocation(Principal principal) {

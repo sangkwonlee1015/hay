@@ -8,6 +8,10 @@ import lombok.Setter;
 
 public class CategoryDto {
 
+  private CategoryDto() {
+    throw new IllegalStateException("Utility class");
+  }
+
   @Getter
   @Setter
   @Builder

@@ -4,10 +4,15 @@ import lombok.*;
 
 public class UserDto {
 
+  private UserDto() {
+    throw new IllegalStateException("Utility class");
+  }
+
   @Data
   @AllArgsConstructor
   @NoArgsConstructor
   public static class ExtraInfoRequest {
+
     private String kakaoId;
     private String nickname;
     private int birthYear;
