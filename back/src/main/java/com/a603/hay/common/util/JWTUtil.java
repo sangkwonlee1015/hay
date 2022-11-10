@@ -26,6 +26,8 @@ public class JWTUtil {
 
     HashMap<String, String> payloads = new HashMap<String, String>();
     payloads.put("nickname", user.getNickname());
+    payloads.put("gender", user.getGender());
+    payloads.put("birthYear", String.valueOf(user.getBirthYear()));
     return JWT.create()
         .withSubject(user.getEmail())
         .withExpiresAt(new Date(System.currentTimeMillis() + REFRESH_EXPIRE_MINUTES))
