@@ -31,7 +31,7 @@ const Orders = styled.div`
   margin-right: 5px;
 `;
 
-const CATEGORY_NAME = ["이야기", "먹자지껄", "매일매일"];
+const CATEGORY_NAME = [{name: "이야기", id: 1}, {name: "먹자지껄", id: 2}, {name: "매일매일", id: 3}];
 
 function MainPage() {
   const dispatch = useDispatch();
@@ -70,10 +70,10 @@ function MainPage() {
       <Categories>
         {CATEGORY_NAME.map((category, index) => (
           <Category
-            name={category}
+            name={category.name}
             key={index}
-            onChangeCategory={(index) => {
-              setCategory(index);
+            onChangeCategory={() => {
+              setCategory(category.id);
             }}
           />
         ))}
