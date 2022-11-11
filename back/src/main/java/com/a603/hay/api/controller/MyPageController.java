@@ -93,4 +93,11 @@ public class MyPageController {
     locationService.changeLocationRange(principal.getName(), locationRangeRequest);
     return new ResponseEntity<>(new ResponseDto<>("success"), HttpStatus.OK);
   }
+
+  @GetMapping("location/range")
+  @ApiOperation(value = "동네 범위 조회", notes = "동네 범위 조회")
+  public ResponseEntity<ResponseDto<?>> getLocationRange(Principal principal) {
+    return new ResponseEntity<>(
+        new ResponseDto<>(locationService.getLocationRange(principal.getName())), HttpStatus.OK);
+  }
 }
