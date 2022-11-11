@@ -228,4 +228,13 @@ public class UserService {
 
     return result;
   }
+
+  public TokenResponse reissueAccessToken(String userEmail) {
+    User user = userRepository.findByEmail(userEmail).orElse(null);
+    if (user == null) {
+      throw new CustomException(ErrorCode.USER_NOT_EXIST);
+    }
+    return new TokenResponse(jwtUtil.generateAccessToken(user),
+        jwtUtil.generateRefreshToken(user), true);
+  }
 }
