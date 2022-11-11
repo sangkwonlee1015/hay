@@ -41,7 +41,7 @@ function MyLocationSetting() {
     axios.get(api.getLocation())
     .then(({ data }) => {
       setLocations(data.response);
-      console.log(data);
+      console.log("data", data);
     })
     .catch((Error) => {
       console.log(Error);
@@ -74,7 +74,10 @@ function MyLocationSetting() {
   }
   //현재 동네 설정
   function setCurrentLocation(locationId, seq) {
-    if(!locationId) { addMyLocation(seq) }
+    console.log("locationId : ", locationId)
+    if(locationId === null) { 
+      addMyLocation(seq);
+    }
     else {
       axios.post(api.setCurrentLocation(), {
         locationId: locationId,
@@ -82,6 +85,7 @@ function MyLocationSetting() {
       .then((Response)=>{
         const result = Response.data.response
         console.log(result);
+        getMyLocations();
       })
       .catch((Error)=>{console.log(Error)})
     }
@@ -122,6 +126,7 @@ function MyLocationSetting() {
               });
             },
             (err) => {
+              console.log("error getLocation")
               resolve({
                 err: -1,
                 latitude: -1,
@@ -142,18 +147,18 @@ function MyLocationSetting() {
   dispatch(userAction.latitude(position.latitude));
   dispatch(userAction.longitude(position.longitude));
 
-  const 동네이름 = [
-    {
-      name: "선택하여 설정",
-      locationId: null,
-      isSelected: false,
-    },
-    {
-      name: "선택하여 설정",
-      locationId: null,
-      isSelected: false,
-    },
-  ]
+  // const 동네이름 = [
+  //   {
+  //     name: locations[0].address,
+  //     locationId: locations[0].locationId,
+  //     isSelected: locations[0].isCurrent,
+  //   },
+  //   {
+  //     name: locations[1].address,
+  //     locationId: locations[1].locationId,
+  //     isSelected: locations[1].isCurrent,
+  //   },
+  // ]
   const valuetext = (value) => {
     return `${value}km`;
   }
@@ -183,18 +188,18 @@ function MyLocationSetting() {
       <div>{areaName}</div>
       <Stack direction="row" spacing={2} justifyContent="center">
         <Chip
-          label={동네이름[0].name}
-          onClick={setCurrentLocation(동네이름[0].locationId, 0)}
+          label={locations[0]?.address}
+          onClick={() => setCurrentLocation(locations[0]?.id, 0)}
           onDelete={deleteMyLocation}
           color="primary"
-          variant={ 동네이름[0].isSelected ? "filled" : "outlined" }
+          variant={ locations[0]?.isCurrent ? "filled" : "outlined" }
         />
         <Chip
-          label={동네이름[1].name}
-          onClick={setCurrentLocation(동네이름[1].locationId, 1)}
+          label={locations[1]?.address}
+          onClick={() => setCurrentLocation(locations[1]?.id, 1)}
           onDelete={deleteMyLocation}
           color="primary"
-          variant={ 동네이름[1].isSelected ? "filled" : "outlined" }
+          variant={ locations[1]?.isCurrent ? "filled" : "outlined" }
         />
       </Stack>
       <div className="slider">
@@ -222,12 +227,12 @@ function MyLocationSetting() {
         getMyLocations
       </Button>
       <div></div>
-      <Button
+      {/* <Button
         variant="test02"
         onClick={addMyLocation()}
       >
         addMyLocation
-      </Button>
+      </Button> */}
       <div></div>
       <Button
         variant="test03"

@@ -8,14 +8,27 @@
 import React from 'react'
 // import { Button } from "@mui/material";
 import {useNavigate} from 'react-router-dom';
+import { useState } from "react";
+import { useEffect } from "react";
 import HeaderOnlyText from '../../components/HeaderOnlyText';
 import setAuthorizationToken from '../User/AuthorizationToken';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import jwt_decode from "jwt-decode";
 import "./MyPage.css";
+import axios from "axios";
+import api from "../../api/api";
 
 function MyPage() {
+  const [putcheck, setPutCheck] = useState(true);
+  const [changeNickname, setChangeNickname] = useState("");
+  const [nickName, setNickName] = useState("");
+
   const navigate = useNavigate();
+
+  function putCheckChange() {
+    if(putcheck === false) setPutCheck(true);
+    else setPutCheck(false);
+  }
 
   function logout() {
     console.log("logout");
@@ -23,18 +36,44 @@ function MyPage() {
     localStorage.removeItem('jwtToken')
   }
 
-  const getNickname = () => {
-    let nickName = jwt_decode(localStorage.getItem('jwtToken')).nickname
-    return nickName
+  function putNickName(String) {
+    axios.post(api.putNickname(), {
+      nickname : String
+    })
+    .then(({ Response }) => {
+      putCheckChange();
+      setNickName(String);
+    })
+    .catch((Error) => {console.log(Error)})
   }
+
+  // const getNickname = () => {
+  //   let nickName = jwt_decode(localStorage.getItem('jwtToken')).nickname
+  //   return nickName
+  // }
+
+  useEffect(() => {
+    setNickName(jwt_decode(localStorage.getItem('jwtToken')).nickname)
+  },[]);
 
   return (
     <div>
       <HeaderOnlyText text="마이페이지" />
       <div className="myPage">
         <div className="myNickname">
-          아주강력한닉네임
-          <button>수정</button>
+          {putcheck ? 
+          <div>
+            {nickName} 
+            <button 
+              onClick={()=>{putCheckChange()}}
+              >수정</button>
+          </div> : 
+          <div>
+            <input onChange={(e) => setChangeNickname(e.target.value)}></input>
+            <button 
+              onClick={()=>{putNickName(changeNickname)}}
+              >확인</button>
+          </div>}
         </div>
         <div className="myInfoList">
           <div onClick={() => {navigate("/myvote")}} className="myPageNavButton">
