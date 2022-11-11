@@ -4,7 +4,6 @@ import LocationOnIcon from "@mui/icons-material/LocationOn";
 import SearchIcon from "@mui/icons-material/Search";
 import styled from "styled-components";
 import { Button, Input } from "@mui/material";
-import { useSelector } from 'react-redux/es/exports';
 import api from '../../api/api'
 
 
@@ -13,17 +12,18 @@ const MainHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 10px;
+  padding: 0 20px;
   border-bottom: 0.5px solid rgba(0, 0, 0, 0.25);
 `;
 const AreaInfo = styled.div`
   display: flex;
   align-items: center;
+  margin: 0 10px;
 `;
 const AreaName = styled.div`
   font-size: 20px;
-  font-weight: 700px;
-  margin-right: 5px;
+  font-weight: 700;
+  margin-right: 7px;
 `;
 const AreaCoordinates = styled.div`
   display: flex;
@@ -64,6 +64,7 @@ function MainPageHeader(props) {
           onChange={(e) => {
             props.setKeyword(e.target.value);
           }}
+          sx={{ width: '120px'}}
         ></Input>
         <Button sx={{minWidth: 0}}>
           <SearchIcon />

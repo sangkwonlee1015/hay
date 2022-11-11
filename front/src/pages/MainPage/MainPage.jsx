@@ -10,6 +10,8 @@ import { Button, Input } from "@mui/material";
 import axios from "axios";
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
+import { useDispatch } from "react-redux";
+import { navigateAction } from "../../_slice/NavigateSlice";
 import api from "../../api/api";
 import VoteItem from "../../components/VoteItem";
 import Banner from "./Banner";
@@ -32,6 +34,9 @@ const Orders = styled.div`
 const CATEGORY_NAME = ["이야기", "먹자지껄", "매일매일"];
 
 function MainPage() {
+  const dispatch = useDispatch();
+  dispatch(navigateAction.isLoggedIn(true));
+
   const [voteList, setVoteList] = useState([]);
   const [bestVote, setBestVote] = useState();
   const [keyword, setKeyword] = useState("");

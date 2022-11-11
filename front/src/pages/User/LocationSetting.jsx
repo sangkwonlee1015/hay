@@ -4,12 +4,41 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@mui/material";
 import AutorenewIcon from "@mui/icons-material/Autorenew";
+import styled from 'styled-components';
 import Map from '../../components/Map'
 import HeaderOnlyText from '../../components/HeaderOnlyText';
 import { userAction } from "../../_slice/UserSlice";
 import { useLocation } from "react-router";
 import axios from 'axios';
 import api from '../../api/api';
+import { navigateAction } from "../../_slice/NavigateSlice";
+
+const LocationInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`
+const Position = styled.div`
+  margin: 20px 0 10px;
+  text-align: center;
+  font-weight: 300;
+  font-size: 20px;
+  color: rgba(0, 0, 0, 0.5);
+`;
+const AreaName = styled.div`
+  margin: 20px 0 30px;
+  text-align: center;
+  font-weight: 400;
+  font-size: 24px;
+`;
+const RefreshButton = styled.div`
+  &:hover{
+    cursor: pointer;
+  }
+  &:active{
+    transform: scale(0.95)}
+`;
+
 
 function LocationSetting() {
   const navigate = useNavigate();
@@ -17,6 +46,8 @@ function LocationSetting() {
   const [renew, setRenew] = useState(false);
 
   const dispatch = useDispatch();
+  dispatch(navigateAction.isLoggedIn(false));
+
   const latitude = useSelector((state) => state.user.latitude);
   const longitude = useSelector((state) => state.user.longitude);
   const areaName = useSelector((state) => state.user.areaName);
@@ -89,11 +120,13 @@ function LocationSetting() {
     <div>
       <HeaderOnlyText text="동네 설정" />
       <Map />
-      <div>{`위도 ${latitude}   경도 ${longitude}`}</div>
-      <div>{areaName}</div>
-      <div onClick={handleRenew}>
-        <AutorenewIcon sx={{ fontSize: 50 }} />
-      </div>
+      <LocationInfo>
+        <Position>{`위도 ${latitude}   경도 ${longitude}`}</Position>
+        <AreaName>{areaName}</AreaName>
+        <RefreshButton onClick={handleRenew}>
+          <AutorenewIcon sx={{ fontSize: 50 }} />
+        </RefreshButton>
+      </LocationInfo>
       <Button
         variant="contained"
         onClick={handleButton}

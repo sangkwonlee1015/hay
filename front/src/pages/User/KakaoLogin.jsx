@@ -44,7 +44,7 @@ function KakaoLogin() {
                 navigate("/signup", {state: {"kakaoId": kakaoId}});
             }
         })
-        .catch((Error)=>{alert('로그인 오류'); navigate('/')})
+        .catch((Error)=>{alert('로그인이 안 됐습니다. 다시 시도해주세요'); navigate('/')})
     });
 
 }
