@@ -23,7 +23,7 @@ const initialState = {
   birthyear: 2022,
   latitude: -1,
   longitude: -1,
-  areaName: '',
+  areaName: '기본값',
 };
 
 const UserSlice = createSlice({

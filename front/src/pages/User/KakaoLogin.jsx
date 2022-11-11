@@ -2,11 +2,16 @@ import React from 'react'
 import { useEffect } from 'react';
 import axios from 'axios';
 import {useNavigate} from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import api from '../../api/api';
 import jwt_decode from "jwt-decode";
 import setAuthorizationToken from './AuthorizationToken';
+import { userAction } from "../../_slice/UserSlice";
+
 
 function KakaoLogin() {
+    const dispatch = useDispatch();
+
     const PARAMS = new URL(document.location).searchParams;
     const KAKAO_CODE = PARAMS.get('code');
 
@@ -27,9 +32,11 @@ function KakaoLogin() {
                 
                 //유저 정보 추출
                 const decode = jwt_decode(token);
-                console.log(decode)
+
+                // 닉네임 저장
+                dispatch(userAction.nickname(decode.nickname));
                 
-                navigate('/main');
+                navigate("/main");
             } else{
                 //추가 정보 입력 페이지 이동
                 console.log("추가정보 페이지 이동")
@@ -37,7 +44,7 @@ function KakaoLogin() {
                 navigate("/signup", {state: {"kakaoId": kakaoId}});
             }
         })
-        .catch((Error)=>{console.log(Error)})
+        .catch((Error)=>{alert('로그인이 안 됐습니다. 다시 시도해주세요'); navigate('/')})
     });
 
 }

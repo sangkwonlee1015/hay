@@ -1,6 +1,8 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import styled from "styled-components";
-import {useNavigate} from 'react-router-dom';
+import axios from 'axios';
+import { useLocation } from "react-router";
+import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from "react-redux";
 import HeaderOnlyText from '../../components/HeaderOnlyText'
 import {
@@ -12,7 +14,9 @@ import {
   MenuItem,
 } from "@mui/material";
 import { userAction } from '../../_slice/UserSlice';
-import { useLocation } from "react-router";
+import { navigateAction } from "../../_slice/NavigateSlice";
+import api from '../../api/api';
+
 
 const Body = styled.div`
   height: 100%;
@@ -29,6 +33,7 @@ const Body = styled.div`
 function Signup() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  dispatch(navigateAction.isLoggedIn(false)); // 로그인 안 됐으면 하단 NavBar 없애기
 
   const nickname = useSelector((state) => state.user.nickname);
   const isNotDuplicate = useSelector((state) => state.user.isNotDuplicate);
@@ -58,9 +63,18 @@ function Signup() {
     dispatch(userAction.birthyear(+e.target.value));
   }
 
+  useEffect(() => {
+    axios.post(api.nicknameDuplicateCheck(), { nickname: nickname })
+    .then(Response => {
+      console.log(Response.data.response.duplicate);
+      dispatch(userAction.isNotDuplicate(!Response.data.response.duplicate));
+    })
+    .catch((Error) => console.log(Error));
+  }, [nickname, dispatch]);
+
   return (
     <div>
-      <HeaderOnlyText text="마이페이지" />
+      <HeaderOnlyText text="추가정보 입력" />
       <Body>
         {isNotDuplicate && (
           <TextField
@@ -76,6 +90,7 @@ function Signup() {
             error
             id="outlined-error-helper-text"
             label="닉네임"
+            value={nickname}
             onChange={handleNickname}
             helperText="중복된 닉네임입니다."
           />
@@ -116,8 +131,9 @@ function Signup() {
       </Body>
       <Button
         variant="contained"
+        disabled={nickname.length === 0 || !isNotDuplicate}
         onClick={handleButton}
-        sx={{ position: "absolute", bottom: "100px", left: 'calc(50% - 45px)' }}
+        sx={{ position: "absolute", bottom: "100px", left: "calc(50% - 45px)" }}
       >
         다음으로
       </Button>

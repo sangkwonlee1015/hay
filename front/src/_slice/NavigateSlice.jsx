@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   BottomNavigate: 0,
+  isLoggedIn: true,
 };
 
 const NavigateSlice = createSlice({
@@ -10,6 +11,9 @@ const NavigateSlice = createSlice({
   reducers: {
     bottomNavigate(state, action) {
       state.bottomNavigate = action.payload;
+    },
+    isLoggedIn(state, action) {
+      state.isLoggedIn = action.payload;
     },
   },
 });

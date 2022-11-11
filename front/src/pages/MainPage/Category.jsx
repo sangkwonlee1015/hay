@@ -8,7 +8,7 @@ function Category(props) {
     <div>
       <Button
         onClick={() => {
-          props.onChangeCategory(props.id);
+          props.onChangeCategory(props.key+1);
         }}
       >
         {props.name}
