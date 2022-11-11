@@ -57,5 +57,13 @@ public class LocationDto {
     private Boolean isCurrent;
   }
 
+  @Data
+  @AllArgsConstructor
+  @NoArgsConstructor
+  @Builder
+  public static class LocationRangeResponse {
+
+    private int range;
+  }
 
 }

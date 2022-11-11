@@ -2,6 +2,7 @@ package com.a603.hay.api.service;
 
 import com.a603.hay.api.dto.LocationDto.LocationRangeRequest;
 import com.a603.hay.api.dto.LocationDto.LocationIdRequest;
+import com.a603.hay.api.dto.LocationDto.LocationRangeResponse;
 import com.a603.hay.api.dto.LocationDto.LocationRequest;
 import com.a603.hay.api.dto.LocationDto.UserLocationResponse;
 import com.a603.hay.db.entity.Location;
@@ -122,5 +123,13 @@ public class LocationService {
     location.setUpdatedAt(now);
     location.setEndDate(now.plusDays(30));
     location.setUser(user);
+  }
+
+  public LocationRangeResponse getLocationRange(String userEmail) {
+    User user = userRepository.findByEmail(userEmail).orElse(null);
+    if (user == null) {
+      throw new CustomException(ErrorCode.USER_NOT_EXIST);
+    }
+    return LocationRangeResponse.builder().range(user.getCurrentRange()).build();
   }
 }
