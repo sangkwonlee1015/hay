@@ -14,6 +14,10 @@ import lombok.Setter;
 
 public class VoteDto {
 
+  private VoteDto() {
+    throw new IllegalStateException("Utility class");
+  }
+
   @Getter
   @Setter
   @Builder
@@ -23,8 +27,6 @@ public class VoteDto {
 
     private String title;
     private String body;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
-    private LocalDateTime startDate;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime endDate;
     private boolean isCommentable;

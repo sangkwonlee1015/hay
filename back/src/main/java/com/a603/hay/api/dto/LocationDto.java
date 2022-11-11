@@ -8,6 +8,10 @@ import lombok.NoArgsConstructor;
 
 public class LocationDto {
 
+  private LocationDto() {
+    throw new IllegalStateException("Utility class");
+  }
+
   @Data
   @AllArgsConstructor
   @NoArgsConstructor
@@ -44,13 +48,22 @@ public class LocationDto {
   @Builder
   public static class UserLocationResponse {
 
-    private long id;
-    private double lat;
-    private double lng;
+    private Long id;
+    private Double lat;
+    private Double lng;
     private String address;
-    private int seq;
+    private Integer seq;
     private LocalDateTime endDate;
+    private Boolean isCurrent;
   }
 
+  @Data
+  @AllArgsConstructor
+  @NoArgsConstructor
+  @Builder
+  public static class LocationRangeResponse {
+
+    private int range;
+  }
 
 }
