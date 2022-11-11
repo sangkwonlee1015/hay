@@ -7,6 +7,7 @@ import com.a603.hay.api.dto.UserDto.NicknameRequest;
 import com.a603.hay.api.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import java.security.Principal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -45,6 +46,13 @@ public class UserController {
       @RequestBody NicknameRequest nicknameRequest) {
     return new ResponseEntity<>(
         new ResponseDto<>(userService.checkDuplicateNickname(nicknameRequest)), HttpStatus.OK);
+  }
+
+  @PostMapping("token")
+  @ApiOperation(value = "access Token 재발급", notes = "access Token 재발급")
+  public ResponseEntity<ResponseDto<?>> reissueAccessToken(Principal principal) {
+    return new ResponseEntity<>(
+        new ResponseDto<>(userService.reissueAccessToken(principal.getName())), HttpStatus.OK);
   }
 
 }
