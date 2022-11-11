@@ -7,6 +7,7 @@ import com.a603.hay.api.dto.ResponseDto;
 import com.a603.hay.api.dto.UserDto.NicknameRequest;
 import com.a603.hay.api.service.LocationService;
 import com.a603.hay.api.service.UserService;
+import com.a603.hay.db.entity.Location;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import java.security.Principal;
@@ -37,6 +38,14 @@ public class MyPageController {
       @RequestBody NicknameRequest nicknameRequest) {
     userService.updateNickname(principal.getName(), nicknameRequest);
     return new ResponseEntity<>(new ResponseDto<>("success"), HttpStatus.OK);
+  }
+
+  @GetMapping("nickname")
+  @ApiOperation(value = "닉네임 조회", notes = "닉네임 조회")
+  public ResponseEntity<ResponseDto<String>> getNickname(
+      Principal principal) {
+    return new ResponseEntity<>(new ResponseDto<>(userService.getNickname(principal.getName())),
+        HttpStatus.OK);
   }
 
   @GetMapping("location")
@@ -70,11 +79,25 @@ public class MyPageController {
     return new ResponseEntity<>(new ResponseDto<>("success"), HttpStatus.OK);
   }
 
+  @GetMapping("location/current")
+  @ApiOperation(value = "현재 동네 조회", notes = "현재 동네 조회")
+  public ResponseEntity<ResponseDto<?>> getCurrentLocation(Principal principal) {
+    return new ResponseEntity<>(
+        new ResponseDto<>(locationService.getCurrentLocation(principal.getName())), HttpStatus.OK);
+  }
+
   @PostMapping("location/range")
   @ApiOperation(value = "동네 범위 설정", notes = "동네 범위 설정")
   public ResponseEntity<ResponseDto<?>> setLocationRange(Principal principal,
       @RequestBody LocationRangeRequest locationRangeRequest) {
     locationService.changeLocationRange(principal.getName(), locationRangeRequest);
     return new ResponseEntity<>(new ResponseDto<>("success"), HttpStatus.OK);
+  }
+
+  @GetMapping("location/range")
+  @ApiOperation(value = "동네 범위 조회", notes = "동네 범위 조회")
+  public ResponseEntity<ResponseDto<?>> getLocationRange(Principal principal) {
+    return new ResponseEntity<>(
+        new ResponseDto<>(locationService.getLocationRange(principal.getName())), HttpStatus.OK);
   }
 }

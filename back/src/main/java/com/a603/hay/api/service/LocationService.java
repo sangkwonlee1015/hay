@@ -2,6 +2,7 @@ package com.a603.hay.api.service;
 
 import com.a603.hay.api.dto.LocationDto.LocationRangeRequest;
 import com.a603.hay.api.dto.LocationDto.LocationIdRequest;
+import com.a603.hay.api.dto.LocationDto.LocationRangeResponse;
 import com.a603.hay.api.dto.LocationDto.LocationRequest;
 import com.a603.hay.api.dto.LocationDto.UserLocationResponse;
 import com.a603.hay.db.entity.Location;
@@ -31,11 +32,20 @@ public class LocationService {
     }
     List<Location> locations = locationRepository.findAllByUser(user);
     List<UserLocationResponse> userLocationResponses = new ArrayList<>();
+    userLocationResponses.add(
+        UserLocationResponse.builder().isCurrent(false).seq(0).build());
+    userLocationResponses.add(
+        UserLocationResponse.builder().isCurrent(false).seq(1).build());
+    long currentLocationId = user.getCurrentLocation();
+
     locations.forEach(location -> {
-      userLocationResponses.add(
-          new UserLocationResponse(location.getId(), location.getLat(), location.getLng(),
-              location.getAddress(),
-              location.getSeq(), location.getEndDate()));
+      UserLocationResponse ulr = userLocationResponses.get(location.getSeq());
+      ulr.setId(location.getId());
+      ulr.setLat(location.getLat());
+      ulr.setLng(location.getLng());
+      ulr.setAddress(location.getAddress());
+      ulr.setEndDate(location.getEndDate());
+      ulr.setIsCurrent(location.getId() == currentLocationId);
     });
     return userLocationResponses;
   }
@@ -78,7 +88,20 @@ public class LocationService {
     if (findLocation == null) {
       throw new CustomException(ErrorCode.LOCATION_NOT_FOUND);
     }
-    user.setCurrentLocation(findLocation.getSeq());
+    user.setCurrentLocation(findLocation.getId());
+  }
+
+  public UserLocationResponse getCurrentLocation(String userEmail) {
+    User user = userRepository.findByEmail(userEmail).orElse(null);
+    if (user == null) {
+      throw new CustomException(ErrorCode.USER_NOT_EXIST);
+    }
+    Location location = locationRepository.findById(user.getCurrentLocation()).orElse(null);
+    if (location == null) {
+      throw new CustomException(ErrorCode.LOCATION_NOT_FOUND);
+    }
+    return new UserLocationResponse(location.getId(), location.getLat(), location.getLng(),
+        location.getAddress(), location.getSeq(), location.getEndDate(), true);
   }
 
   @Transactional
@@ -100,5 +123,13 @@ public class LocationService {
     location.setUpdatedAt(now);
     location.setEndDate(now.plusDays(30));
     location.setUser(user);
+  }
+
+  public LocationRangeResponse getLocationRange(String userEmail) {
+    User user = userRepository.findByEmail(userEmail).orElse(null);
+    if (user == null) {
+      throw new CustomException(ErrorCode.USER_NOT_EXIST);
+    }
+    return LocationRangeResponse.builder().range(user.getCurrentRange()).build();
   }
 }
