@@ -10,9 +10,11 @@ import React from 'react'
 import {useNavigate} from 'react-router-dom';
 import { useState } from "react";
 import { useEffect } from "react";
+import { useSelector } from "react-redux";
 import HeaderOnlyText from '../../components/HeaderOnlyText';
 import setAuthorizationToken from '../User/AuthorizationToken';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import TextField from '@mui/material/TextField';
 import jwt_decode from "jwt-decode";
 import "./MyPage.css";
 import axios from "axios";
@@ -22,20 +24,24 @@ function MyPage() {
   const [putcheck, setPutCheck] = useState(true);
   const [changeNickname, setChangeNickname] = useState("");
   const [nickName, setNickName] = useState("");
-
+  const [alreadyCheck, setAlreadyCheck] = useState(true);
+  
   const navigate = useNavigate();
+
+  const isNotDuplicate = useSelector((state) => state.user.isNotDuplicate);
+
 
   function putCheckChange() {
     if(putcheck === false) setPutCheck(true);
     else setPutCheck(false);
   }
 
+
   function logout() {
     console.log("logout");
     setAuthorizationToken(null);
     localStorage.removeItem('jwtToken')
   }
-
   function putNickName(String) {
     axios.post(api.putNickname(), {
       nickname : String
@@ -49,10 +55,14 @@ function MyPage() {
         localStorage.setItem('jwtToken' , token);
         let nickName = jwt_decode(localStorage.getItem('jwtToken')).nickname
         console.log(nickName);
+        if(alreadyCheck === false) setAlreadyCheck(true);
       })
       .catch((Error) => {console.log(Error)})
     })
-    .catch((Error) => {console.log(Error)})
+    .catch((Error) => {
+      console.log(Error);
+      if(alreadyCheck === true) setAlreadyCheck(false);
+    })
   }
 
   // const getNickname = () => {
@@ -68,19 +78,40 @@ function MyPage() {
     <div>
       <HeaderOnlyText text="마이페이지" />
       <div className="myPage">
-        <div className="myNickname">
+        <div>
           {putcheck ? 
-          <div>
-            {nickName} 
-            <button 
+          <div className="myNickname">
+            <div className="myNicknameDisplay">{nickName}</div>
+            <div className="myNicknamePutButton"
               onClick={()=>{putCheckChange()}}
-              >수정</button>
+              >수정
+            </div>
           </div> : 
-          <div>
-            <input onChange={(e) => setChangeNickname(e.target.value)}></input>
-            <button 
+          <div className="myNickname">
+            {alreadyCheck
+              ?
+              <TextField
+                id="outlined-required"
+                label="닉네임"
+                defaultValue={nickName}
+                className="inputNickname"
+                onChange={(e) => setChangeNickname(e.target.value)}
+              />
+              :
+              <TextField
+                error
+                id="outlined-error"
+                label="닉네임"
+                helperText="중복된 닉네임입니다."
+                className="inputNickname"
+                onChange={(e) => setChangeNickname(e.target.value)}
+              />
+            }
+            <div className="myNicknamePutOkButton" 
               onClick={()=>{putNickName(changeNickname)}}
-              >확인</button>
+            >확인
+            </div>
+            {/* <div className="myNicknameErrorMsg">{err}</div> */}
           </div>}
         </div>
         <div className="myInfoList">
