@@ -58,19 +58,23 @@ function MyLocationSetting() {
     .then((Response)=>{
       const result = Response.data.response
       console.log(result);
+      getMyLocations();
     })
     .catch((Error)=>{console.log(Error)})
   }
   //동네 삭제
-  function deleteMyLocation(locationId) {
-    //if(locations.length == 1) { 다메요 }
-    //else {}
-    axios.delete(api.deleteLocation(locationId))
-    .then((Response)=>{
-      const result = Response.data.response
-      console.log(result);
-    })
-    .catch((Error)=>{console.log(Error)})
+  function deleteMyLocation(locationId, seq) {
+    if(locations[0].id === null || locations[1].id === null) { }
+    else {
+      axios.delete(api.deleteLocation(locationId))
+      .then((Response)=>{
+        const result = Response.data.response
+        console.log(result);
+        getMyLocations();
+        setCurrentLocation(locations[seq].id, seq)
+      })
+      .catch((Error)=>{console.log(Error)})
+    }
   }
   //현재 동네 설정
   function setCurrentLocation(locationId, seq) {
@@ -187,20 +191,36 @@ function MyLocationSetting() {
       <div>{`위도 ${latitude}   경도 ${longitude}`}</div>
       <div>{areaName}</div>
       <Stack direction="row" spacing={2} justifyContent="center">
+        {locations[0]?.id?
         <Chip
           label={locations[0]?.address}
           onClick={() => setCurrentLocation(locations[0]?.id, 0)}
-          onDelete={deleteMyLocation}
+          onDelete={() => {deleteMyLocation(locations[0]?.id, 1);}}
+          color="primary"
+          variant={ locations[0]?.isCurrent ? "filled" : "outlined" }
+        /> :
+        <Chip
+          label="선택하여 설정"
+          onClick={() => setCurrentLocation(locations[0]?.id, 0)}
           color="primary"
           variant={ locations[0]?.isCurrent ? "filled" : "outlined" }
         />
+        }
+        {locations[1]?.id ?
         <Chip
           label={locations[1]?.address}
           onClick={() => setCurrentLocation(locations[1]?.id, 1)}
-          onDelete={deleteMyLocation}
+          onDelete={() => {deleteMyLocation(locations[1]?.id, 0);}}
+          color="primary"
+          variant={ locations[1]?.isCurrent ? "filled" : "outlined" }
+        /> :
+        <Chip
+          label="선택하여 설정"
+          onClick={() => setCurrentLocation(locations[1]?.id, 1)}
           color="primary"
           variant={ locations[1]?.isCurrent ? "filled" : "outlined" }
         />
+        }
       </Stack>
       <div className="slider">
         <Slider

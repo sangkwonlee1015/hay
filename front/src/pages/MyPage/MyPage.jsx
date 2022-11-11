@@ -43,6 +43,14 @@ function MyPage() {
     .then(({ Response }) => {
       putCheckChange();
       setNickName(String);
+      axios.post(api.token())
+      .then((Response)=> {
+        const token = Response.data.response.accessToken;
+        localStorage.setItem('jwtToken' , token);
+        let nickName = jwt_decode(localStorage.getItem('jwtToken')).nickname
+        console.log(nickName);
+      })
+      .catch((Error) => {console.log(Error)})
     })
     .catch((Error) => {console.log(Error)})
   }
