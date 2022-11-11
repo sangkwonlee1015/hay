@@ -8,8 +8,9 @@ function Category(props) {
     <div>
       <Button
         onClick={() => {
-          props.onChangeCategory(props.key+1);
+          props.onChangeCategory(props.index);
         }}
+        variant={props.index === props.category ? "contained" : "text"}
       >
         {props.name}
       </Button>

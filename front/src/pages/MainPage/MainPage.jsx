@@ -31,7 +31,7 @@ const Orders = styled.div`
   margin-right: 5px;
 `;
 
-const CATEGORY_NAME = [{name: "이야기", id: 1}, {name: "먹자지껄", id: 2}, {name: "매일매일", id: 3}];
+const CATEGORY_NAME = ["이야기", "먹자지껄", "매일매일"];
 
 function MainPage() {
   const dispatch = useDispatch();
@@ -40,7 +40,7 @@ function MainPage() {
   const [voteList, setVoteList] = useState([]);
   const [bestVote, setBestVote] = useState();
   const [keyword, setKeyword] = useState("");
-  const [category, setCategory] = useState(1);
+  const [category, setCategory] = useState(0);
   const [order, setOrder] = useState("최신");
 
   useEffect(() => {
@@ -48,7 +48,7 @@ function MainPage() {
       .get(api.getVotes(), {
         params: {
           search: keyword,
-          category: category,
+          category: category + 1,
           order: order,
         },
       })
@@ -68,13 +68,13 @@ function MainPage() {
     <>
       <MainPageNavbar setKeyword={setKeyword} />
       <Categories>
-        {CATEGORY_NAME.map((category, index) => (
+        {CATEGORY_NAME.map((item, index) => (
           <Category
-            name={category.name}
+            name={item}
             key={index}
-            onChangeCategory={() => {
-              setCategory(category.id);
-            }}
+            index={index}
+            category={category}
+            onChangeCategory={setCategory}
           />
         ))}
       </Categories>
@@ -95,9 +95,11 @@ function MainPage() {
           참여자순
         </Button>
       </Orders>
-      {bestVote ? <VoteItem vote={bestVote} best={true}/> : null}
+      {bestVote ? <VoteItem vote={bestVote} best={true} /> : null}
       {voteList.map((vote, index) =>
-        bestVote?.id === vote.id ? null : <VoteItem vote={vote} best={false} key={index} />
+        bestVote?.id === vote.id ? null : (
+          <VoteItem vote={vote} best={false} key={index} />
+        )
       )}
     </>
   );
