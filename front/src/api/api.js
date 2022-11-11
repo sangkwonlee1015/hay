@@ -1,6 +1,6 @@
 const BASE_URL = "http://localhost:8080";
+// const BASE_URL = "https://k7a603.p.ssafy.io";
 const API_BASE_URL = "/api";
-// const API_BASE_URL = "https://k7a603.p.ssafy.io/api";
 
 // 경로
 const USER_URL = "/user";
@@ -45,6 +45,7 @@ const api = {
   deleteLocation: (locationId) =>
     API_BASE_URL + MYPAGE_URL + LOCATION_URL + `/${locationId}`,
   setCurrentLocation: () => API_BASE_URL + MYPAGE_URL + LOCATION_SETTING_URL,
+  getCurrentLocation: () => API_BASE_URL + MYPAGE_URL + LOCATION_SETTING_URL,
   setLocationRange: () => API_BASE_URL + MYPAGE_URL + LOCATION_RANGE,
 
   // votes
