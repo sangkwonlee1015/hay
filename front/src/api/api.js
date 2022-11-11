@@ -12,6 +12,7 @@ const VOTES_URL = "/votes";
 const INFOINPUT_URL = "/info";
 const DUPLICATECHECK_URL = "/nickname/check";
 const LOGIN_URL = "/login";
+const TOKEN_URL = "/token";
 
 const KAKAO_AUTH_URL = `https://kauth.kakao.com/oauth/authorize?client_id=2cc38f3feb14c46b190ca5fe77598eb6&redirect_uri=http://localhost:3000/kakaologin&response_type=code`;
 
@@ -20,6 +21,7 @@ const NICKNAME_URL = "/nickname";
 const LOGOUT_URL = "/logout";
 const LOCATION_URL = "/location";
 const LOCATION_SETTING_URL = "/location/current";
+const LOCATION_RANGE = "/location/range";
 
 // Votes
 const COMMENT_URL = "/comment";
@@ -32,6 +34,8 @@ const api = {
   nicknameDuplicateCheck: () => API_BASE_URL + USER_URL + DUPLICATECHECK_URL,
   login: () => API_BASE_URL + USER_URL + LOGIN_URL,
   kakaoLogin: () => KAKAO_AUTH_URL,
+  token: () => API_BASE_URL + USER_URL + TOKEN_URL,
+
   // mypage
   getNickname: () => API_BASE_URL + MYPAGE_URL + NICKNAME_URL,
   putNickname: () => API_BASE_URL + MYPAGE_URL + NICKNAME_URL,
@@ -41,6 +45,7 @@ const api = {
   deleteLocation: (locationId) =>
     API_BASE_URL + MYPAGE_URL + LOCATION_URL + `/${locationId}`,
   setCurrentLocation: () => API_BASE_URL + MYPAGE_URL + LOCATION_SETTING_URL,
+  setLocationRange: () => API_BASE_URL + MYPAGE_URL + LOCATION_RANGE,
 
   // votes
   getVotes: () => API_BASE_URL + VOTES_URL,
