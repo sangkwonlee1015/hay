@@ -20,6 +20,7 @@ const Resolution = styled.div`
 `;
 
 function App() {
+  const isLoggedIn = useSelector((state) => state.navigate.isLoggedIn);
   return (
     <div>
       <Resolution>
@@ -27,7 +28,7 @@ function App() {
           <Outlet />
         </div>
       </Resolution>
-      <BottomNavBar />
+      {isLoggedIn ? <BottomNavBar /> : null}
     </div>
   );
 }
