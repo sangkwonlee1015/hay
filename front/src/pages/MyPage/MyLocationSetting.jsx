@@ -102,12 +102,21 @@ function MyLocationSetting() {
     })
     .then((Response)=>{
       const result = Response.data.response
+      getLocationRange();
       console.log(result);
     })
     .catch((Error)=>{console.log(Error)})
   }
   //동네 범위 조회
   //setDefaultRange();
+  function getLocationRange() {
+    axios.get(api.setLocationRange())
+    .then((Response)=>{
+      console.log(Response.data.response.range);
+      setDefaultRange(Response.data.response.range);
+    })
+    .catch((Error)=>{console.log(Error)})
+  }
 
   
   function handleRenew() {
@@ -116,6 +125,7 @@ function MyLocationSetting() {
 
   useEffect(() => {
     getMyLocations();
+    getLocationRange();
   }, []);
 
   useEffect(() => {
@@ -191,8 +201,6 @@ function MyLocationSetting() {
     <div className="myLocationSettingPage">
       <HeaderTextAndNavigate path="/mypage" text="내 동네 설정" />
       <Map />
-      <div>{`위도 ${latitude}   경도 ${longitude}`}</div>
-      <div>{areaName}</div>
       <Stack direction="row" spacing={2} justifyContent="center">
         {locations[0]?.id?
         <Chip
@@ -228,7 +236,7 @@ function MyLocationSetting() {
       <div className="slider">
         <Slider
           aria-label="Restricted values"
-          defaultValue={defalutRange}
+          value={defalutRange}
           valueLabelFormat={valueLabelFormat}
           getAriaValueText={valuetext}
           step={null}
@@ -241,29 +249,6 @@ function MyLocationSetting() {
       <div onClick={handleRenew}>
         <AutorenewIcon sx={{ fontSize: 50 }} />
       </div>
-      <div></div>
-      <Button
-        variant="test01"
-        onClick={() => {
-          getMyLocations()
-        }}
-      >
-        getMyLocations
-      </Button>
-      <div></div>
-      {/* <Button
-        variant="test02"
-        onClick={addMyLocation()}
-      >
-        addMyLocation
-      </Button> */}
-      <div></div>
-      <Button
-        variant="test03"
-      >
-        test03
-      </Button>
-
     </div>
   )
 }
