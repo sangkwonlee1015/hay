@@ -21,6 +21,7 @@ const NICKNAME_URL = "/nickname";
 const LOGOUT_URL = "/logout";
 const LOCATION_URL = "/location";
 const LOCATION_SETTING_URL = "/location/current";
+const LOCATION_RANGE = "/location/range";
 
 // Votes
 const COMMENT_URL = "/comment";
@@ -44,6 +45,7 @@ const api = {
   deleteLocation: (locationId) =>
     API_BASE_URL + MYPAGE_URL + LOCATION_URL + `/${locationId}`,
   setCurrentLocation: () => API_BASE_URL + MYPAGE_URL + LOCATION_SETTING_URL,
+  setLocationRange: () => API_BASE_URL + MYPAGE_URL + LOCATION_RANGE,
 
   // votes
   getVotes: () => API_BASE_URL + VOTES_URL,

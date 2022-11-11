@@ -28,6 +28,7 @@ import "./MyLocationSetting.css";
 function MyLocationSetting() {
   const [position, setPosition] = useState({});
   const [renew, setRenew] = useState(false);
+  const [defalutRange, setDefaultRange] = useState(500);
 
   const dispatch = useDispatch();
   const latitude = useSelector((state) => state.user.latitude);
@@ -95,9 +96,9 @@ function MyLocationSetting() {
     }
   }
   //동네 범위 설정
-  function setLocationRange() {
+  function setLocationRange(range) {
     axios.post(api.setLocationRange(), {
-      //range
+      range : range,
     })
     .then((Response)=>{
       const result = Response.data.response
@@ -105,6 +106,8 @@ function MyLocationSetting() {
     })
     .catch((Error)=>{console.log(Error)})
   }
+  //동네 범위 조회
+  //setDefaultRange();
 
   
   function handleRenew() {
@@ -168,15 +171,15 @@ function MyLocationSetting() {
   }
   const marks = [
     {
-      value: 0.5,
+      value: 500,
       label: "0.5km",
     },
     {
-      value: 1,
+      value: 1000,
       label: "1km",
     },
     {
-      value: 2,
+      value: 2000,
       label: "2km",
     }
   ]
@@ -225,13 +228,14 @@ function MyLocationSetting() {
       <div className="slider">
         <Slider
           aria-label="Restricted values"
-          defaultValue={2}
+          defaultValue={defalutRange}
           valueLabelFormat={valueLabelFormat}
           getAriaValueText={valuetext}
           step={null}
-          max={2}
+          max={2000}
           valueLabelDisplay="off"
           marks={marks}
+          onChange={(e) => setLocationRange(e.target.value)}
         />
       </div>
       <div onClick={handleRenew}>
