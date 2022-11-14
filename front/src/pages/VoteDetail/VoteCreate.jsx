@@ -9,30 +9,62 @@
 // 댓글 허용 스위치
 // 만들기
 
-import React from 'react'
+import React, { useState, useEffect, useRef } from "react";
 import './VoteCreate.css'
-import TextField from '@mui/material/TextField';
-import ToggleButton from "@mui/material/ToggleButton";
-import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import FormControl from "@mui/material/FormControl";
-import Select from "@mui/material/Select";
-import Button from "@mui/material/Button";
-import Switch from "@mui/material/Switch";
-import FormControlLabel from "@mui/material/FormControlLabel";
+import {
+  Typography,
+  TextField,
+  ToggleButton,
+  ToggleButtonGroup,
+  InputLabel,
+  MenuItem,
+  FormControlLabel,
+  FormControl,
+  Select,
+  Button,
+  Switch,
+} from "@mui/material";
+
+import HeaderOnlyText from '../../components/HeaderOnlyText';
+import HowToVoteIcon from "@mui/icons-material/HowToVote";
+import FormData from 'form-data';
+import axios from 'axios'
+import api from '../../api/api';
+
 import AWS from "aws-sdk"
 import {v4 as uuidv4} from 'uuid';
 
-
 function VoteCreate() {
-  const [alignment, setAlignment] = React.useState("category");
-  const categoryHandleChange = (event, newAlignment) => {setAlignment(newAlignment)};
-  const [term, setTerm] = React.useState("");
+  const uploadInputRef = useRef(null);
 
-  const termHandleChange = (event) => {
-    setTerm(event.target.value);
+  const [title, setTitle] = useState('');
+  const [categoryId, setCategoryId] = useState(1);
+  const [body, setBody] = useState('');
+  const [endDate, setEndDate] = useState(1);
+  const [imageUrls, setImageUrls] = useState('');
+  const [commentable, setCommentable] = useState(true);
+  const [voteItemContents, setVoteItemContents] = useState([]);
+
+  function handleTitleChange(e) {
+    setTitle(e.target.value);
   };
+  function handleCategoryChange(e, newAlignment) {
+    setCategoryId(newAlignment);
+  }
+  function handleBodyChange(e) {
+    setBody(e.target.value)
+  }
+  function handleEndDateChange(e) {
+    setEndDate(e.target.value);
+  }
+  function handleCommentable(e) {
+    // console.log(e.target.checked);
+    setCommentable(e.target.checked);
+  }
+  function handleImgUrls(e) {
+    const fileList = e.target.files;
+    console.log(URL.createObjectURL(fileList[0]))
+  }
 
   /** 항목 추가하기 누를 시 항목 추가해주는 함수 */
   const selectionAdd = () => {
@@ -45,6 +77,30 @@ function VoteCreate() {
     return result;
   }
 
+  // sumbit datas
+
+  // const formData = new FormData();
+
+  // // img url => blob file
+  // formData.append("imageUrls", uploadInputRef.current.files[0]);
+  // formData.append(
+  //   "data",
+  //   new Blob([JSON.stringify(data)], { type: "application/json" })
+  // );
+
+  // submit
+  function handleSubmit() {
+    const data = {
+      body: body,
+      categoryId: categoryId,
+      commentable: commentable,
+      endDate: endDate,
+      title: title,
+      voteItemContents: voteItemContents,
+    };
+
+    axios.post(api.addVotes(), data).catch((Error) => console.log(Error));
+  }
 
   AWS.config.update({
     region: process.env.REACT_APP_BUCKET_REGION, // 버킷이 존재하는 리전을 문자열로 입력합니다. (Ex. "ap-northeast-2")
@@ -52,7 +108,6 @@ function VoteCreate() {
       IdentityPoolId: process.env.REACT_APP_IDENTITY_POOL_ID, // cognito 인증 풀에서 받아온 키를 문자열로 입력합니다. (Ex. "ap-northeast-2...")
     }),
   })
-  
 
   const handleFileInput = e => {
     const file = e.target.files[0]
@@ -69,71 +124,102 @@ function VoteCreate() {
         Body: file,
       },
     })
-  
+
     const promise = upload.promise()
-  
+
     promise.then(
-      function (data) {
-        console.log("이미지 업로드에 성공했습니다.")
-      },
-      function (err) {
-        console.log(err)
-      }
+        function (data) {
+          console.log("이미지 업로드에 성공했습니다.")
+        },
+        function (err) {
+          console.log(err)
+        }
     )
   }
 
   return (
     <div>
-      <div>
+      <HeaderOnlyText text="투표 만들기"/>
+      <div className="titleSpace">
         <TextField
           id="standard-basic"
           label="제목을 입력해주세요"
           variant="standard"
+          sx={{
+            width: "86%;",
+            marginLeft: "7%;"
+          }}
         />
       </div>
-      <div>주제</div>
-      <div>
-        <ToggleButtonGroup
-          color="primary"
-          value={alignment}
-          exclusive
-          onChange={categoryHandleChange}
-          aria-label="Category"
-          required={true}
-        >
-          <ToggleButton value="story">이야기</ToggleButton>
-          <ToggleButton value="foods">먹자지껄</ToggleButton>
-          <ToggleButton value="daily">매일매일</ToggleButton>
-        </ToggleButtonGroup>
+      <div className="voteCreateCategory">
+        <div>주제</div>
+        <div>
+          <ToggleButtonGroup
+            color="primary"
+            value={categoryId}
+            exclusive
+            onChange={handleCategoryChange}
+            aria-label="Category"
+            required={true}
+            sx={{
+              marginLeft: "30px;"
+            }}
+          >
+            <ToggleButton value={1}>이야기</ToggleButton>
+            <ToggleButton value={2}>먹자지껄</ToggleButton>
+            <ToggleButton value={3}>매일매일</ToggleButton>
+          </ToggleButtonGroup>
+        </div>
+        <div className="addPhoto">사진 추가하기
+          <input type="file" id="upload" className="image-upload" onChange = {handleFileInput} />
+          <label htmlFor="upload" className="image-upload-wrapper"></label>
+        </div>
       </div>
-      <div className="addPhoto">사진 추가하기
-        <input type="file" id="upload" className="image-upload" onChange = {handleFileInput} />
-        <label htmlFor="upload" className="image-upload-wrapper"></label>
-      </div>
+      {/* <div className="addPhoto">사진 추가하기</div> */}
+      <input
+        ref={uploadInputRef}
+        type="file"
+        accept="image/*"
+        style={{ display: "none" }}
+        onChange={handleImgUrls}
+      />
+      {/* <Button
+        onClick={() => uploadInputRef.current && uploadInputRef.current.click()}
+        variant="contained"
+      >
+        Upload
+      </Button> */}
       <div>
         <TextField
           id="outlined-multiline-static"
           multiline
-          rows={4}
+          minRows={4}
           placeholder="본문을 입력해주세요"
+          sx={{
+            width: "86%;",
+            marginLeft: "7%;",
+            marginBottom: "16px;"
+          }}
+          value={body}
+          onChange={handleBodyChange}
         />
       </div>
-      <div>
-        <div>
-          <div>아이콘</div>
-          <div>투표</div>
+      <div className="voteCreate">
+        <div className="voteCreateTitle">
+          <HowToVoteIcon color="primary" fontSize="small" />
+          <div className="voteText">투표</div>
         </div>
-        <div>
-          <FormControl fullWidth>
+        <div className="voteCreateTermSelect">
+          <FormControl fullWidth sx={{ width: "86%;" }}>
             <InputLabel id="demo-simple-select-label">기간 선택</InputLabel>
             <Select
               labelId="demo-simple-select-label"
               id="demo-simple-select"
-              value={term}
+              value={endDate}
               label="Term"
-              onChange={termHandleChange}
+              onChange={handleEndDateChange}
             >
-              <MenuItem value={1}>24시간</MenuItem>
+              <MenuItem value={1}>1일</MenuItem>
               <MenuItem value={3}>3일</MenuItem>
               <MenuItem value={7}>7일</MenuItem>
               <MenuItem value={15}>15일</MenuItem>
@@ -141,25 +227,27 @@ function VoteCreate() {
             </Select>
           </FormControl>
         </div>
+        <hr className="horizon"></hr>
         <div>
-          항목들
-          <TextField required id="outlined-required" placeholder="항목 1" />
-          <TextField required id="outlined-required" placeholder="항목 2" />
+          <TextField required id="selection-1" sx={{ width: "86%;", marginLeft: "20px;" }} placeholder="항목 1" />
+          <TextField required id="selection-2" sx={{ width: "86%;", marginLeft: "20px;", marginTop: "12px;" ,marginBottom: "12px;" }} placeholder="항목 2" />
           {/* {selectionAdd()} */}
-          <Button variant="outlined" onClick={() => {}}>
+          <Button disabled variant="outlined" onClick={() => {}} sx={{ width: "86%;", marginLeft: "20px;", padding: "16px 0px;" }}>
             항목 추가하기
           </Button>
         </div>
       </div>
       <div>
         <FormControlLabel
-          value="allowComment"
-          control={<Switch color="primary" defaultChecked />}
+          control={
+            <Switch checked={commentable} onChange={handleCommentable} />
+          }
           label="댓글 허용"
           labelPlacement="start"
+          sx={{ marginLeft: "28px;", marginButtom: "32px;" }}
         />
       </div>
-      <div className="voteCreateSubmitButton">만들기</div>
+      <div className="voteCreateSubmitButton" onClick={handleSubmit}>만들기</div>
     </div>
   );
 }

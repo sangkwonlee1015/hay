@@ -1,4 +1,15 @@
-.addPhoto {
+.titleSpace {
+  margin-top: 50px;
+  margin-bottom: 16px;
+}
+.voteCreateCategory {
+  display: flex;
+  align-items: center;
+  width: 86%;
+  margin-left: 7%;
+  margin-bottom: 16px;
+}
+/* .addPhoto {
   padding: 4px 6px;
   border-radius: 4px;
   border-style: dashed;
@@ -7,11 +18,37 @@
   width: 80%;
   height: 20px;
   margin: auto;
+} */
+.voteCreate {
+  width: 77%;
+  margin-left: 7%;
+  margin-right: 7%;
+  border-style: solid;
+  border-width: 1px;
+  border-color: #d1d1d1;
+  border-radius: 4px;
+  padding: 20px 20px 36px 20px;
+  margin-bottom: 20px;
 }
-
+.voteCreateTitle {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24px;
+}
+.voteCreateTermSelect {
+  margin: 20px;
+}
+.horizon {
+  margin: 30px -20px 30px -20px;
+}
 .voteCreateSubmitButton {
+  width: 72%;
+  margin: auto;
   padding: 24px;
   text-align: center;
   background-color: #064579;
   color: #fff;
+  margin-bottom: 56px;
+  margin-top: 32px;
 }
+
