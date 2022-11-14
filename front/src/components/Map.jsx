@@ -51,7 +51,7 @@ const Map = () => {
           marginTop: '48px'
         }}
       >
-        <div id="map"  style={{ height: '100vw' }}></div>
+        <div id="map"  style={{ height: '70vw', maxWidth: '800px' }}></div>
       </div>
     );
 };

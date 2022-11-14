@@ -12,67 +12,63 @@
 // 댓글 수, 공유하기
 // 댓글 리스트
 
-import { Details, DetailsSharp } from "@mui/icons-material";
-import { borderRadius } from "@mui/system";
-import React from "react";
+import HowToVoteIcon from "@mui/icons-material/HowToVote";
+import RadioButtonCheckedIcon from "@mui/icons-material/RadioButtonChecked";
+import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
+import CheckIcon from "@mui/icons-material/Check";
+import React, { useEffect, useState } from "react";
 import "./VoteDetail.css";
+import { useLocation } from "react-router-dom";
+import axios from "axios";
+import api from "../../api/api";
+import { FormControlLabel, Radio, RadioGroup } from "@mui/material";
 
 function VoteDetail() {
-  const details = {
-    id: 1,
-    title: "여러분이 정해주신 곳으로 가겠습니다.",
-    작성자: "건설로봇",
-    distanceLevel: 0,
-    imageUrls: "",
-    body: "안녕하세요 저는 매일매일 노동력을 착취당하는 프롤레탈리아입니...",
-    voteCount: 10,
-    startDate: "2022-10-28 14:01:00.000000",
-    endDate: "2022-11-30 11:05:59.000000",
-    ended: false,
-    voted: true,
-    voteItems: [
-      {
-        id: 1,
-        content: "서플라이 국밥",
-        voteCount: 0,
-        voted: false,
-      },
-      {
-        id: 2,
-        content: "팩토리 분식",
-        voteCount: 3,
-        voted: true,
-      },
-      {
-        id: 3,
-        content: "스타포트 레스토랑",
-        voteCount: 7,
-        voted: false,
-      },
-    ],
-    comments: [
-      {
-        id: 1,
-        content: "댓글내용1입니다",
-        likesCount: 0,
-        createdAt: "2022-11-04 17:06:12.000000",
-        writerNickname: "버뮤",
-        deleted: false, // true일 경우 삭제된 댓글입니다 표시
-        replies: [
-          {
-            // 객체 하나당 댓글or대댓글 한 개임
-          },
-          {
-            id: 2,
-            content: "댓글내용1의 대댓글1 내용입니다.",
-            likesCount: 0,
-            createdAt: "2022-11-14 17:09:28.000000",
-            writerNickname: "미온",
-          },
-        ],
-      },
-    ],
-  };
+  const { state } = useLocation();
+  const [details, setDetails] = useState();
+  const [selectedItemId, setSelectedItemId] = useState();
+  const [voteAgain, setVoteAgain] = useState(false);
+
+  useEffect(() => {
+    getDetail();
+  }, []);
+
+  /**
+   * 투표 내용을 받아오는 함수
+   */
+  const getDetail = () => {
+    axios
+      .get(api.getVoteDetail(state.voteId))
+      .then(({ data }) => {
+        console.log(data.response);
+        setDetails(data.response);
+      })
+      .catch((Error) => {
+        console.log(Error);
+      });
+  }
+
+  const doVote = () => {
+    axios.post(api.pickVote(state.voteId), { "voteItemId": selectedItemId })
+    .then(() => {getDetail(); setSelectedItemId();})
+    .catch((Error) => {
+      console.log(Error);
+    });
+  }
+
+  /**
+   * 좋아요 아이콘 클릭시 좋아요 처리가 되거나 이미 되어있다면 취소하는 함수
+   */
+  const clickFavoriteIcon = (commentId) => {
+    axios.post(api.likeComment(state.voteId, commentId))
+    .then(() => {getDetail()})
+    .catch((Error) => {
+      console.log(Error);
+    });
+  }
 
   /**
    * 댓글별로 대댓글까지 순회하며 카운트해서 총 댓글 수를 반환하는 함수
@@ -94,92 +90,269 @@ function VoteDetail() {
   /**
    * 투표거리에 따른 단계(스타일 적용된)
    */
-  let distanceLevel = null;
-  switch (details.distanceLevel) {
-    case 0: {
-      distanceLevel = (
-        <div
-          style={{
-            backgroundColor: "e7f3fe",
-            fontSize: "12px",
-            fontWeight: "bold",
-            borderRadius: "4px",
-          }}
-        >
-          {details.distanceLevel}
+  const distanceLevel = (distanceLevel) => {
+    let result = "";
+    switch (distanceLevel) {
+      case 0: {
+        result = "0.5km 이내";
+        return (
+          <div
+            style={{
+              backgroundColor: "#e7f3fe",
+              padding: "6px",
+              fontSize: "12px",
+              fontWeight: "bold",
+              borderRadius: "4px",
+            }}
+          >
+            {result}
+          </div>
+        );
+      }
+      case 1: {
+        result = "1km 이내";
+        return (
+          <div
+            style={{
+              backgroundColor: "#cfe8fc",
+              padding: "6px",
+              fontSize: "12px",
+              fontWeight: "bold",
+              borderRadius: "4px",
+            }}
+          >
+            {result}
+          </div>
+        );
+      }
+      default: {
+        result = "2km 이내";
+        return (
+          <div
+            style={{
+              backgroundColor: "#b6dcfb",
+              padding: "6px",
+              fontSize: "12px",
+              fontWeight: "bold",
+              borderRadius: "4px",
+            }}
+          >
+            {result}
+          </div>
+        );
+      }
+    }
+  };
+
+  /**
+   * 투표 선택지 반복랜더링
+   * 1. 종료된 투표 또는 조회자가 선택 완료한 투표일 경우 - 막대그래프 result
+   * 2. 재투표중 또는 미투표 상태 - 라디오버튼 + 선택
+   */
+  const selectionGroup = (details) => {
+    if (details.ended || details.voted) {
+      return (
+        <div>
+          {details.voteItems.map((selection, index) => (
+            <div className="votedSelection" key={index}>
+              <div className="checkSelection">
+                {selection.voted ? (
+                  <CheckIcon color="primary" className="checkIcon" />
+                ) : (
+                  <></>
+                )}
+                <div>{selection.content}</div>
+                <div className="votedCount">{selection.voteCount}명</div>
+              </div>
+              <div className="voteGraph">
+                <div
+                  className="voteGraphRatio"
+                  style={{
+                    width:
+                      Math.round(
+                        (selection.voteCount / details.voteCount) * 100
+                      ) + "%",
+                  }}
+                ></div>
+              </div>
+            </div>
+          ))}
         </div>
       );
-      break;
-    }
-    case 1: {
-      distanceLevel = (
-        <div
-          style={{
-            backgroundColor: "cfe8fc",
-            fontSize: "12px",
-            fontWeight: "bold",
-            borderRadius: "4px",
-          }}
-        >
-          {details.distanceLevel}
+    } else {
+      return (
+        <div>
+          <RadioGroup
+            aria-labelledby="demo-radio-buttons-group-label"
+            name="radio-buttons-group"
+            onChange={(e) => {setSelectedItemId(e.target.value)}}
+          >
+          {details.voteItems.map((selection, index) => (
+            <FormControlLabel value={selection.id} control={<Radio />} label={selection.content} key={index} />
+            // <div
+            //   className={
+            //     selection.voted ? "unvotedSelected" : "unvotedSelection"
+            //   }
+            //   key={index}
+            //   onClick={() => {console.log(selection.voted); selection.voted = !selection.voted}}
+            // >
+            //   <div className="votedIcon">
+            //     {selection.voted ? (
+            //       <RadioButtonCheckedIcon color="primary" />
+            //     ) : (
+            //       <RadioButtonUncheckedIcon />
+            //     )}
+            //   </div>
+            //   <div className="selectContent">{selection.content}</div>
+            // </div>
+          ))}
+          </RadioGroup>
         </div>
       );
-      break;
     }
-    default: {
-      distanceLevel = (
-        <div
-          style={{
-            backgroundColor: "b6dcfb",
-            fontSize: "12px",
-            fontWeight: "bold",
-            borderRadius: "4px",
-          }}
-        >
-          {details.distanceLevel}
+  };
+  /**
+   * 조건 분기에 따른 투표하기 버튼 표시
+   */
+  const gotoVote = (ended, voted, voteItems) => {
+    let selected = 0;
+    voteItems.forEach((element) => {
+      selected += !!element.voted;
+    });
+    // 투표가 종료된 경우 -> 아무것도 표시x
+    if (!ended) {
+      if (selectedItemId) {
+        // 선택한 경우 -> 투표하기
+        return <div className="gotoVote" onClick={() => doVote()}>투표하기</div>;
+      }
+      // 선택한 것이 아무것도 없는 경우 -> 아무것도 표시x
+    }
+  };
+
+  /**
+   * 댓글 표시
+   */
+  const comment = (comments) => {
+    let result = [];
+    for (let i = 0; i < comments.length; i++) {
+      result.push(
+        <div className="comment">
+          {comments[i].deleted ? (
+            <div>삭제된 댓글입니다.</div>
+          ) : (
+            <div>
+              <div>{comments[i].content}</div>
+              <div className="commentInfor">
+                <div className="commentBy">{comments[i].writerNickname}</div>
+                {comments[i].likedByMe ? <FavoriteIcon onClick={() => clickFavoriteIcon(comments[i].id)} color="primary" /> : <FavoriteBorderIcon onClick={() => clickFavoriteIcon(comments[i].id)} />}
+                <div className="good">좋아요</div>
+                {comments[i].likesCount ? (
+                  <div>{comments[i].likesCount}</div>
+                ) : (
+                  <></>
+                )}
+                <div className="commentCreatedAt">
+                  {comments[i].createdAt.substring(0, 16)}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       );
+      for (let j = 0; j < comments[i].replies.length; j++) {
+        result.push(
+          <div className="reply">
+            <ArrowRightAltIcon />
+            <div className="replyDiv">
+              <div>{comments[i].replies[j].content}</div>
+              <div className="commentInfor">
+                <div className="commentBy">
+                  {comments[i].replies[j].writerNickname}
+                </div>
+                {comments[i].replies[j].likedByMe ? <FavoriteIcon onClick={() => clickFavoriteIcon(comments[i].replies[j].id)} color="primary" /> : <FavoriteBorderIcon onClick={() => clickFavoriteIcon(comments[i].replies[j].id)} />}
+                <div className="good">좋아요</div>
+                {comments[i].replies[j].likesCount ? (
+                  <div>{comments[i].replies[j].likesCount}</div>
+                ) : (
+                  <></>
+                )}
+                <div className="commentCreatedAt">
+                  {comments[i].replies[j].createdAt.substring(0, 16)}
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      }
     }
-  }
+    return result;
+  };
 
   return (
-    <div className="contentAll">
-      <div>
-        <div className="title">{details.title}</div>
-        <div className="titleGroup">
-          <div className="writter">{details.작성자}</div>
-          {distanceLevel}
-          <div className="startDate">{details.startDate.substring(0, 16)}</div>
-        </div>
-      </div>
-      <div>이미지</div>
-      <div className="article">{details.body}</div>
-      <div className="vote">
-        <div className="voteTitle">
-          <div className="voteText">투표</div>
-          <div>{details.voteCount}명 참여</div>
-        </div>
-        <div className="remainDate">{남은날짜계산(details.endDate)}</div>
-      </div>
-      <div className="commentShare">
-        <div className="commentNav">댓글 {commentCount()}</div>
-        <div className="share">공유하기</div>
-      </div>
-      <div>
-        <h2>베스트 댓글</h2>
-        <div></div>
-
-        {details.comments[0].deleted ? (
-          <div>삭제된 댓글입니다.</div>
-        ) : (
+    <div>
+      {details ? (
+        <div className="contentAll">
           <div>
-            <div>{details.comments[0].content}</div>
-            <div>{details.comments[0].writerNickname}</div>
-            <div>좋아요 {details.comments[0].likesCount}</div>
-            <div>{details.comments[0].createdAt.substring(0, 16)}</div>
+            <div className="title">{details.title}</div>
+            <div className="titleGroup">
+              <div className="writter">{details.작성자}</div>
+              {distanceLevel(details.distanceLevel)}
+              <div className="startDate">
+                {details.startDate.substring(0, 16)}
+              </div>
+            </div>
           </div>
-        )}
-      </div>
+          <div>이미지</div>
+          <div className="article">{details.body}</div>
+          <div className="vote">
+            <div className="voteTitle">
+              <HowToVoteIcon color="primary" fontSize="small" />
+              <div className="voteText">투표</div>
+              <div>{details.voteCount}명 참여</div>
+            </div>
+            <div className="remainDate">{남은날짜계산(details.endDate)}</div>
+            <div className="selectionGroup">{selectionGroup(details)}</div>
+            <div>
+              {gotoVote(details.ended, details.voted, details.voteItems)}
+            </div>
+          </div>
+          <div className="commentShare">
+            <div>댓글 {commentCount()}</div>
+            <div className="share">공유하기</div>
+          </div>
+          <div className="commentAll">
+            {details.bestComment?
+            <div>
+              <div className="bestCommentTitle">베스트 댓글</div>
+              <div className="bestComment">
+                <div className="comment">
+                  <div>{details.bestComment.content}</div>
+                  <div className="commentInfor">
+                    <div className="commentBy">
+                      {details.bestComment.writerNickname}
+                    </div>
+                    {details.bestComment.likedByMe ? (
+                      <FavoriteIcon onClick={() => clickFavoriteIcon(details.bestComment.id)} color="primary" />
+                    ) : (
+                      <FavoriteBorderIcon onClick={() => clickFavoriteIcon(details.bestComment.id)} />
+                    )}
+                    <div className="good">좋아요</div>
+                    {details.bestComment.likesCount ? (
+                      <div>{details.bestComment.likesCount}</div>
+                    ) : (
+                      <></>
+                    )}
+                    <div className="commentCreatedAt">
+                      {details.bestComment.createdAt.substring(0, 16)}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>:null}
+            {comment(details.comments)}
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

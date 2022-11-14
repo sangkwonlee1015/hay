@@ -15,8 +15,14 @@ import Mypage from './pages/MyPage/MyPage';
 import MyLocationSetting from './pages/MyPage/MyLocationSetting';
 import VoteDetail from './pages/VoteDetail/VoteDetail';
 import VoteCreate from './pages/VoteDetail/VoteCreate';
+import MyVotePage from './pages/MyPage/MyVotePage';
+import MyParticipatedPage from './pages/MyPage/MyParticipatedPage';
+import setAuthorizationToken from './pages/User/AuthorizationToken';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
+
+setAuthorizationToken(localStorage.jwtToken);
+
 root.render(
   <BrowserRouter>
     <Provider store={store}>
@@ -29,6 +35,8 @@ root.render(
           <Route path="locationsetting" element={<LocationSetting />} />
           <Route path="main" element={<MainPage />} />
           <Route path="mypage" element={<Mypage />} />
+          <Route path="myvote" element={<MyVotePage />} />
+          <Route path="myparticipated" element={<MyParticipatedPage />} />
           <Route path="mylocationsetting" element={<MyLocationSetting />} />
           <Route path="votedetail/:voteId" element={<VoteDetail />} />
           <Route path="votecreate" element={<VoteCreate />} />

@@ -1,21 +1,49 @@
-// 그림
-// 너는어때?
-// 카카오 로그인
-
 import React from 'react'
+import styled from 'styled-components';
+import { useDispatch } from 'react-redux';
 import logo from '../../img/logo.png';
 import kakao_login from '../../img/kakao_login.png'
+import api from '../../api/api';
+import { navigateAction } from "../../_slice/NavigateSlice";
 
-const KAKAO_AUTH_URL = `https://kauth.kakao.com/oauth/authorize?client_id=2cc38f3feb14c46b190ca5fe77598eb6&redirect_uri=http://localhost:3000/kakaologin&response_type=code`;
+
+const LogoStyle = styled.div`
+  position: absolute;
+  top: calc(50% - 48px - 300px);
+  left: calc(50% - 150px);
+`;
+const NameStyle = styled.div`
+  position: absolute;
+  top: calc(50% - 48px);
+  left: calc(50% - 96px);
+  font-weight: 700;
+  font-size: 48px;
+  line-height: 150%;
+  color: #064579;
+  text-align: center;
+`;
+const KakaoStyle = styled.div`
+  position: absolute;
+  bottom: 100px;
+  left: calc(50% - 150px);
+`;
+
 
 function Login() {
+  const dispatch = useDispatch();
+  dispatch(navigateAction.isLoggedIn(false));
+
   return (
     <>
-      <img src={logo} alt='너는어때 로고' width='300px'/>
-      <div>너는어때</div>
-        <a href={KAKAO_AUTH_URL}>
-         <img src={kakao_login} alt='카카오로그인'/>
+      <LogoStyle>
+        <img src={logo} alt="너는어때 로고" width="300px" />
+      </LogoStyle>
+      <NameStyle>너는어때</NameStyle>
+      <KakaoStyle>
+        <a href={api.kakaoLogin()}>
+          <img src={kakao_login} alt="카카오로그인" />
         </a>
+      </KakaoStyle>
     </>
   );
 }

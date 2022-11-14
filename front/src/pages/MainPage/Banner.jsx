@@ -8,7 +8,7 @@ import Banner1 from '../../img/banner1.png'
 function Banner() {
   return (
     <div>
-      <img src={Banner1} className="Banner1" alt="Banner" />
+      <img src={Banner1} className="Banner1" alt="Banner" width="100%"/>
     </div>
   )
 }

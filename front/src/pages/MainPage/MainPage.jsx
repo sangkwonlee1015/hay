@@ -6,20 +6,41 @@
 // 하단바 (components 폴더에 있음)
 
 import { Button, Input } from "@mui/material";
+
 import axios from "axios";
-import React, { useState } from "react";
-import { useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import styled from "styled-components";
+import { useDispatch } from "react-redux";
+import { navigateAction } from "../../_slice/NavigateSlice";
 import api from "../../api/api";
 import VoteItem from "../../components/VoteItem";
 import Banner from "./Banner";
 import Category from "./Category";
+import MainPageNavbar from "./MainPageNavbar";
+
+const Categories = styled.nav`
+  display: flex;
+  justify-content: space-around;
+`;
+const Orders = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  height: 40px;
+  line-height: 40px;
+  border-bottom: 0.25px solid #6EB9F7;
+  margin-right: 5px;
+`;
+
+const CATEGORY_NAME = ["이야기", "먹자지껄", "매일매일"];
 
 function MainPage() {
+  const dispatch = useDispatch();
+  dispatch(navigateAction.isLoggedIn(true));
+
   const [voteList, setVoteList] = useState([]);
   const [bestVote, setBestVote] = useState();
-  const [searchInput, setSearchInput] = useState("");
   const [keyword, setKeyword] = useState("");
-  const [category, setCategory] = useState(1);
+  const [category, setCategory] = useState(0);
   const [order, setOrder] = useState("최신");
 
   useEffect(() => {
@@ -27,16 +48,12 @@ function MainPage() {
       .get(api.getVotes(), {
         params: {
           search: keyword,
-          category: category,
+          category: category + 1,
           order: order,
-        },
-        headers: {
-          Authorization:
-            "Bearer " +
-            "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzX2t6eGN2QG5hdmVyLmNvbSIsIm5pY2tuYW1lIjoi7J207IOB6raMIiwiaXNzIjoiaGF5IiwiZXhwIjoxNjY4MTQ5NjAzfQ.Livkg_-eWhsS-L00xGCSHLjMwuNEMNr2H2ZJnbAcsDo",
         },
       })
       .then(({ data }) => {
+        console.log(data);
         setBestVote(data.response.bestVote);
         setVoteList(data.response.votes);
       })
@@ -49,58 +66,39 @@ function MainPage() {
 
   return (
     <>
-      <Input
-        onChange={(e) => {
-          setSearchInput(e.target.value);
-        }}
-      ></Input>
-      <Button
-        onClick={() => {
-          setKeyword(searchInput);
-        }}
-      >
-        검색
-      </Button>
-      <Category
-        name="이야기"
-        id="1"
-        onChangeCategory={(id) => {
-          setCategory(id);
-        }}
-      />
-      <Category
-        name="먹자지껄"
-        id="2"
-        onChangeCategory={(id) => {
-          setCategory(id);
-        }}
-      />
-      <Category
-        name="매일매일"
-        id="3"
-        onChangeCategory={(id) => {
-          setCategory(id);
-        }}
-      />
+      <MainPageNavbar setKeyword={setKeyword} />
+      <Categories>
+        {CATEGORY_NAME.map((item, index) => (
+          <Category
+            name={item}
+            key={index}
+            index={index}
+            category={category}
+            onChangeCategory={setCategory}
+          />
+        ))}
+      </Categories>
       <Banner />
-      <Button
-        onClick={() => {
-          setOrder("최신");
-        }}
-      >
-        최신순
-      </Button>
-      <Button
-        onClick={() => {
-          setOrder("참여자");
-        }}
-      >
-        참여자순
-      </Button>
-      {bestVote ? <VoteItem vote={bestVote}></VoteItem> : null}
+      <Orders>
+        <Button
+          onClick={() => {
+            setOrder("최신");
+          }}
+        >
+          최신순
+        </Button>
+        <Button
+          onClick={() => {
+            setOrder("참여자");
+          }}
+        >
+          참여자순
+        </Button>
+      </Orders>
+      {bestVote ? <VoteItem vote={bestVote} best={true} /> : null}
       {voteList.map((vote, index) =>
         bestVote?.id === vote.id ? null : (
-          <VoteItem vote={vote} key={index}></VoteItem>
+          <VoteItem vote={vote} best={false} key={index} />
         )
       )}
     </>
