@@ -262,7 +262,7 @@ function VoteDetail() {
                 </div>
               </div>
             </div>
-          )}
+          }
         </div>
       );
       for (let j = 0; j < comments[i].replies.length; j++) {

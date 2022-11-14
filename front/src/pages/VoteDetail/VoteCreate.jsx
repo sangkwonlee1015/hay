@@ -21,6 +21,8 @@ import Select from "@mui/material/Select";
 import Button from "@mui/material/Button";
 import Switch from "@mui/material/Switch";
 import FormControlLabel from "@mui/material/FormControlLabel";
+import HeaderOnlyText from '../../components/HeaderOnlyText';
+import HowToVoteIcon from "@mui/icons-material/HowToVote";
 
 
 
@@ -46,44 +48,59 @@ function VoteCreate() {
 
   return (
     <div>
-      <div>
+      <HeaderOnlyText text="투표 만들기"/>
+      <div className="titleSpace">
         <TextField
           id="standard-basic"
           label="제목을 입력해주세요"
           variant="standard"
+          sx={{
+            width: "86%;",
+            marginLeft: "7%;"
+          }}
         />
       </div>
-      <div>주제</div>
-      <div>
-        <ToggleButtonGroup
-          color="primary"
-          value={alignment}
-          exclusive
-          onChange={categoryHandleChange}
-          aria-label="Category"
-          required={true}
-        >
-          <ToggleButton value="story">이야기</ToggleButton>
-          <ToggleButton value="foods">먹자지껄</ToggleButton>
-          <ToggleButton value="daily">매일매일</ToggleButton>
-        </ToggleButtonGroup>
+      <div className="voteCreateCategory">
+        <div>주제</div>
+        <div>
+          <ToggleButtonGroup
+            color="primary"
+            value={alignment}
+            exclusive
+            onChange={categoryHandleChange}
+            aria-label="Category"
+            required={true}
+            sx={{
+              marginLeft: "30px;"
+            }}
+          >
+            <ToggleButton value="story">이야기</ToggleButton>
+            <ToggleButton value="foods">먹자지껄</ToggleButton>
+            <ToggleButton value="daily">매일매일</ToggleButton>
+          </ToggleButtonGroup>
+        </div>
       </div>
-      <div className="addPhoto">사진 추가하기</div>
+      {/* <div className="addPhoto">사진 추가하기</div> */}
       <div>
         <TextField
           id="outlined-multiline-static"
           multiline
-          rows={4}
+          minRows={4}
           placeholder="본문을 입력해주세요"
+          sx={{
+            width: "86%;",
+            marginLeft: "7%;",
+            marginBottom: "16px;"
+          }}
         />
       </div>
-      <div>
-        <div>
-          <div>아이콘</div>
-          <div>투표</div>
+      <div className="voteCreate">
+        <div className="voteCreateTitle">
+          <HowToVoteIcon color="primary" fontSize="small" />
+          <div className="voteText">투표</div>
         </div>
-        <div>
-          <FormControl fullWidth>
+        <div className="voteCreateTermSelect">
+          <FormControl fullWidth sx={{ width: "86%;" }}>
             <InputLabel id="demo-simple-select-label">기간 선택</InputLabel>
             <Select
               labelId="demo-simple-select-label"
@@ -91,6 +108,7 @@ function VoteCreate() {
               value={term}
               label="Term"
               onChange={termHandleChange}
+              
             >
               <MenuItem value={1}>24시간</MenuItem>
               <MenuItem value={3}>3일</MenuItem>
@@ -100,12 +118,12 @@ function VoteCreate() {
             </Select>
           </FormControl>
         </div>
+        <hr className="horizon"></hr>
         <div>
-          항목들
-          <TextField required id="outlined-required" placeholder="항목 1" />
-          <TextField required id="outlined-required" placeholder="항목 2" />
+          <TextField required id="selection-1" sx={{ width: "86%;", marginLeft: "20px;" }} placeholder="항목 1" />
+          <TextField required id="selection-2" sx={{ width: "86%;", marginLeft: "20px;", marginTop: "12px;" ,marginBottom: "12px;" }} placeholder="항목 2" />
           {/* {selectionAdd()} */}
-          <Button variant="outlined" onClick={() => {}}>
+          <Button variant="outlined" onClick={() => {}} sx={{ width: "86%;", marginLeft: "20px;", padding: "16px 0px;" }}>
             항목 추가하기
           </Button>
         </div>
@@ -116,6 +134,7 @@ function VoteCreate() {
           control={<Switch color="primary" defaultChecked />}
           label="댓글 허용"
           labelPlacement="start"
+          sx={{ marginLeft: "28px;", marginButtom: "32px;" }}
         />
       </div>
       <div className="voteCreateSubmitButton">만들기</div>
