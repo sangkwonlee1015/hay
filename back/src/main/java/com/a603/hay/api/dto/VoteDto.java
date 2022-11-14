@@ -86,6 +86,7 @@ public class VoteDto {
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private boolean isEnded;
+    private boolean isCommentable;
     private int voteCount;
     private List<VoteDetailItem> voteItems;
     private VoteDetailComment bestComment;
