@@ -194,7 +194,7 @@ function VoteCreate() {
           <TextField required id="selection-1" sx={{ width: "86%;", marginLeft: "20px;" }} placeholder="항목 1" />
           <TextField required id="selection-2" sx={{ width: "86%;", marginLeft: "20px;", marginTop: "12px;" ,marginBottom: "12px;" }} placeholder="항목 2" />
           {/* {selectionAdd()} */}
-          <Button variant="outlined" onClick={() => {}} sx={{ width: "86%;", marginLeft: "20px;", padding: "16px 0px;" }}>
+          <Button disabled variant="outlined" onClick={() => {}} sx={{ width: "86%;", marginLeft: "20px;", padding: "16px 0px;" }}>
             항목 추가하기
           </Button>
         </div>
