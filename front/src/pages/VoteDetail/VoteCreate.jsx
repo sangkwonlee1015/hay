@@ -24,6 +24,9 @@ import {
   Button,
   Switch,
 } from "@mui/material";
+
+import HeaderOnlyText from '../../components/HeaderOnlyText';
+import HowToVoteIcon from "@mui/icons-material/HowToVote";
 import FormData from 'form-data';
 import axios from 'axios'
 import api from '../../api/api';
@@ -142,12 +145,12 @@ function VoteCreate() {
         style={{ display: "none" }}
         onChange={handleImgUrls}
       />
-      <Button
+      {/* <Button
         onClick={() => uploadInputRef.current && uploadInputRef.current.click()}
         variant="contained"
       >
         Upload
-      </Button>
+      </Button> */}
       <div>
         <TextField
           id="outlined-multiline-static"
