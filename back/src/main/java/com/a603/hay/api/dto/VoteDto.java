@@ -27,8 +27,8 @@ public class VoteDto {
 
     private String title;
     private String body;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
-    private LocalDateTime endDate;
+//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+    private int endDate;
     private boolean isCommentable;
     private long categoryId;
     private List<String> voteItemContents;

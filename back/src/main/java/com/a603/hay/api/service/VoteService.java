@@ -88,9 +88,12 @@ public class VoteService {
     newVote.setTitle(createVoteRequest.getTitle());
     newVote.setBody(createVoteRequest.getBody());
     LocalDateTime nowTime = LocalDateTime.now();
-    newVote.setStartDate(LocalDateTime.of(nowTime.getYear(), nowTime.getMonth(), nowTime.getDayOfMonth(),
-        nowTime.getHour(), nowTime.getMinute(), nowTime.getSecond()));
-    newVote.setEndDate(createVoteRequest.getEndDate());
+    newVote.setStartDate(
+        LocalDateTime.of(nowTime.getYear(), nowTime.getMonth(), nowTime.getDayOfMonth(),
+            nowTime.getHour(), nowTime.getMinute(), nowTime.getSecond()));
+    newVote.setEndDate(
+        LocalDate.of(nowTime.getYear(), nowTime.getMonth(), nowTime.getDayOfMonth())
+            .plusDays(createVoteRequest.getEndDate()).atStartOfDay());
     newVote.setCommentable(createVoteRequest.isCommentable());
     newVote.setEnded(false);
     Location location = locationRepository.findById(user.getCurrentLocation())
@@ -436,7 +439,7 @@ public class VoteService {
       });
     }
     voteDetailResponse.setComments(voteDetailComments);
-    if(voteDetailComments.size() == 0) {
+    if (voteDetailComments.size() == 0) {
       voteDetailResponse.setBestComment(null);
     } else {
       Comment bestComment = commentRepository.findFirstByVoteAndIsDeletedOrderByLikesCountDesc(vote,
