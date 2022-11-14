@@ -372,6 +372,7 @@ public class VoteService {
     voteDetailResponse.setStartDate(vote.getStartDate());
     voteDetailResponse.setEndDate(vote.getEndDate());
     voteDetailResponse.setEnded(vote.isEnded());
+    voteDetailResponse.setCommentable(vote.isCommentable());
     voteDetailResponse.setVoteCount(vote.getVoteCount());
 
     List<String> imageUrls = new ArrayList<>();
