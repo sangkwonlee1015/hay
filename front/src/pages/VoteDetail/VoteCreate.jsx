@@ -9,40 +9,96 @@
 // 댓글 허용 스위치
 // 만들기
 
-import React from 'react'
+import React, { useState, useEffect, useRef } from "react";
 import './VoteCreate.css'
-import TextField from '@mui/material/TextField';
-import ToggleButton from "@mui/material/ToggleButton";
-import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import FormControl from "@mui/material/FormControl";
-import Select from "@mui/material/Select";
-import Button from "@mui/material/Button";
-import Switch from "@mui/material/Switch";
-import FormControlLabel from "@mui/material/FormControlLabel";
+import {
+  Typography,
+  TextField,
+  ToggleButton,
+  ToggleButtonGroup,
+  InputLabel,
+  MenuItem,
+  FormControlLabel,
+  FormControl,
+  Select,
+  Button,
+  Switch,
+} from "@mui/material";
+import FormData from 'form-data';
+import axios from 'axios'
+import api from '../../api/api';
 
 
 
 function VoteCreate() {
-  const [alignment, setAlignment] = React.useState("category");
-  const categoryHandleChange = (event, newAlignment) => {setAlignment(newAlignment)};
-  const [term, setTerm] = React.useState("");
+  const uploadInputRef = useRef(null);
 
-  const termHandleChange = (event) => {
-    setTerm(event.target.value);
+  const [title, setTitle] = useState('');
+  const [categoryId, setCategoryId] = useState(1);
+  const [body, setBody] = useState('');
+  const [endDate, setEndDate] = useState(1);
+  const [imageUrls, setImageUrls] = useState('');
+  const [commentable, setCommentable] = useState(true);
+  const [voteItemContents, setVoteItemContents] = useState([]);
+
+  function handleTitleChange(e) {
+    setTitle(e.target.value);
   };
-
+  function handleCategoryChange(e, newAlignment) {
+    setCategoryId(newAlignment);
+  }
+  function handleBodyChange(e) {
+    setBody(e.target.value)
+  }  
+  function handleEndDateChange(e) {
+    setEndDate(e.target.value);
+  }
+  function handleCommentable(e) {
+    // console.log(e.target.checked);
+    setCommentable(e.target.checked);
+  }
+  function handleImgUrls(e) {
+    const fileList = e.target.files;
+    console.log(URL.createObjectURL(fileList[0]))
+  }
+  
   /** 항목 추가하기 누를 시 항목 추가해주는 함수 */
   const selectionAdd = () => {
     let result = (<div></div>)
-
+    
     result.div.push(
       <TextField id="outlined" placeholder="" />
     )
 
     return result;
   }
+  
+  // sumbit datas
+
+  // const formData = new FormData();
+
+  // // img url => blob file
+  // formData.append("imageUrls", uploadInputRef.current.files[0]);
+  // formData.append(
+  //   "data",
+  //   new Blob([JSON.stringify(data)], { type: "application/json" })
+  // );
+
+  // submit
+  function handleSubmit() {
+    const data = {
+      body: body,
+      categoryId: categoryId,
+      commentable: commentable,
+      endDate: endDate,
+      title: title,
+      voteItemContents: voteItemContents,
+    };
+    
+    axios.post(api.addVotes(), data).catch((Error) => console.log(Error));
+  }
+    
+  
 
   return (
     <div>
@@ -51,30 +107,47 @@ function VoteCreate() {
           id="standard-basic"
           label="제목을 입력해주세요"
           variant="standard"
+          value={title}
+          onChange={handleTitleChange}
         />
       </div>
       <div>주제</div>
       <div>
         <ToggleButtonGroup
           color="primary"
-          value={alignment}
+          value={categoryId}
           exclusive
-          onChange={categoryHandleChange}
+          onChange={handleCategoryChange}
           aria-label="Category"
           required={true}
         >
-          <ToggleButton value="story">이야기</ToggleButton>
-          <ToggleButton value="foods">먹자지껄</ToggleButton>
-          <ToggleButton value="daily">매일매일</ToggleButton>
+          <ToggleButton value={1}>이야기</ToggleButton>
+          <ToggleButton value={2}>먹자지껄</ToggleButton>
+          <ToggleButton value={3}>매일매일</ToggleButton>
         </ToggleButtonGroup>
       </div>
       <div className="addPhoto">사진 추가하기</div>
+      <input
+        ref={uploadInputRef}
+        type="file"
+        accept="image/*"
+        style={{ display: "none" }}
+        onChange={handleImgUrls}
+      />
+      <Button
+        onClick={() => uploadInputRef.current && uploadInputRef.current.click()}
+        variant="contained"
+      >
+        Upload
+      </Button>
       <div>
         <TextField
           id="outlined-multiline-static"
           multiline
           rows={4}
           placeholder="본문을 입력해주세요"
+          value={body}
+          onChange={handleBodyChange}
         />
       </div>
       <div>
@@ -88,11 +161,11 @@ function VoteCreate() {
             <Select
               labelId="demo-simple-select-label"
               id="demo-simple-select"
-              value={term}
+              value={endDate}
               label="Term"
-              onChange={termHandleChange}
+              onChange={handleEndDateChange}
             >
-              <MenuItem value={1}>24시간</MenuItem>
+              <MenuItem value={1}>1일</MenuItem>
               <MenuItem value={3}>3일</MenuItem>
               <MenuItem value={7}>7일</MenuItem>
               <MenuItem value={15}>15일</MenuItem>
@@ -112,13 +185,14 @@ function VoteCreate() {
       </div>
       <div>
         <FormControlLabel
-          value="allowComment"
-          control={<Switch color="primary" defaultChecked />}
+          control={
+            <Switch checked={commentable} onChange={handleCommentable} />
+          }
           label="댓글 허용"
           labelPlacement="start"
         />
       </div>
-      <div className="voteCreateSubmitButton">만들기</div>
+      <div className="voteCreateSubmitButton" onClick={handleSubmit}>만들기</div>
     </div>
   );
 }
