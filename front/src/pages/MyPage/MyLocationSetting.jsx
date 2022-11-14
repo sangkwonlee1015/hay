@@ -164,18 +164,6 @@ function MyLocationSetting() {
   dispatch(userAction.latitude(position.latitude));
   dispatch(userAction.longitude(position.longitude));
 
-  // const 동네이름 = [
-  //   {
-  //     name: locations[0].address,
-  //     locationId: locations[0].locationId,
-  //     isSelected: locations[0].isCurrent,
-  //   },
-  //   {
-  //     name: locations[1].address,
-  //     locationId: locations[1].locationId,
-  //     isSelected: locations[1].isCurrent,
-  //   },
-  // ]
   const valuetext = (value) => {
     return `${value}km`;
   }
