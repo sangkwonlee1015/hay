@@ -65,7 +65,7 @@ function VoteItem({ vote, best }) {
   return (
     <VoteContainer
       onClick={() => {
-        navigate(`/votedetail/${vote.id}`);
+        navigate(`/votedetail/${vote.id}`, {state: {"voteId": vote.id}});
       }}
       best={best}
     >

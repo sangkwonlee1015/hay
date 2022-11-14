@@ -7,11 +7,49 @@
 
 .myNickname {
     height: 120px;
-    padding: 20px 0 0 32px;
+    padding: 20px 32px 0 32px;
     background-color: #6EB9F7;
+    display: flex;
+}
+.myNicknameDisplay {
     font-weight: bold;
     font-size: 20px;
+    padding: 5px 0;
 }
+.myNicknamePutButton {
+    margin-left: auto;
+    font-size: 16px;
+    font-weight: bold;
+    color: #064579;
+    height: 16px;
+    padding: 5px 10px;
+    border-radius: 4px;
+    border-color: #064579;
+    border-style: solid;
+    border-width: 2px;
+    background-color: #fff;
+}
+.myNicknamePutOkButton {
+    margin-left: auto;
+    font-size: 20px;
+    font-weight: bold;
+    color: #fff;
+    height: 21px;
+    padding: 17px 24px;
+    border-radius: 4px;
+    background-color: #064579;
+}
+.myNicknameInputGroup {
+    display: flex;
+}
+.inputNickname {
+    background-color: #E7F3FE;
+    height: 55px;
+    border-radius: 4px;
+}
+/* .myNicknameErrorMsg {
+    color: #ff4242;
+} */
 
 .myPageNavButton {
     display: flex;
