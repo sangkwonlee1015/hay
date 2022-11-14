@@ -162,3 +162,40 @@
   margin-left: auto;
   color: #7e7e7e;
 }
+.replyInfor {
+  display: flex;
+  align-items: center;
+  margin-bottom: 4px;
+}
+.replyFor {
+  margin-right: 10px;
+  font-size: 14px;
+  color: #064579;
+  font-weight: bold;
+}
+.commentCreateBoard {
+  width: 90%;
+  border-top: 1px;
+  border-color: #b4b4b4;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+}
+.commentInput {
+  width: calc(100% - 60px);
+  height: 40px;
+  padding: 2  px;
+  font-size: 14px;
+  color: #000;
+  resize: none;
+}
+.commentSubmitButton {
+  width: 60px;
+  height: 40px;
+  margin-left: auto;
+  border-radius: 12px;
+  background-color: #6eb9f7;
+  text-align: center;
+  font-weight: bold;
+  line-height: 40px;
+}

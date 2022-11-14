@@ -251,12 +251,19 @@ function VoteDetail() {
    */
   const comment = (comments) => {
     let result = [];
+    let replyFor = "";
     for (let i = 1; i < comments.length; i++) {
       result.push(
         <div className="comment">
           { comments[i].deleted
           ? <div>삭제된 댓글입니다.</div>
-          : <div>
+          : <div onClick={() => {
+              if (replyFor === comments[i].writerNickname) {
+                replyFor = "";
+              } else {
+                replyFor = comments[i].writerNickname
+              }
+            }}>
               <div>{comments[i].content}</div>
               <div className="commentInfor">
                 <div className="commentBy">{comments[i].writerNickname}</div>
@@ -287,6 +294,36 @@ function VoteDetail() {
         )
       }
     }
+
+    /**
+     * 댓글 작성 함수
+     */
+    const commentCreate = (replyFor) => {
+      const replyComments = (target) => {
+        return (
+          <div className="replyInfor">
+            <div className="replyFor">{target}</div>
+            <div>님에게 답글</div>
+          </div>
+        );
+      };
+
+      return (
+        <div>
+          {replyFor ? replyComments(replyFor) : <></>}
+          <div className="commentCreateBoard">
+            <input
+              className="commentInput"
+              type="text"
+              placeholder="댓글을 남겨주세요"
+            ></input>
+            <div className="commentSubmitButton">게시</div>
+          </div>
+        </div>
+      );
+    };
+    result.push(commentCreate(replyFor))
+
     return result;
   }
 
