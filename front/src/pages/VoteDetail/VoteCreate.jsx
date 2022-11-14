@@ -21,7 +21,8 @@ import Select from "@mui/material/Select";
 import Button from "@mui/material/Button";
 import Switch from "@mui/material/Switch";
 import FormControlLabel from "@mui/material/FormControlLabel";
-
+import AWS from "aws-sdk"
+import {v4 as uuidv4} from 'uuid';
 
 
 function VoteCreate() {
@@ -42,6 +43,43 @@ function VoteCreate() {
     )
 
     return result;
+  }
+
+
+  AWS.config.update({
+    region: process.env.REACT_APP_BUCKET_REGION, // 버킷이 존재하는 리전을 문자열로 입력합니다. (Ex. "ap-northeast-2")
+    credentials: new AWS.CognitoIdentityCredentials({
+      IdentityPoolId: process.env.REACT_APP_IDENTITY_POOL_ID, // cognito 인증 풀에서 받아온 키를 문자열로 입력합니다. (Ex. "ap-northeast-2...")
+    }),
+  })
+  
+
+  const handleFileInput = e => {
+    const file = e.target.files[0]
+
+    //이 파일 이름을 백앤드에 전송!!! 꼭 여기서 안만들어도 됨
+    const fileName = uuidv4();
+    console.log("fileName", fileName);
+    //이 파일 이름을 백앤드에 전송!!! 꼭 여기서 안만들어도 됨
+    console.log("name", process.env.REACT_APP_BUCKET_NAME)
+    const upload = new AWS.S3.ManagedUpload({
+      params: {
+        Bucket: process.env.REACT_APP_BUCKET_NAME,
+        Key: "hay/vote/" + fileName + ".jpg",
+        Body: file,
+      },
+    })
+  
+    const promise = upload.promise()
+  
+    promise.then(
+      function (data) {
+        console.log("이미지 업로드에 성공했습니다.")
+      },
+      function (err) {
+        console.log(err)
+      }
+    )
   }
 
   return (
@@ -68,7 +106,10 @@ function VoteCreate() {
           <ToggleButton value="daily">매일매일</ToggleButton>
         </ToggleButtonGroup>
       </div>
-      <div className="addPhoto">사진 추가하기</div>
+      <div className="addPhoto">사진 추가하기
+        <input type="file" id="upload" className="image-upload" onChange = {handleFileInput} />
+        <label htmlFor="upload" className="image-upload-wrapper"></label>
+      </div>
       <div>
         <TextField
           id="outlined-multiline-static"
