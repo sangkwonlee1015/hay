@@ -14,21 +14,8 @@ const Header = styled.div`
   border-bottom: 0.5px solid rgba(0, 0, 0, 0.25);
 
   line-height: 48px;
-  text-align: left;
-  font-size: 16px;
-  padding-left: 16px;
-`;
-
-const TextSpace = styled.div`
-  display:inline;
-  width: 100%;
-  height: 48px;
-  left: 0px;
-  top: 0px;
-  line-height: 48px;
   text-align: center;
   font-size: 16px;
-  padding-left: 16px;
 `;
 
 function HeaderTextAndNavigate(props) {
@@ -47,7 +34,7 @@ function HeaderTextAndNavigate(props) {
       >
         <ArrowBackIosIcon></ArrowBackIosIcon>
       </IconButton>
-      <TextSpace>{props.text}</TextSpace>
+      {props.text}
     </Header>
   );
 }
