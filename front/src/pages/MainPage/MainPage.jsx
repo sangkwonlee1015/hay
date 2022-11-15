@@ -71,10 +71,10 @@ function MainPage() {
         {CATEGORY_NAME.map((item, index) => (
           <Category
             name={item}
-            key={index}
             index={index}
             category={category}
             onChangeCategory={setCategory}
+            key={index}
           />
         ))}
       </Categories>
