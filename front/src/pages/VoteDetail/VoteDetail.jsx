@@ -367,10 +367,17 @@ function VoteDetail() {
               {gotoVote(details.ended, details.voted, details.voteItems)}
             </div>
           </div>
-          <div className="commentShare">
-            <div>댓글 {commentCount()}</div>
-            <div className="share">공유하기</div>
-          </div>
+          { details.commentable
+            ? <div className="commentShare">
+                <div>댓글 {commentCount()}</div>
+                <div className="share">공유하기</div>
+              </div>
+            : <div className="commentShare">
+                <div>댓글을 작성할 수 없는 게시글입니다</div>
+                <div className="share">공유하기</div>
+              </div>
+          }
+          { details.commentable ?
           <div className="commentAll">
             {details.bestComment?
             <div onClick={() => {
@@ -408,6 +415,7 @@ function VoteDetail() {
             </div>:null}
             {comment(details.comments)}
           </div>
+          : <></>/* 댓글 작성불가==댓글 목록 조회x */}
         </div>
       ) : null}
     </div>
