@@ -39,7 +39,6 @@ import HeaderOnlyText from "../../components/HeaderOnlyText";
 function VoteCreate() {
   const navigate = useNavigate();
   const uploadInputRef = useRef(null);
-
   const [title, setTitle] = useState('');
   const [categoryId, setCategoryId] = useState(1);
   const [body, setBody] = useState('');
@@ -114,7 +113,7 @@ function VoteCreate() {
     setIsUploaded(false);
 
     const file = e.target.files[0];
-    let url = URL.createObjectURL(file);
+
     //이 파일 이름을 백앤드에 전송!!! 꼭 여기서 안만들어도 됨
     const fileName = uuidv4();
     console.log("fileName", fileName);
@@ -189,7 +188,7 @@ function VoteCreate() {
               className="uploadedImage"
               id="previewImage"
               alt="imagePreview"
-              src={isUploaded ? (e)=>{handleFileInput(e)} : ""}
+              src={`https://` + process.env.REACT_APP_BUCKET_NAME + `.s3.ap-northeast-2.amazonaws.com/hay/vote/${imageUrls}.jpg`} 
               onChange={(e)=>{handleFileInput(e)}}
               ></img>
             : <></>
