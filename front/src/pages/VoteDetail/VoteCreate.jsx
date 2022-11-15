@@ -134,6 +134,11 @@ function VoteCreate() {
         console.log("이미지 업로드에 성공했습니다.");
         setIsUploaded(true);
         setImageUrls(fileName);
+        let imagePreview = document.getElementById("imageUploadSpace");
+        imagePreview.removeChild("upload")
+        imagePreview.removeChild("uploadLabel")
+        let previewImage = imagePreview.appendChild("uploadedImagePreview");
+        previewImage.className = "uploadedImagePreview";
       },
       function (err) {
         console.log(err);
@@ -153,6 +158,10 @@ function VoteCreate() {
           variant="standard"
           value={title}
           onChange={handleTitleChange}
+          sx={{
+            width: "86%;",
+            marginLeft: "7%;"
+          }}
         />
       </div>
       <div className="voteCreateCategory">
