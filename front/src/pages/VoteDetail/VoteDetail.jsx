@@ -30,7 +30,8 @@ function VoteDetail() {
   const { state } = useLocation();
   const [details, setDetails] = useState();
   const [selectedItemId, setSelectedItemId] = useState();
-  const [voteAgain, setVoteAgain] = useState(false);
+  const [commentText, setCommentText] = useState("");
+  const [targetComment, setTargetComment] = useState(null);
 
   useEffect(() => {
     getDetail();
@@ -54,6 +55,20 @@ function VoteDetail() {
   const doVote = () => {
     axios.post(api.pickVote(state.voteId), { "voteItemId": selectedItemId })
     .then(() => {getDetail(); setSelectedItemId();})
+    .catch((Error) => {
+      console.log(Error);
+    });
+  }
+
+  const writeComment = () => {
+    let addCommentBody = {"content": commentText};
+    if (targetComment != null) {
+      addCommentBody = {
+        "commentId": targetComment.id,
+        "content": commentText
+      }
+    }
+    axios.post(api.addComment(state.voteId), addCommentBody).then(() => {getDetail();})
     .catch((Error) => {
       console.log(Error);
     });
@@ -234,17 +249,16 @@ function VoteDetail() {
    */
   const comment = (comments) => {
     let result = [];
-    let replyFor = "";
-    for (let i = 1; i < comments.length; i++) {
+    for (let i = 0; i < comments.length; i++) {
       result.push(
         <div className="comment">
           { comments[i].deleted
           ? <div>삭제된 댓글입니다.</div>
           : <div onClick={() => {
-              if (replyFor === comments[i].writerNickname) {
-                replyFor = "";
+              if (targetComment != null) {
+                setTargetComment(null);
               } else {
-                replyFor = comments[i].writerNickname
+                setTargetComment(comments[i]);
               }
             }}>
               <div>{comments[i].content}</div>
@@ -295,11 +309,11 @@ function VoteDetail() {
     /**
      * 댓글 작성 함수
      */
-    const commentCreate = (replyFor) => {
+    const commentCreate = () => {
       const replyComments = (target) => {
         return (
           <div className="replyInfor">
-            <div className="replyFor">{target}</div>
+            <div className="replyFor">{target.writerNickname}</div>
             <div>님에게 답글</div>
           </div>
         );
@@ -307,19 +321,20 @@ function VoteDetail() {
 
       return (
         <div>
-          {replyFor ? replyComments(replyFor) : <></>}
+          {targetComment ? replyComments(targetComment) : <></>}
           <div className="commentCreateBoard">
             <input
               className="commentInput"
               type="text"
               placeholder="댓글을 남겨주세요"
+              onChange={(e) => {setCommentText(e.target.value)}}
             ></input>
-            <div className="commentSubmitButton">게시</div>
+            <div className="commentSubmitButton" onClick={() => writeComment()} >게시</div>
           </div>
         </div>
       );
     };
-    result.push(commentCreate(replyFor))
+    result.push(commentCreate())
 
     return result;
   };
@@ -352,13 +367,31 @@ function VoteDetail() {
               {gotoVote(details.ended, details.voted, details.voteItems)}
             </div>
           </div>
-          <div className="commentShare">
-            <div>댓글 {commentCount()}</div>
-            <div className="share">공유하기</div>
-          </div>
+          { !details.voted
+            ? <div className="commentShare">
+                <div></div>
+                <div className="share">공유하기</div>
+              </div>
+            : details.commentable
+            ? <div className="commentShare">
+                <div>댓글 {commentCount()}</div>
+                <div className="share">공유하기</div>
+              </div>
+            : <div className="commentShare">
+                <div>댓글을 작성할 수 없는 게시글입니다</div>
+                <div className="share">공유하기</div>
+              </div>
+          }
+          { details.commentable && details.voted ?
           <div className="commentAll">
             {details.bestComment?
-            <div>
+            <div onClick={() => {
+              if (targetComment != null) {
+                setTargetComment(null);
+              } else {
+                setTargetComment(details.bestComment);
+              }
+            }}>
               <div className="bestCommentTitle">베스트 댓글</div>
               <div className="bestComment">
                 <div className="comment">
@@ -387,6 +420,7 @@ function VoteDetail() {
             </div>:null}
             {comment(details.comments)}
           </div>
+          : <></>/* 댓글 작성불가==댓글 목록 조회x */}
         </div>
       ) : null}
     </div>
