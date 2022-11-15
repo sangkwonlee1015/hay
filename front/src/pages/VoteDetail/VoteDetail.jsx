@@ -362,18 +362,30 @@ function VoteDetail() {
     <div>
       {details ? (
         <div className="contentAll">
-          <HeaderTextAndNavigate path={state?state.path:"/main"} text={details.title}></HeaderTextAndNavigate>
+          <HeaderTextAndNavigate
+            path={state ? state.path : "/main"}
+            text={details.title}
+          ></HeaderTextAndNavigate>
           <div>
             <div className="title">{details.title}</div>
             <div className="titleGroup">
-              <div className="writter">{details.작성자}</div>
+              <div className="writter">{details.writerNickname}</div>
               {distanceLevel(details.distanceLevel)}
               <div className="startDate">
                 {details.startDate.substring(0, 16)}
               </div>
             </div>
           </div>
-          <div>이미지</div>
+          <img
+            className="profile-img"
+            src={
+              `https://` +
+              process.env.REACT_APP_BUCKET_NAME +
+              `.s3.ap-northeast-2.amazonaws.com/hay/vote/${details.imageUrls[0]}.jpg`
+            }
+            width='100%'
+            alt="업로드 이미지"
+          />
           <div className="article">{details.body}</div>
           <div className="vote">
             <div className="voteTitle">
@@ -387,63 +399,77 @@ function VoteDetail() {
               {gotoVote(details.ended, details.voted, details.voteItems)}
             </div>
           </div>
-          { !details.voted
-            ? <div className="commentShare">
-                <div></div>
-                <KakaoShareButton details={details}/>
-
-              </div>
-            : details.commentable
-            ? <div className="commentShare">
-                <div>댓글 {commentCount()}</div>
-                <KakaoShareButton details={details}/>
-
-              </div>
-            : <div className="commentShare">
-                <div>댓글을 작성할 수 없는 게시글입니다</div>
-                <KakaoShareButton details={details}/>
-
-              </div>
-          }
-          { details.commentable && details.voted ?
-          <div className="commentAll">
-            {details.bestComment?
-            <div onClick={() => {
-              if (targetComment != null) {
-                setTargetComment(null);
-              } else {
-                setTargetComment(details.bestComment);
-              }
-            }}>
-              <div className="bestCommentTitle">베스트 댓글</div>
-              <div className="bestComment">
-                <div className="comment">
-                  <div>{details.bestComment.content}</div>
-                  <div className="commentInfor">
-                    <div className="commentBy">
-                      {details.bestComment.writerNickname}
-                    </div>
-                    {details.bestComment.likedByMe ? (
-                      <FavoriteIcon onClick={() => clickFavoriteIcon(details.bestComment.id)} color="primary" />
-                    ) : (
-                      <FavoriteBorderIcon onClick={() => clickFavoriteIcon(details.bestComment.id)} />
-                    )}
-                    <div className="good">좋아요</div>
-                    {details.bestComment.likesCount ? (
-                      <div>{details.bestComment.likesCount}</div>
-                    ) : (
-                      <></>
-                    )}
-                    <div className="commentCreatedAt">
-                      {details.bestComment.createdAt.substring(0, 16)}
+          {!details.voted ? (
+            <div className="commentShare">
+              <div></div>
+              <KakaoShareButton details={details}/>
+            </div>
+          ) : details.commentable ? (
+            <div className="commentShare">
+              <div>댓글 {commentCount()}</div>
+              <KakaoShareButton details={details}/>
+            </div>
+          ) : (
+            <div className="commentShare">
+              <div>댓글을 작성할 수 없는 게시글입니다</div>
+              <KakaoShareButton details={details}/>
+            </div>
+          )}
+          {
+            details.commentable && details.voted ? (
+              <div className="commentAll">
+                {details.bestComment ? (
+                  <div
+                    onClick={() => {
+                      if (targetComment != null) {
+                        setTargetComment(null);
+                      } else {
+                        setTargetComment(details.bestComment);
+                      }
+                    }}
+                  >
+                    <div className="bestCommentTitle">베스트 댓글</div>
+                    <div className="bestComment">
+                      <div className="comment">
+                        <div>{details.bestComment.content}</div>
+                        <div className="commentInfor">
+                          <div className="commentBy">
+                            {details.bestComment.writerNickname}
+                          </div>
+                          {details.bestComment.likedByMe ? (
+                            <FavoriteIcon
+                              onClick={() =>
+                                clickFavoriteIcon(details.bestComment.id)
+                              }
+                              color="primary"
+                            />
+                          ) : (
+                            <FavoriteBorderIcon
+                              onClick={() =>
+                                clickFavoriteIcon(details.bestComment.id)
+                              }
+                            />
+                          )}
+                          <div className="good">좋아요</div>
+                          {details.bestComment.likesCount ? (
+                            <div>{details.bestComment.likesCount}</div>
+                          ) : (
+                            <></>
+                          )}
+                          <div className="commentCreatedAt">
+                            {details.bestComment.createdAt.substring(0, 16)}
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
+                ) : null}
+                {comment(details.comments)}
               </div>
-            </div>:null}
-            {comment(details.comments)}
-          </div>
-          : <></>/* 댓글 작성불가==댓글 목록 조회x */}
+            ) : (
+              <></>
+            ) /* 댓글 작성불가==댓글 목록 조회x */
+          }
         </div>
       ) : null}
     </div>

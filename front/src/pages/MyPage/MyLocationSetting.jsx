@@ -77,7 +77,8 @@ function MyLocationSetting() {
     axios.get(api.getLocation())
     .then(({ data }) => {
       setLocations(data.response);
-      console.log("data", data);
+      // console.log("data", data);
+      // console.log(locations);
     })
     .catch((Error) => {
       console.log(Error);
@@ -93,7 +94,7 @@ function MyLocationSetting() {
     })
     .then((Response)=>{
       const result = Response.data.response
-      console.log(result);
+      // console.log(result);
       getMyLocations();
     })
     .catch((Error)=>{console.log(Error)})
@@ -105,7 +106,7 @@ function MyLocationSetting() {
       axios.delete(api.deleteLocation(locationId))
       .then((Response)=>{
         const result = Response.data.response
-        console.log(result);
+        // console.log(result);
         getMyLocations();
         setCurrentLocation(locations[seq].id, seq)
       })
@@ -114,7 +115,7 @@ function MyLocationSetting() {
   }
   //현재 동네 설정
   function setCurrentLocation(locationId, seq) {
-    console.log("locationId : ", locationId)
+    // console.log("locationId : ", locationId)
     if(locationId === null) { 
       addMyLocation(seq);
     }
@@ -124,7 +125,7 @@ function MyLocationSetting() {
       })
       .then((Response)=>{
         const result = Response.data.response
-        console.log(result);
+        // console.log("현재동네설정", result);
         getMyLocations();
       })
       .catch((Error)=>{console.log(Error)})
@@ -271,7 +272,10 @@ function MyLocationSetting() {
       </LocationContainer>
       <hr />
       <SliderContainer>
-        <BoldText>{areaName}과(와) {defalutRange/1000}km 이내</BoldText>
+        <BoldText>
+          {locations.filter((location) => location.isCurrent).length > 0 ? locations.filter((location) => location.isCurrent)[0].address : "선택 안됨"}과(와)
+          {defalutRange / 1000}km 이내
+        </BoldText>
         <LightText>선택한 범위의 게시물만 볼 수 있어요</LightText>
         <div className="slider">
           <Slider
