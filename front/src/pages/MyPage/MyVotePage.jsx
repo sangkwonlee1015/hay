@@ -27,7 +27,7 @@ function MyVotePage() {
     <>
       <HeaderTextAndNavigate path="/mypage" text="내가 생성한 투표" />
       {voteList.map((vote, index) => (
-        <VoteItem vote={vote} key={index}></VoteItem>
+        <VoteItem vote={vote} path={"/myvote"} key={index}></VoteItem>
       ))}
     </>
   );
