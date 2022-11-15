@@ -95,14 +95,9 @@ function VoteCreate() {
       voteItemContents: voteItemContents,
     };
     
-    axios.post(api.addVotes(), data)
-    .then((res) => {
-      navigate('/main');
-
-    })
-    .catch((Error) => console.log(Error));
+    axios.post(api.addVotes(), data).catch((Error) => console.log(Error));
   }
-
+    
   AWS.config.update({
     region: process.env.REACT_APP_BUCKET_REGION, // 버킷이 존재하는 리전을 문자열로 입력합니다. (Ex. "ap-northeast-2")
     credentials: new AWS.CognitoIdentityCredentials({

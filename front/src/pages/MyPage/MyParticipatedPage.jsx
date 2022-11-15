@@ -1,6 +1,5 @@
 import axios from "axios";
-import { useEffect } from "react";
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import api from "../../api/api";
 import HeaderTextAndNavigate from "../../components/HeaderTextAndNavigate";
 import VoteItem from "../../components/VoteItem";
