@@ -184,7 +184,7 @@ function VoteCreate() {
           </ToggleButtonGroup>
         </div>
       </div>
-      <div>
+      <div className="imageUploadAll">
         <input
           ref={uploadInputRef}
           type="file"
@@ -201,7 +201,7 @@ function VoteCreate() {
         >
           사진 추가하기
         </Button>
-        <span>{isUploaded ? "업로드 완료" : "사진 없음"}</span>
+        <div className="imageUploadStatus">{isUploaded ? "업로드 완료" : "사진 없음"}</div>
       </div>
       <div>
         <TextField
@@ -254,8 +254,8 @@ function VoteCreate() {
               key={idx}
             />
           ))}
-          <div style={{ display: "flex", justifyContent: "center" }}>
-            <Button variant="outlined" onClick={createVoteItem}>
+          <div style={{ display: "flex", justifyContent: "center", marginTop: "20px" }}>
+            <Button variant="outlined" onClick={createVoteItem} sx={{ marginRight: "20px;" }}>
               항목 추가하기
             </Button>
             <Button variant="outlined" color="error" onClick={deleleVoteItem}>
