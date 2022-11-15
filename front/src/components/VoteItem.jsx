@@ -52,7 +52,7 @@ const VoteTextCount = styled.div`
   color: #064579;
 `;
 
-function VoteItem({ vote, best }) {
+function VoteItem({ vote, best, path }) {
   const navigate = useNavigate();
 
   // 남은 날짜 계산
@@ -65,7 +65,7 @@ function VoteItem({ vote, best }) {
   return (
     <VoteContainer
       onClick={() => {
-        navigate(`/votedetail/${vote.id}`, {state: {"voteId": vote.id}});
+        navigate(`/votedetail/${vote.id}`, {state: {"voteId": vote.id, "path": path}});
       }}
       best={best}
     >

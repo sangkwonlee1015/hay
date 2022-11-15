@@ -27,7 +27,7 @@ function MyParticipatedPage() {
     <>
       <HeaderTextAndNavigate path="/mypage" text="내가 참여한 투표" />
       {voteList.map((vote, index) => (
-        <VoteItem vote={vote} key={index}></VoteItem>
+        <VoteItem vote={vote} path={"/myparticipated"} key={index}></VoteItem>
       ))}
     </>
   );
