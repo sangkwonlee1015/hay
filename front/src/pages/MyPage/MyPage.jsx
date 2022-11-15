@@ -32,8 +32,13 @@ function MyPage() {
 
 
   function putCheckChange() {
-    if(putcheck === false) setPutCheck(true);
-    else setPutCheck(false);
+    if(putcheck === false) {
+      setPutCheck(true);
+    }
+    else {
+      setChangeNickname(nickName);
+      setPutCheck(false);
+    }
   }
 
 
