@@ -130,6 +130,11 @@ function VoteCreate() {
     promise.then(
         function (data) {
           console.log("이미지 업로드에 성공했습니다.")
+          let imagePreview = document.getElementById("imageUploadSpace");
+          // imagePreview.removeChild("upload")
+          // imagePreview.removeChild("uploadLabel")
+          let previewImage = imagePreview.appendChild("uploadedImagePreview");
+          previewImage.className = "uploadedImagePreview";
         },
         function (err) {
           console.log(err)
@@ -170,11 +175,12 @@ function VoteCreate() {
             <ToggleButton value={3}>매일매일</ToggleButton>
           </ToggleButtonGroup>
         </div>
-        <div className="addPhoto">사진 추가하기
-          <input type="file" id="upload" className="image-upload" onChange = {handleFileInput} />
-          <label htmlFor="upload" className="image-upload-wrapper"></label>
-        </div>
       </div>
+      <div className="imageUploadAllWrapper" id="imageUploadSpace">
+      {/* <div className="addPhoto">사진 추가하기 */}
+        <input type="file" id="upload" className="image-upload" onChange = {handleFileInput} accept="image/png, image/jpeg, image/gif" />
+        <label htmlFor="upload" id="uploadLabel" className="image-upload-wrapper">사진 추가하기</label>
+      {/* </div> */}
       {/* <div className="addPhoto">사진 추가하기</div> */}
       <input
         ref={uploadInputRef}
@@ -183,6 +189,7 @@ function VoteCreate() {
         style={{ display: "none" }}
         onChange={handleImgUrls}
       />
+      </div>
       {/* <Button
         onClick={() => uploadInputRef.current && uploadInputRef.current.click()}
         variant="contained"
