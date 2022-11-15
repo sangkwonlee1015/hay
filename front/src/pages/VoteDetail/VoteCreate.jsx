@@ -22,6 +22,7 @@ import {
   Select,
   Button,
   Switch,
+  FilledInput,
 } from "@mui/material";
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom';
@@ -113,7 +114,7 @@ function VoteCreate() {
     setIsUploaded(false);
 
     const file = e.target.files[0];
-
+    let url = URL.createObjectURL(file);
     //이 파일 이름을 백앤드에 전송!!! 꼭 여기서 안만들어도 됨
     const fileName = uuidv4();
     console.log("fileName", fileName);
@@ -134,11 +135,8 @@ function VoteCreate() {
         console.log("이미지 업로드에 성공했습니다.");
         setIsUploaded(true);
         setImageUrls(fileName);
-        let imagePreview = document.getElementById("imageUploadSpace");
-        imagePreview.removeChild("upload")
-        imagePreview.removeChild("uploadLabel")
-        let previewImage = imagePreview.appendChild("uploadedImagePreview");
-        previewImage.className = "uploadedImagePreview";
+        // let previewImage = imagePreview.appendChild("uploadedImagePreview");
+        // previewImage.className = "uploadedImagePreview";
       },
       function (err) {
         console.log(err);
@@ -184,7 +182,19 @@ function VoteCreate() {
           </ToggleButtonGroup>
         </div>
       </div>
-      <div className="imageUploadAll">
+      <div>
+        <div className="imageUploadStatus">
+          {isUploaded
+            ? <img
+              className="uploadedImage"
+              id="previewImage"
+              alt="imagePreview"
+              src={isUploaded ? (e)=>{handleFileInput(e)} : ""}
+              onChange={(e)=>{handleFileInput(e)}}
+              ></img>
+            : <></>
+          }
+         </div>
         <input
           ref={uploadInputRef}
           type="file"
@@ -193,15 +203,16 @@ function VoteCreate() {
           style={{ display: "none" }}
           onChange={handleFileInput}
         />
-        <Button
-          onClick={() =>
-            uploadInputRef.current && uploadInputRef.current.click()
-          }
-          variant="contained"
-        >
-          사진 추가하기
-        </Button>
-        <div className="imageUploadStatus">{isUploaded ? "업로드 완료" : "사진 없음"}</div>
+        <div className="imageUploadButton">
+          <Button
+            onClick={() =>
+              uploadInputRef.current && uploadInputRef.current.click()
+            }
+            variant="contained"
+          >
+            {!isUploaded ? "사진 추가하기" : "사진 변경하기" }
+          </Button>
+        </div>
       </div>
       <div>
         <TextField
