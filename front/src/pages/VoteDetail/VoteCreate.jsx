@@ -56,7 +56,7 @@ function VoteCreate() {
   }
   function handleBodyChange(e) {
     setBody(e.target.value)
-  }  
+  }
   function handleEndDateChange(e) {
     setEndDate(e.target.value);
   }
@@ -64,10 +64,10 @@ function VoteCreate() {
     // console.log(e.target.checked);
     setCommentable(e.target.checked);
   }
-  function handleImgUrls(e) {
-    const fileList = e.target.files;
-    console.log(URL.createObjectURL(fileList[0]))
-  }
+  // function handleImgUrls(e) {
+  //   const fileList = e.target.files;
+  //   console.log(URL.createObjectURL(fileList[0]))
+  // }
   function handleVoteItem(e, index) {
     setVoteItemContents(voteItemContents.map((item, idx) => idx === index ? item = e.target.value : item));
     // console.log(voteItemContents);
@@ -95,7 +95,11 @@ function VoteCreate() {
       voteItemContents: voteItemContents,
     };
     
-    axios.post(api.addVotes(), data).catch((Error) => console.log(Error));
+    axios.post(api.addVotes(), data)
+    .then((res) => {
+      navigate('/main');
+    })
+    .catch((Error) => console.log(Error));
   }
     
   AWS.config.update({
@@ -171,8 +175,6 @@ function VoteCreate() {
           </ToggleButtonGroup>
         </div>
       </div>
-
-      {/* <div className="addPhoto">사진 추가하기</div> */}
       <div>
         <input
           ref={uploadInputRef}
@@ -243,8 +245,6 @@ function VoteCreate() {
               key={idx}
             />
           ))}
-          {/* <TextField required id="outlined-required" placeholder="항목 2" /> */}
-          {/* {selectionAdd()} */}
           <div style={{ display: "flex", justifyContent: "center" }}>
             <Button variant="outlined" onClick={createVoteItem}>
               항목 추가하기
