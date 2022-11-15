@@ -17,6 +17,7 @@ import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
 import Slider from '@mui/material/Slider';
 import AutorenewIcon from "@mui/icons-material/Autorenew";
+import styled from "styled-components";
 import Map from '../../components/Map'
 import HeaderOnlyText from '../../components/HeaderOnlyText';
 import { userAction } from "../../_slice/UserSlice";
@@ -25,17 +26,51 @@ import axios from 'axios';
 import api from '../../api/api';
 import "./MyLocationSetting.css";
 
+const LocationContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 10px;
+`;
+const BoldText = styled.div`
+  font-weight: 700;
+  margin: 5px 0;
+`;
+const LightText = styled.div`
+  margin: 10px 0;
+
+  font-weight: 300;
+  font-size: 12px;
+  line-height: 150%;
+  color: rgba(0, 0, 0, 0.5);
+`;
+const SliderContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 10px;
+`;
+const RefreshButton = styled.div`
+  margin-top: 10px;
+  &:hover {
+    cursor: pointer;
+  }
+  &:active {
+    transform: scale(0.95);
+  }
+`;
+
 function MyLocationSetting() {
   const [position, setPosition] = useState({});
   const [renew, setRenew] = useState(false);
   const [defalutRange, setDefaultRange] = useState(500);
+  const [locations, setLocations] = useState([]);
 
   const dispatch = useDispatch();
   const latitude = useSelector((state) => state.user.latitude);
   const longitude = useSelector((state) => state.user.longitude);
   const areaName = useSelector((state) => state.user.areaName);
 
-  const [locations, setLocations] = useState([]);
   //api 통신들
   //등록된 동네 조회
   function getMyLocations() {
@@ -189,56 +224,71 @@ function MyLocationSetting() {
     <div className="myLocationSettingPage">
       <HeaderTextAndNavigate path="/mypage" text="내 동네 설정" />
       <Map />
-      <Stack direction="row" spacing={2} justifyContent="center">
-        {locations[0]?.id?
-        <Chip
-          label={locations[0]?.address}
-          onClick={() => setCurrentLocation(locations[0]?.id, 0)}
-          onDelete={() => {deleteMyLocation(locations[0]?.id, 1);}}
-          color="primary"
-          variant={ locations[0]?.isCurrent ? "filled" : "outlined" }
-        /> :
-        <Chip
-          label="선택하여 설정"
-          onClick={() => setCurrentLocation(locations[0]?.id, 0)}
-          color="primary"
-          variant={ locations[0]?.isCurrent ? "filled" : "outlined" }
-        />
-        }
-        {locations[1]?.id ?
-        <Chip
-          label={locations[1]?.address}
-          onClick={() => setCurrentLocation(locations[1]?.id, 1)}
-          onDelete={() => {deleteMyLocation(locations[1]?.id, 0);}}
-          color="primary"
-          variant={ locations[1]?.isCurrent ? "filled" : "outlined" }
-        /> :
-        <Chip
-          label="선택하여 설정"
-          onClick={() => setCurrentLocation(locations[1]?.id, 1)}
-          color="primary"
-          variant={ locations[1]?.isCurrent ? "filled" : "outlined" }
-        />
-        }
-      </Stack>
-      <div className="slider">
-        <Slider
-          aria-label="Restricted values"
-          value={defalutRange}
-          valueLabelFormat={valueLabelFormat}
-          getAriaValueText={valuetext}
-          step={null}
-          max={2000}
-          valueLabelDisplay="off"
-          marks={marks}
-          onChange={(e) => setLocationRange(e.target.value)}
-        />
-      </div>
-      <div onClick={handleRenew}>
-        <AutorenewIcon sx={{ fontSize: 50 }} />
-      </div>
+      <LocationContainer>
+        <BoldText>동네선택</BoldText>
+        <LightText>지역은 최소 1개 최대 2개를 설정할 수 있어요</LightText>
+        <Stack direction="row" spacing={2} justifyContent="center">
+          {locations[0]?.id ? (
+            <Chip
+              label={locations[0]?.address}
+              onClick={() => setCurrentLocation(locations[0]?.id, 0)}
+              onDelete={() => {
+                deleteMyLocation(locations[0]?.id, 1);
+              }}
+              color="primary"
+              variant={locations[0]?.isCurrent ? "filled" : "outlined"}
+            />
+          ) : (
+            <Chip
+              label="선택하여 설정"
+              onClick={() => setCurrentLocation(locations[0]?.id, 0)}
+              color="primary"
+              variant={locations[0]?.isCurrent ? "filled" : "outlined"}
+            />
+          )}
+          {locations[1]?.id ? (
+            <Chip
+              label={locations[1]?.address}
+              onClick={() => setCurrentLocation(locations[1]?.id, 1)}
+              onDelete={() => {
+                deleteMyLocation(locations[1]?.id, 0);
+              }}
+              color="primary"
+              variant={locations[1]?.isCurrent ? "filled" : "outlined"}
+            />
+          ) : (
+            <Chip
+              label="선택하여 설정"
+              onClick={() => setCurrentLocation(locations[1]?.id, 1)}
+              color="primary"
+              variant={locations[1]?.isCurrent ? "filled" : "outlined"}
+            />
+          )}
+        </Stack>
+        <RefreshButton onClick={handleRenew}>
+          <AutorenewIcon sx={{ fontSize: 50 }} />
+        </RefreshButton>
+      </LocationContainer>
+      <hr />
+      <SliderContainer>
+        <BoldText>{areaName}과(와) {defalutRange/1000}km 이내</BoldText>
+        <LightText>선택한 범위의 게시물만 볼 수 있어요</LightText>
+        <div className="slider">
+          <Slider
+            aria-label="Restricted values"
+            value={defalutRange}
+            valueLabelFormat={valueLabelFormat}
+            getAriaValueText={valuetext}
+            step={null}
+            max={2000}
+            valueLabelDisplay="off"
+            marks={marks}
+            onChange={(e) => setLocationRange(e.target.value)}
+          />
+        </div>
+      </SliderContainer>
     </div>
-  )
+  );
 }
 
 export default MyLocationSetting
