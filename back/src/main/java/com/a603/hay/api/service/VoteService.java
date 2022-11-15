@@ -289,6 +289,13 @@ public class VoteService {
     User user = userRepository.findByEmail(userEmail)
         .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_EXIST));
 
+    Vote vote = voteRepository.findById(voteId)
+        .orElseThrow(() -> new CustomException(ErrorCode.VOTE_NOT_FOUND));
+
+    if (!vote.isCommentable()) {
+      throw new CustomException(ErrorCode.VOTE_IS_NOT_COMMENTABLE);
+    }
+
     Comment comment = new Comment();
     comment.setContent(createCommentRequest.getContent());
     comment.setLikesCount(0);
@@ -296,8 +303,7 @@ public class VoteService {
     comment.setCreatedAt(LocalDateTime.now());
     comment.setUpdatedAt(LocalDateTime.now());
     comment.setUser(user);
-    comment.setVote(voteRepository.findById(voteId)
-        .orElseThrow(() -> new CustomException(ErrorCode.VOTE_NOT_FOUND)));
+    comment.setVote(vote);
 
     // 부모 댓글이 있을 경우
     if (createCommentRequest.getCommentId() != null) {

@@ -19,6 +19,7 @@ public enum ErrorCode {
 
   //403 FORBIDDEN : 권한이 없는 리소스에 접근
   FORBIDDEN(HttpStatus.FORBIDDEN, "권한이 없습니다."),
+  VOTE_IS_NOT_COMMENTABLE(HttpStatus.FORBIDDEN, "댓글을 작성할 수 없습니다"),
 
   //404 NOT_FOUND : 리소스를 찾을 수 없음
   POSTS_NOT_FOUND(HttpStatus.NOT_FOUND, "정보를 찾을 수 없습니다."),
