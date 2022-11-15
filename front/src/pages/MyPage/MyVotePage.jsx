@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import api from "../../api/api";
 import HeaderTextAndNavigate from "../../components/HeaderTextAndNavigate";
 import VoteItem from "../../components/VoteItem";
+import "./MyVotePage.css"
 
 function MyVotePage() {
   const [voteList, setVoteList] = useState([]);
@@ -26,9 +27,11 @@ function MyVotePage() {
   return (
     <>
       <HeaderTextAndNavigate path="/mypage" text="내가 생성한 투표" />
-      {voteList.map((vote, index) => (
-        <VoteItem vote={vote} path={"/myvote"} key={index}></VoteItem>
-      ))}
+      <div className="voteListSpace">
+        {voteList.map((vote, index) => (
+          <VoteItem vote={vote} path={"/myvote"} key={index}></VoteItem>
+        ))}
+      </div>
     </>
   );
 }
