@@ -18,7 +18,6 @@ import VoteCreate from './pages/VoteDetail/VoteCreate';
 import MyVotePage from './pages/MyPage/MyVotePage';
 import MyParticipatedPage from './pages/MyPage/MyParticipatedPage';
 import setAuthorizationToken from './pages/User/AuthorizationToken';
-import Test from './pages/VoteDetail/Test';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -41,8 +40,6 @@ root.render(
           <Route path="mylocationsetting" element={<MyLocationSetting />} />
           <Route path="votedetail/:voteId" element={<VoteDetail />} />
           <Route path="votecreate" element={<VoteCreate />} />
-          <Route path="test" element={<Test />} />
-
         </Route>
       </Routes>
     </Provider>
