@@ -9,10 +9,9 @@
 // 댓글 허용 스위치
 // 만들기
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef } from "react";
 import './VoteCreate.css'
 import {
-  Typography,
   TextField,
   ToggleButton,
   ToggleButtonGroup,
@@ -24,17 +23,20 @@ import {
   Button,
   Switch,
 } from "@mui/material";
-
-import HeaderOnlyText from '../../components/HeaderOnlyText';
-import HowToVoteIcon from "@mui/icons-material/HowToVote";
-import FormData from 'form-data';
 import axios from 'axios'
+import { useNavigate } from 'react-router-dom';
+import HowToVoteIcon from "@mui/icons-material/HowToVote";
 import api from '../../api/api';
 
-import AWS from "aws-sdk"
-import {v4 as uuidv4} from 'uuid';
+import AWS from "aws-sdk";
+import { v4 as uuidv4 } from "uuid";
+
+import HeaderOnlyText from "../../components/HeaderOnlyText";
+
+
 
 function VoteCreate() {
+  const navigate = useNavigate();
   const uploadInputRef = useRef(null);
 
   const [title, setTitle] = useState('');
@@ -43,7 +45,8 @@ function VoteCreate() {
   const [endDate, setEndDate] = useState(1);
   const [imageUrls, setImageUrls] = useState('');
   const [commentable, setCommentable] = useState(true);
-  const [voteItemContents, setVoteItemContents] = useState([]);
+  const [voteItemContents, setVoteItemContents] = useState(['','']);
+  const [isUploaded, setIsUploaded] = useState(false);
 
   function handleTitleChange(e) {
     setTitle(e.target.value);
@@ -61,32 +64,24 @@ function VoteCreate() {
     // console.log(e.target.checked);
     setCommentable(e.target.checked);
   }
-  function handleImgUrls(e) {
-    const fileList = e.target.files;
-    console.log(URL.createObjectURL(fileList[0]))
+  // function handleImgUrls(e) {
+  //   const fileList = e.target.files;
+  //   console.log(URL.createObjectURL(fileList[0]))
+  // }
+  function handleVoteItem(e, index) {
+    setVoteItemContents(voteItemContents.map((item, idx) => idx === index ? item = e.target.value : item));
+    // console.log(voteItemContents);
   }
-
-  /** 항목 추가하기 누를 시 항목 추가해주는 함수 */
-  const selectionAdd = () => {
-    let result = (<div></div>)
-
-    result.div.push(
-      <TextField id="outlined" placeholder="" />
-    )
-
-    return result;
+  function createVoteItem() {
+    setVoteItemContents(prev => [...prev, '']);
   }
-
-  // sumbit datas
-
-  // const formData = new FormData();
-
-  // // img url => blob file
-  // formData.append("imageUrls", uploadInputRef.current.files[0]);
-  // formData.append(
-  //   "data",
-  //   new Blob([JSON.stringify(data)], { type: "application/json" })
-  // );
+  function deleleVoteItem() {
+    if(voteItemContents.length > 2) {
+      setVoteItemContents(voteItemContents.filter((item, index) => index !== voteItemContents.length - 1));
+    } else {
+      alert("투표는 최소 2개 항목이 필요합니다")
+    }
+  }
 
   // submit
   function handleSubmit() {
@@ -96,55 +91,73 @@ function VoteCreate() {
       commentable: commentable,
       endDate: endDate,
       title: title,
+      imageUrls: [imageUrls],
       voteItemContents: voteItemContents,
     };
-
-    axios.post(api.addVotes(), data).catch((Error) => console.log(Error));
+    
+    axios.post(api.addVotes(), data)
+    .then((res) => {
+      navigate('/main');
+    })
+    .catch((Error) => console.log(Error));
   }
-
+    
   AWS.config.update({
     region: process.env.REACT_APP_BUCKET_REGION, // 버킷이 존재하는 리전을 문자열로 입력합니다. (Ex. "ap-northeast-2")
     credentials: new AWS.CognitoIdentityCredentials({
       IdentityPoolId: process.env.REACT_APP_IDENTITY_POOL_ID, // cognito 인증 풀에서 받아온 키를 문자열로 입력합니다. (Ex. "ap-northeast-2...")
     }),
-  })
+  });
 
-  const handleFileInput = e => {
-    const file = e.target.files[0]
+  const handleFileInput = (e) => {
+    setIsUploaded(false);
+
+    const file = e.target.files[0];
 
     //이 파일 이름을 백앤드에 전송!!! 꼭 여기서 안만들어도 됨
     const fileName = uuidv4();
     console.log("fileName", fileName);
     //이 파일 이름을 백앤드에 전송!!! 꼭 여기서 안만들어도 됨
-    console.log("name", process.env.REACT_APP_BUCKET_NAME)
+    console.log("name", process.env.REACT_APP_BUCKET_NAME);
     const upload = new AWS.S3.ManagedUpload({
       params: {
         Bucket: process.env.REACT_APP_BUCKET_NAME,
         Key: "hay/vote/" + fileName + ".jpg",
         Body: file,
       },
-    })
+    });
 
-    const promise = upload.promise()
+    const promise = upload.promise();
 
     promise.then(
-        function (data) {
-          console.log("이미지 업로드에 성공했습니다.")
-        },
-        function (err) {
-          console.log(err)
-        }
-    )
-  }
+      function (data) {
+        console.log("이미지 업로드에 성공했습니다.");
+        setIsUploaded(true);
+        setImageUrls(fileName);
+        let imagePreview = document.getElementById("imageUploadSpace");
+        imagePreview.removeChild("upload")
+        imagePreview.removeChild("uploadLabel")
+        let previewImage = imagePreview.appendChild("uploadedImagePreview");
+        previewImage.className = "uploadedImagePreview";
+      },
+      function (err) {
+        console.log(err);
+      }
+    );
+  };
+    
+  
 
   return (
     <div>
-      <HeaderOnlyText text="투표 만들기"/>
+      <HeaderOnlyText text="투표 만들기" />
       <div className="titleSpace">
         <TextField
           id="standard-basic"
           label="제목을 입력해주세요"
           variant="standard"
+          value={title}
+          onChange={handleTitleChange}
           sx={{
             width: "86%;",
             marginLeft: "7%;"
@@ -162,7 +175,7 @@ function VoteCreate() {
             aria-label="Category"
             required={true}
             sx={{
-              marginLeft: "30px;"
+              marginLeft: "30px;",
             }}
           >
             <ToggleButton value={1}>이야기</ToggleButton>
@@ -170,25 +183,26 @@ function VoteCreate() {
             <ToggleButton value={3}>매일매일</ToggleButton>
           </ToggleButtonGroup>
         </div>
-        <div className="addPhoto">사진 추가하기
-          <input type="file" id="upload" className="image-upload" onChange = {handleFileInput} />
-          <label htmlFor="upload" className="image-upload-wrapper"></label>
-        </div>
       </div>
-      {/* <div className="addPhoto">사진 추가하기</div> */}
-      <input
-        ref={uploadInputRef}
-        type="file"
-        accept="image/*"
-        style={{ display: "none" }}
-        onChange={handleImgUrls}
-      />
-      {/* <Button
-        onClick={() => uploadInputRef.current && uploadInputRef.current.click()}
-        variant="contained"
-      >
-        Upload
-      </Button> */}
+      <div>
+        <input
+          ref={uploadInputRef}
+          type="file"
+          id="upload"
+          accept="image/*"
+          style={{ display: "none" }}
+          onChange={handleFileInput}
+        />
+        <Button
+          onClick={() =>
+            uploadInputRef.current && uploadInputRef.current.click()
+          }
+          variant="contained"
+        >
+          사진 추가하기
+        </Button>
+        <span>{isUploaded ? "업로드 완료" : "사진 없음"}</span>
+      </div>
       <div>
         <TextField
           id="outlined-multiline-static"
@@ -198,7 +212,7 @@ function VoteCreate() {
           sx={{
             width: "86%;",
             marginLeft: "7%;",
-            marginBottom: "16px;"
+            marginBottom: "16px;",
           }}
           value={body}
           onChange={handleBodyChange}
@@ -229,12 +243,25 @@ function VoteCreate() {
         </div>
         <hr className="horizon"></hr>
         <div>
-          <TextField required id="selection-1" sx={{ width: "86%;", marginLeft: "20px;" }} placeholder="항목 1" />
-          <TextField required id="selection-2" sx={{ width: "86%;", marginLeft: "20px;", marginTop: "12px;" ,marginBottom: "12px;" }} placeholder="항목 2" />
-          {/* {selectionAdd()} */}
-          <Button disabled variant="outlined" onClick={() => {}} sx={{ width: "86%;", marginLeft: "20px;", padding: "16px 0px;" }}>
-            항목 추가하기
-          </Button>
+          {voteItemContents.map((item, idx) => (
+            <TextField
+              required
+              id="outlined-required"
+              placeholder={`항목 ${idx + 1}`}
+              value={item}
+              onChange={(e) => handleVoteItem(e, idx)}
+              sx={{ width: "86%;", margin: "12px 0 0 20px" }}
+              key={idx}
+            />
+          ))}
+          <div style={{ display: "flex", justifyContent: "center" }}>
+            <Button variant="outlined" onClick={createVoteItem}>
+              항목 추가하기
+            </Button>
+            <Button variant="outlined" color="error" onClick={deleleVoteItem}>
+              항목 삭제하기
+            </Button>
+          </div>
         </div>
       </div>
       <div>
@@ -244,10 +271,11 @@ function VoteCreate() {
           }
           label="댓글 허용"
           labelPlacement="start"
-          sx={{ marginLeft: "28px;", marginButtom: "32px;" }}
         />
       </div>
-      <div className="voteCreateSubmitButton" onClick={handleSubmit}>만들기</div>
+      <div className="voteCreateSubmitButton" onClick={handleSubmit}>
+        만들기
+      </div>
     </div>
   );
 }

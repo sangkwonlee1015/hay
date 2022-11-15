@@ -25,6 +25,7 @@ import { useLocation } from "react-router-dom";
 import axios from "axios";
 import api from "../../api/api";
 import { FormControlLabel, Radio, RadioGroup } from "@mui/material";
+import HeaderTextAndNavigate from "../../components/HeaderTextAndNavigate";
 
 function VoteDetail() {
   const { state } = useLocation();
@@ -343,6 +344,7 @@ function VoteDetail() {
     <div>
       {details ? (
         <div className="contentAll">
+          <HeaderTextAndNavigate path={state.path} text={details.title}></HeaderTextAndNavigate>
           <div>
             <div className="title">{details.title}</div>
             <div className="titleGroup">

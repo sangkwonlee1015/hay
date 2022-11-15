@@ -71,10 +71,10 @@ function MainPage() {
         {CATEGORY_NAME.map((item, index) => (
           <Category
             name={item}
-            key={index}
             index={index}
             category={category}
             onChangeCategory={setCategory}
+            key={index}
           />
         ))}
       </Categories>
@@ -95,10 +95,10 @@ function MainPage() {
           참여자순
         </Button>
       </Orders>
-      {bestVote ? <VoteItem vote={bestVote} best={true} /> : null}
+      {bestVote ? <VoteItem vote={bestVote} best={true} path={"/main"} /> : null}
       {voteList.map((vote, index) =>
         bestVote?.id === vote.id ? null : (
-          <VoteItem vote={vote} best={false} key={index} />
+          <VoteItem vote={vote} best={false} path={"/main"} key={index} />
         )
       )}
     </>
