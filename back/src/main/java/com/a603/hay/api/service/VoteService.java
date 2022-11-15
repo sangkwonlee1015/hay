@@ -80,6 +80,10 @@ public class VoteService {
     User user = userRepository.findByEmail(userEmail)
         .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_EXIST));
 
+    if (createVoteRequest.getVoteItemContents() == null) {
+      throw new CustomException(ErrorCode.BAD_REQUEST);
+    }
+
     Vote newVote = new Vote();
     Category category = categoryRepository.findById(createVoteRequest.getCategoryId())
         .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
