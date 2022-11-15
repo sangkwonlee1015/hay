@@ -31,6 +31,7 @@ function HeaderTextAndNavigate(props) {
         onClick={() => {
           handleButton(props.path);
         }}
+        style={{ position: 'absolute', top: '4px', left: '10px'}}
       >
         <ArrowBackIosIcon></ArrowBackIosIcon>
       </IconButton>
