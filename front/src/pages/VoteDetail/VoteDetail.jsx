@@ -26,16 +26,33 @@ import axios from "axios";
 import api from "../../api/api";
 import { FormControlLabel, Radio, RadioGroup } from "@mui/material";
 import HeaderTextAndNavigate from "../../components/HeaderTextAndNavigate";
+import KakaoShareButton from "./KakaoShareButton";
 
 function VoteDetail() {
-  const { state } = useLocation();
+  let { state } = useLocation();
   const [details, setDetails] = useState();
   const [selectedItemId, setSelectedItemId] = useState();
   const [commentText, setCommentText] = useState("");
   const [targetComment, setTargetComment] = useState(null);
 
   useEffect(() => {
+    //공유하기를 통해 url 이동 시 state 채워줌
+    if (!state) { 
+      const parts = window.location.pathname.split('/');
+      const lastSegment = parts.pop() || parts.pop();
+      state = {voteId : +lastSegment, path : "/main"};
+    }
+
     getDetail();
+    const script = document.createElement('script')
+    script.src = 'https://developers.kakao.com/sdk/js/kakao.js'
+    script.async = true
+
+    document.body.appendChild(script)
+
+    return () => {
+      document.body.removeChild(script)
+    }
   }, []);
 
   /**
@@ -344,7 +361,7 @@ function VoteDetail() {
     <div>
       {details ? (
         <div className="contentAll">
-          <HeaderTextAndNavigate path={state.path} text={details.title}></HeaderTextAndNavigate>
+          <HeaderTextAndNavigate path={state?state.path:"/main"} text={details.title}></HeaderTextAndNavigate>
           <div>
             <div className="title">{details.title}</div>
             <div className="titleGroup">
@@ -372,16 +389,19 @@ function VoteDetail() {
           { !details.voted
             ? <div className="commentShare">
                 <div></div>
-                <div className="share">공유하기</div>
+                <KakaoShareButton details={details}/>
+
               </div>
             : details.commentable
             ? <div className="commentShare">
                 <div>댓글 {commentCount()}</div>
-                <div className="share">공유하기</div>
+                <KakaoShareButton details={details}/>
+
               </div>
             : <div className="commentShare">
                 <div>댓글을 작성할 수 없는 게시글입니다</div>
-                <div className="share">공유하기</div>
+                <KakaoShareButton details={details}/>
+
               </div>
           }
           { details.commentable && details.voted ?
