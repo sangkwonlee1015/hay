@@ -34,14 +34,15 @@ function VoteDetail() {
   const [selectedItemId, setSelectedItemId] = useState();
   const [commentText, setCommentText] = useState("");
   const [targetComment, setTargetComment] = useState(null);
-
+  const parts = window.location.pathname.split('/');
+  const voteId = parts.pop() || parts.pop();
   useEffect(() => {
     //공유하기를 통해 url 이동 시 state 채워줌
-    if (!state) { 
-      const parts = window.location.pathname.split('/');
-      const lastSegment = parts.pop() || parts.pop();
-      state = {voteId : +lastSegment, path : "/main"};
-    }
+    // if (!state) { 
+    //   const parts = window.location.pathname.split('/');
+    //   const lastSegment = parts.pop() || parts.pop();
+    //   state = {voteId : +lastSegment, path : "/main"};
+    // }
 
     getDetail();
     const script = document.createElement('script')
@@ -60,7 +61,7 @@ function VoteDetail() {
    */
   const getDetail = () => {
     axios
-      .get(api.getVoteDetail(state.voteId))
+      .get(api.getVoteDetail(voteId))
       .then(({ data }) => {
         console.log(data.response);
         setDetails(data.response);
@@ -71,7 +72,7 @@ function VoteDetail() {
   }
 
   const doVote = () => {
-    axios.post(api.pickVote(state.voteId), { "voteItemId": selectedItemId })
+    axios.post(api.pickVote(voteId), { "voteItemId": selectedItemId })
     .then(() => {getDetail(); setSelectedItemId();})
     .catch((Error) => {
       console.log(Error);
@@ -86,7 +87,7 @@ function VoteDetail() {
         "content": commentText
       }
     }
-    axios.post(api.addComment(state.voteId), addCommentBody).then(() => {getDetail();})
+    axios.post(api.addComment(voteId), addCommentBody).then(() => {getDetail();})
     .catch((Error) => {
       console.log(Error);
     });
@@ -96,7 +97,7 @@ function VoteDetail() {
    * 좋아요 아이콘 클릭시 좋아요 처리가 되거나 이미 되어있다면 취소하는 함수
    */
   const clickFavoriteIcon = (commentId) => {
-    axios.post(api.likeComment(state.voteId, commentId))
+    axios.post(api.likeComment(voteId, commentId))
     .then(() => {getDetail()})
     .catch((Error) => {
       console.log(Error);
