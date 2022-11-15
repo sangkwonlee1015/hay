@@ -46,6 +46,8 @@ function MyPage() {
     console.log("logout");
     setAuthorizationToken(null);
     localStorage.removeItem('jwtToken')
+    alert("로그아웃 되었습니다")
+    navigate('/');
   }
   function putNickName(String) {
     axios.post(api.putNickname(), {
