@@ -33,6 +33,7 @@ import com.a603.hay.exception.CustomException;
 import com.a603.hay.exception.ErrorCode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -155,8 +156,11 @@ public class VoteService {
       voteRepository.findAll(spec).forEach(vote -> {
         voteList.add(
             VoteListResponseVote.builder().id(vote.getId()).title(vote.getTitle())
-                .startDate(vote.getStartDate())
-                .endDate(vote.getEndDate()).isEnded(vote.isEnded()).voteCount(vote.getVoteCount())
+                .startDate(vote.getStartDate().atZone(ZoneId.systemDefault())
+                    .withZoneSameInstant(ZoneId.of("Asia/Seoul")).toLocalDateTime())
+                .endDate(vote.getEndDate().atZone(ZoneId.systemDefault())
+                    .withZoneSameInstant(ZoneId.of("Asia/Seoul")).toLocalDateTime())
+                .isEnded(vote.isEnded()).voteCount(vote.getVoteCount())
                 .build());
       });
       return VoteListResponse.builder().votes(voteList).build();
@@ -169,8 +173,11 @@ public class VoteService {
         Vote vote = voteLog.getVote();
         voteList.add(
             VoteListResponseVote.builder().id(vote.getId()).title(vote.getTitle())
-                .startDate(vote.getStartDate())
-                .endDate(vote.getEndDate()).isEnded(vote.isEnded()).voteCount(vote.getVoteCount())
+                .startDate(vote.getStartDate().atZone(ZoneId.systemDefault())
+                    .withZoneSameInstant(ZoneId.of("Asia/Seoul")).toLocalDateTime())
+                .endDate(vote.getEndDate().atZone(ZoneId.systemDefault())
+                    .withZoneSameInstant(ZoneId.of("Asia/Seoul")).toLocalDateTime())
+                .isEnded(vote.isEnded()).voteCount(vote.getVoteCount())
                 .build());
       });
       return VoteListResponse.builder().votes(voteList).build();
@@ -227,8 +234,11 @@ public class VoteService {
       }
       voteList.add(
           VoteListResponseVote.builder().id(vote.getId()).title(vote.getTitle())
-              .startDate(vote.getStartDate())
-              .endDate(vote.getEndDate()).isEnded(vote.isEnded()).voteCount(vote.getVoteCount())
+              .startDate(vote.getStartDate().atZone(ZoneId.systemDefault())
+                  .withZoneSameInstant(ZoneId.of("Asia/Seoul")).toLocalDateTime())
+              .endDate(vote.getEndDate().atZone(ZoneId.systemDefault())
+                  .withZoneSameInstant(ZoneId.of("Asia/Seoul")).toLocalDateTime())
+              .isEnded(vote.isEnded()).voteCount(vote.getVoteCount())
               .build());
     }
     return VoteListResponse.builder().bestVote(bestVote).votes(voteList).build();
@@ -382,8 +392,10 @@ public class VoteService {
     double d = distance(location.getLat(), location.getLng(), vote.getLat(), vote.getLng());
     voteDetailResponse.setDistanceLevel(d < 500 ? 0 : d < 1000 ? 1 : 2);
     voteDetailResponse.setWriterNickname(vote.getUser().getNickname());
-    voteDetailResponse.setStartDate(vote.getStartDate());
-    voteDetailResponse.setEndDate(vote.getEndDate());
+    voteDetailResponse.setStartDate(vote.getStartDate().atZone(ZoneId.systemDefault())
+        .withZoneSameInstant(ZoneId.of("Asia/Seoul")).toLocalDateTime());
+    voteDetailResponse.setEndDate(vote.getEndDate().atZone(ZoneId.systemDefault())
+        .withZoneSameInstant(ZoneId.of("Asia/Seoul")).toLocalDateTime());
     voteDetailResponse.setEnded(vote.isEnded());
     voteDetailResponse.setCommentable(vote.isCommentable());
     voteDetailResponse.setVoteCount(vote.getVoteCount());
@@ -425,8 +437,10 @@ public class VoteService {
               .content(reply.getContent())
               .likesCount(reply.getLikesCount())
               .isDeleted(reply.isDeleted())
-              .createdAt(reply.getCreatedAt())
-              .updatedAt(reply.getUpdatedAt())
+              .createdAt(reply.getCreatedAt().atZone(ZoneId.systemDefault())
+                  .withZoneSameInstant(ZoneId.of("Asia/Seoul")).toLocalDateTime())
+              .updatedAt(reply.getUpdatedAt().atZone(ZoneId.systemDefault())
+                  .withZoneSameInstant(ZoneId.of("Asia/Seoul")).toLocalDateTime())
               .writerNickname(reply.getUser().getNickname())
               .writtenByMe(reply.getUser().getId() == user.getId() ? true : false)
               .likedByMe(
@@ -438,8 +452,10 @@ public class VoteService {
             .content(comment.getContent())
             .likesCount(comment.getLikesCount())
             .isDeleted(comment.isDeleted())
-            .createdAt(comment.getCreatedAt())
-            .updatedAt(comment.getUpdatedAt())
+            .createdAt(comment.getCreatedAt().atZone(ZoneId.systemDefault())
+                .withZoneSameInstant(ZoneId.of("Asia/Seoul")).toLocalDateTime())
+            .updatedAt(comment.getUpdatedAt().atZone(ZoneId.systemDefault())
+                .withZoneSameInstant(ZoneId.of("Asia/Seoul")).toLocalDateTime())
             .writerNickname(comment.getUser().getNickname())
             .writtenByMe(comment.getUser().getId() == user.getId() ? true : false)
             .likedByMe(
@@ -460,8 +476,10 @@ public class VoteService {
           .content(bestComment.getContent())
           .likesCount(bestComment.getLikesCount())
           .isDeleted(bestComment.isDeleted())
-          .createdAt(bestComment.getCreatedAt())
-          .updatedAt(bestComment.getUpdatedAt())
+          .createdAt(bestComment.getCreatedAt().atZone(ZoneId.systemDefault())
+              .withZoneSameInstant(ZoneId.of("Asia/Seoul")).toLocalDateTime())
+          .updatedAt(bestComment.getUpdatedAt().atZone(ZoneId.systemDefault())
+              .withZoneSameInstant(ZoneId.of("Asia/Seoul")).toLocalDateTime())
           .writerNickname(bestComment.getUser().getNickname())
           .writtenByMe(bestComment.getUser().getId() == user.getId() ? true : false)
           .likedByMe(
