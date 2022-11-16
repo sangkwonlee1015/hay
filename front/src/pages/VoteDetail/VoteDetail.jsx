@@ -451,11 +451,11 @@ function VoteDetail() {
                     <div className="bestCommentTitle">베스트 댓글</div>
                     <div className="bestComment">
                       <div className="comment">
-                        <div>{details.bestComment.content}</div>
                         <div className="commentInfor">
                           <div className="commentBy">{details.bestComment.writerNickname}</div>
                           <div className="commentCreatedAt">{details.bestComment.createdAt.substring(0, 16)}</div>
                         </div>
+                        <div>{details.bestComment.content}</div>
                         <div className="commentLike">
                           {details.bestComment.likedByMe ? (
                             <FavoriteIcon
