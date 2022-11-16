@@ -547,7 +547,7 @@ const 거리계산 = (distance) => {
   } else if (distance < 1000) {
     result = "1km 이내";
   } else {
-    result = "2km 이내";
+    result = "1km 이상";
   }
   return result;
 };

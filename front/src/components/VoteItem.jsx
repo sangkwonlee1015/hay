@@ -76,7 +76,7 @@ function VoteItem({ vote, best, path }) {
       <VoteText>
         <VoteTextTop>{vote.title}</VoteTextTop>
         <VoteTextBottom>
-          {vote.startDate.split(" ")[0]} | {dateDiff}일 남음
+          {vote.startDate.split(" ")[0]} | {dateDiff>0?dateDiff+"일 남음":"종료된 투표"}
         </VoteTextBottom>
       </VoteText>
       <VoteTextCount>{vote.voteCount}표</VoteTextCount>
