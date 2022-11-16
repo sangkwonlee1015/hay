@@ -298,19 +298,17 @@ function VoteDetail() {
                 setTargetComment(comments[i]);
               }
             }}>
-              <div>{comments[i].content}</div>
               <div className="commentInfor">
                 <div className="commentBy">{comments[i].writerNickname}</div>
+                <div className="commentCreatedAt">{comments[i].createdAt.substring(0, 16)}</div>
+              </div>
+              <div>
+                {comments[i].content}
+              </div>
+              <div className="commentLike">
                 {comments[i].likedByMe ? <FavoriteIcon onClick={() => clickFavoriteIcon(comments[i].id)} color="primary" /> : <FavoriteBorderIcon onClick={() => clickFavoriteIcon(comments[i].id)} />}
                 <div className="good">좋아요</div>
-                {comments[i].likesCount ? (
-                  <div>{comments[i].likesCount}</div>
-                ) : (
-                  <></>
-                )}
-                <div className="commentCreatedAt">
-                  {comments[i].createdAt.substring(0, 16)}
-                </div>
+                {comments[i].likesCount ? (<div>{comments[i].likesCount}</div>) : (null)}
               </div>
             </div>
           }
@@ -321,21 +319,21 @@ function VoteDetail() {
           <div className="reply">
             <ArrowRightAltIcon />
             <div className="replyDiv">
-              <div>{comments[i].replies[j].content}</div>
               <div className="commentInfor">
                 <div className="commentBy">
                   {comments[i].replies[j].writerNickname}
                 </div>
-                {comments[i].replies[j].likedByMe ? <FavoriteIcon onClick={() => clickFavoriteIcon(comments[i].replies[j].id)} color="primary" /> : <FavoriteBorderIcon onClick={() => clickFavoriteIcon(comments[i].replies[j].id)} />}
-                <div className="good">좋아요</div>
-                {comments[i].replies[j].likesCount ? (
-                  <div>{comments[i].replies[j].likesCount}</div>
-                ) : (
-                  <></>
-                )}
                 <div className="commentCreatedAt">
                   {comments[i].replies[j].createdAt.substring(0, 16)}
                 </div>
+              </div>
+
+              <div>{comments[i].replies[j].content}</div>
+
+              <div className="commentLike">
+                {comments[i].replies[j].likedByMe ? <FavoriteIcon onClick={() => clickFavoriteIcon(comments[i].replies[j].id)} color="primary" /> : <FavoriteBorderIcon onClick={() => clickFavoriteIcon(comments[i].replies[j].id)} />}
+                <div className="good">좋아요</div>
+                {comments[i].replies[j].likesCount ? (<div>{comments[i].replies[j].likesCount}</div>) : (null)}
               </div>
             </div>
           </div>
