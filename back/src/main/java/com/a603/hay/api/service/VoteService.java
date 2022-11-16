@@ -153,7 +153,7 @@ public class VoteService {
     if (myVote) {
       Specification<Vote> spec = Specification.where(VoteSpecification.equalUser(user));
       List<VoteListResponseVote> voteList = new ArrayList<>();
-      voteRepository.findAll(spec).forEach(vote -> {
+      voteRepository.findAll(spec, Sort.by("endDate").descending()).forEach(vote -> {
         voteList.add(
             VoteListResponseVote.builder().id(vote.getId()).title(vote.getTitle())
                 .startDate(vote.getStartDate().atZone(ZoneId.systemDefault())
@@ -167,7 +167,7 @@ public class VoteService {
     }
 
     if (participated) {
-      List<VoteLog> voteLogs = voteLogRepository.findAllByUser(user);
+      List<VoteLog> voteLogs = voteLogRepository.findAllByUser(user, Sort.by("vote_id").descending());
       List<VoteListResponseVote> voteList = new ArrayList<>();
       voteLogs.forEach(voteLog -> {
         Vote vote = voteLog.getVote();
