@@ -52,6 +52,7 @@ const api = {
   getVotes: () => API_BASE_URL + VOTES_URL,
   getVoteDetail: (voteId) => API_BASE_URL + VOTES_URL + `/${voteId}`,
   pickVote: (voteId) => API_BASE_URL + VOTES_URL + `/${voteId}`,
+  endVote: (voteId) => API_BASE_URL + VOTES_URL + `/${voteId}`,
   addComment: (voteId) => API_BASE_URL + VOTES_URL + `/${voteId}` + COMMENT_URL,
   deleteComment: (voteId, commentId) =>
     API_BASE_URL + VOTES_URL + `/${voteId}` + COMMENT_URL + `/${commentId}`,

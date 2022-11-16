@@ -31,6 +31,10 @@ const Orders = styled.div`
   margin-right: 5px;
 `;
 
+const BottomSpace = styled.div`
+  height: 56px;
+`;
+
 const CATEGORY_NAME = ["이야기", "먹자지껄", "매일매일"];
 
 function MainPage() {
@@ -101,6 +105,7 @@ function MainPage() {
           <VoteItem vote={vote} best={false} path={"/main"} key={index} />
         )
       )}
+      <BottomSpace/>
     </>
   );
 }
