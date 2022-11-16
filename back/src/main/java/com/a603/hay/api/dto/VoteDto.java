@@ -83,6 +83,7 @@ public class VoteDto {
     private String body;
     private int distanceLevel;
     private String writerNickname;
+    private boolean writenByMe;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private boolean isEnded;

@@ -388,6 +388,7 @@ public class VoteService {
         .orElseThrow(() -> new CustomException(ErrorCode.VOTE_NOT_FOUND));
     voteDetailResponse.setTitle(vote.getTitle());
     voteDetailResponse.setBody(vote.getBody());
+    voteDetailResponse.setWritenByMe(user.getId() == vote.getUser().getId());
 
     double d = distance(location.getLat(), location.getLng(), vote.getLat(), vote.getLng());
     voteDetailResponse.setDistanceLevel(d < 500 ? 0 : d < 1000 ? 1 : 2);
