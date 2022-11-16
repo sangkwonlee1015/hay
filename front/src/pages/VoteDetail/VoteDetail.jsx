@@ -24,7 +24,7 @@ import "./VoteDetail.css";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
 import api from "../../api/api";
-import { FormControlLabel, Radio, RadioGroup } from "@mui/material";
+import { Button, FormControlLabel, Radio, RadioGroup } from "@mui/material";
 import HeaderTextAndNavigate from "../../components/HeaderTextAndNavigate";
 import KakaoShareButton from "./KakaoShareButton";
 
@@ -77,6 +77,16 @@ function VoteDetail() {
     .catch((Error) => {
       console.log(Error);
     });
+  }
+
+  const handleEndVote = () => {
+    if (window.confirm("정말 종료하시겠습니까?")) {
+      axios.put(api.endVote(state.voteId))
+      .then(() => {alert("투표가 종료되었습니다."); getDetail();})
+      .catch((Error) => {
+        console.log(Error);
+      });
+    }
   }
 
   const writeComment = () => {
@@ -177,6 +187,14 @@ function VoteDetail() {
       }
     }
   };
+
+  const endVoteButton = () => {
+    return (
+      <div>
+        <Button onClick={handleEndVote}>투표 종료하기</Button>
+      </div>
+    )
+  }
 
   /**
    * 투표 선택지 반복랜더링
@@ -280,19 +298,17 @@ function VoteDetail() {
                 setTargetComment(comments[i]);
               }
             }}>
-              <div>{comments[i].content}</div>
               <div className="commentInfor">
                 <div className="commentBy">{comments[i].writerNickname}</div>
+                <div className="commentCreatedAt">{comments[i].createdAt.substring(0, 16)}</div>
+              </div>
+              <div>
+                {comments[i].content}
+              </div>
+              <div className="commentLike">
                 {comments[i].likedByMe ? <FavoriteIcon onClick={() => clickFavoriteIcon(comments[i].id)} color="primary" /> : <FavoriteBorderIcon onClick={() => clickFavoriteIcon(comments[i].id)} />}
                 <div className="good">좋아요</div>
-                {comments[i].likesCount ? (
-                  <div>{comments[i].likesCount}</div>
-                ) : (
-                  <></>
-                )}
-                <div className="commentCreatedAt">
-                  {comments[i].createdAt.substring(0, 16)}
-                </div>
+                {comments[i].likesCount ? (<div>{comments[i].likesCount}</div>) : (null)}
               </div>
             </div>
           }
@@ -303,21 +319,21 @@ function VoteDetail() {
           <div className="reply">
             <ArrowRightAltIcon />
             <div className="replyDiv">
-              <div>{comments[i].replies[j].content}</div>
               <div className="commentInfor">
                 <div className="commentBy">
                   {comments[i].replies[j].writerNickname}
                 </div>
-                {comments[i].replies[j].likedByMe ? <FavoriteIcon onClick={() => clickFavoriteIcon(comments[i].replies[j].id)} color="primary" /> : <FavoriteBorderIcon onClick={() => clickFavoriteIcon(comments[i].replies[j].id)} />}
-                <div className="good">좋아요</div>
-                {comments[i].replies[j].likesCount ? (
-                  <div>{comments[i].replies[j].likesCount}</div>
-                ) : (
-                  <></>
-                )}
                 <div className="commentCreatedAt">
                   {comments[i].replies[j].createdAt.substring(0, 16)}
                 </div>
+              </div>
+
+              <div>{comments[i].replies[j].content}</div>
+
+              <div className="commentLike">
+                {comments[i].replies[j].likedByMe ? <FavoriteIcon onClick={() => clickFavoriteIcon(comments[i].replies[j].id)} color="primary" /> : <FavoriteBorderIcon onClick={() => clickFavoriteIcon(comments[i].replies[j].id)} />}
+                <div className="good">좋아요</div>
+                {comments[i].replies[j].likesCount ? (<div>{comments[i].replies[j].likesCount}</div>) : (null)}
               </div>
             </div>
           </div>
@@ -393,10 +409,14 @@ function VoteDetail() {
               <div className="voteText">투표</div>
               <div>{details.voteCount}명 참여</div>
             </div>
-            <div className="remainDate">{남은날짜계산(details.endDate)}</div>
+            <div className="remainDate">{남은날짜계산(details.endDate, details.ended)}</div>
             <div className="selectionGroup">{selectionGroup(details)}</div>
             <div>
               {gotoVote(details.ended, details.voted, details.voteItems)}
+            </div>
+            <div>
+              {details.writenByMe&&!details.ended&&(남은날짜계산(details.endDate, details.ended) !== "종료된 투표")
+              ?endVoteButton():null}
             </div>
           </div>
           {!details.voted ? (
@@ -431,11 +451,12 @@ function VoteDetail() {
                     <div className="bestCommentTitle">베스트 댓글</div>
                     <div className="bestComment">
                       <div className="comment">
-                        <div>{details.bestComment.content}</div>
                         <div className="commentInfor">
-                          <div className="commentBy">
-                            {details.bestComment.writerNickname}
-                          </div>
+                          <div className="commentBy">{details.bestComment.writerNickname}</div>
+                          <div className="commentCreatedAt">{details.bestComment.createdAt.substring(0, 16)}</div>
+                        </div>
+                        <div>{details.bestComment.content}</div>
+                        <div className="commentLike">
                           {details.bestComment.likedByMe ? (
                             <FavoriteIcon
                               onClick={() =>
@@ -451,15 +472,9 @@ function VoteDetail() {
                             />
                           )}
                           <div className="good">좋아요</div>
-                          {details.bestComment.likesCount ? (
-                            <div>{details.bestComment.likesCount}</div>
-                          ) : (
-                            <></>
-                          )}
-                          <div className="commentCreatedAt">
-                            {details.bestComment.createdAt.substring(0, 16)}
-                          </div>
+                          {details.bestComment.likesCount ? (<div>{details.bestComment.likesCount}</div>) : (null)}
                         </div>
+
                       </div>
                     </div>
                   </div>
@@ -510,13 +525,17 @@ export default VoteDetail;
  * 종료시점과 현재날짜를 비교하여 남은 날짜 또는 시간을 보여주거나 종료된 투표임을 반환하는 함수.
  * @returns {string}
  */
-const 남은날짜계산 = (endTime) => {
+const 남은날짜계산 = (endTime, ended) => {
   const today = new Date();
   const end = new Date(endTime);
   const diff = end - today;
   const diffDays = Math.floor(diff / (1000 * 60 * 60 * 24));
   const diffHours = Math.floor(diff / (1000 * 60 * 60));
   const diffMinutes = Math.floor(diff / (1000 * 60));
+
+  if (ended) {
+    return "종료된 투표";
+  }
 
   if (end < today) {
     return "종료된 투표";
@@ -547,7 +566,7 @@ const 거리계산 = (distance) => {
   } else if (distance < 1000) {
     result = "1km 이내";
   } else {
-    result = "2km 이내";
+    result = "1km 이상";
   }
   return result;
 };
