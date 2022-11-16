@@ -453,9 +453,10 @@ function VoteDetail() {
                       <div className="comment">
                         <div>{details.bestComment.content}</div>
                         <div className="commentInfor">
-                          <div className="commentBy">
-                            {details.bestComment.writerNickname}
-                          </div>
+                          <div className="commentBy">{details.bestComment.writerNickname}</div>
+                          <div className="commentCreatedAt">{details.bestComment.createdAt.substring(0, 16)}</div>
+                        </div>
+                        <div className="commentLike">
                           {details.bestComment.likedByMe ? (
                             <FavoriteIcon
                               onClick={() =>
@@ -471,15 +472,9 @@ function VoteDetail() {
                             />
                           )}
                           <div className="good">좋아요</div>
-                          {details.bestComment.likesCount ? (
-                            <div>{details.bestComment.likesCount}</div>
-                          ) : (
-                            <></>
-                          )}
-                          <div className="commentCreatedAt">
-                            {details.bestComment.createdAt.substring(0, 16)}
-                          </div>
+                          {details.bestComment.likesCount ? (<div>{details.bestComment.likesCount}</div>) : (null)}
                         </div>
+
                       </div>
                     </div>
                   </div>
