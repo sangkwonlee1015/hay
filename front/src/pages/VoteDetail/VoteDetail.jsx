@@ -35,6 +35,7 @@ function VoteDetail() {
   const [selectedItemId, setSelectedItemId] = useState();
   const [commentText, setCommentText] = useState("");
   const [targetComment, setTargetComment] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
   const parts = window.location.pathname.split('/');
   const voteId = parts.pop() || parts.pop();
   useEffect(() => {
@@ -197,6 +198,13 @@ function VoteDetail() {
     )
   }
 
+  const openModal = () => {
+    setModalOpen(true);
+  }
+  const closeModal = () => {
+    setModalOpen(false);
+  }
+
   /**
    * 투표 선택지 반복랜더링
    * 1. 종료된 투표 또는 조회자가 선택 완료한 투표일 경우 - 막대그래프 result
@@ -207,7 +215,7 @@ function VoteDetail() {
       return (
         <div>
           {details.voteItems.map((selection, index) => (
-            <div className="votedSelection" key={index}>
+            <div className="votedSelection" key={index} onClick={openModal}>
               <div className="checkSelection">
                 {selection.voted ? (
                   <CheckIcon color="primary" className="checkIcon" />
@@ -228,7 +236,7 @@ function VoteDetail() {
                   }}
                 ></div>
               </div>
-              <PieGraph /*vision="false"*/ selectionId={selection.id} />
+              <PieGraph selectionId={selection.id} open={modalOpen} close={closeModal}/>
             </div>
           ))}
         </div>
