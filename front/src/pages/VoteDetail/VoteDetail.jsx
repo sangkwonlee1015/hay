@@ -36,6 +36,7 @@ function VoteDetail() {
   const [commentText, setCommentText] = useState("");
   const [targetComment, setTargetComment] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [modalItemId, setModalItemId] = useState(0);
   const parts = window.location.pathname.split('/');
   const voteId = parts.pop() || parts.pop();
   useEffect(() => {
@@ -65,7 +66,6 @@ function VoteDetail() {
     axios
       .get(api.getVoteDetail(voteId))
       .then(({ data }) => {
-        console.log(data.response);
         setDetails(data.response);
       })
       .catch((Error) => {
@@ -198,8 +198,11 @@ function VoteDetail() {
     )
   }
 
-  const openModal = () => {
-    setModalOpen(true);
+  function openModal(id) {
+    if (details.ended) {
+      setModalItemId(id);
+      setModalOpen(true);
+    }
   }
   const closeModal = () => {
     setModalOpen(false);
@@ -215,7 +218,8 @@ function VoteDetail() {
       return (
         <div>
           {details.voteItems.map((selection, index) => (
-            <div className="votedSelection" key={index} onClick={openModal}>
+            <>
+            <div className="votedSelection" key={index} onMouseDown={(e)=>{e.preventDefault()}} onClick={() => openModal(selection.id)}>
               <div className="checkSelection">
                 {selection.voted ? (
                   <CheckIcon color="primary" className="checkIcon" />
@@ -236,8 +240,9 @@ function VoteDetail() {
                   }}
                 ></div>
               </div>
-              <PieGraph selectionId={selection.id} open={modalOpen} close={closeModal}/>
             </div>
+            {details.ended && <PieGraph selection={selection} voteId={voteId} modalItemId={modalItemId} isOpen={modalOpen} close={closeModal}/>}
+            </>
           ))}
         </div>
       );
@@ -402,7 +407,7 @@ function VoteDetail() {
               </div>
             </div>
           </div>
-          <img
+          {details.imageUrls[0] && <img
             className="profile-img"
             src={
               `https://` +
@@ -411,7 +416,7 @@ function VoteDetail() {
             }
             width='100%'
             alt="업로드 이미지"
-          />
+          />}
           <div className="article">{details.body}</div>
           <div className="vote">
             <div className="voteTitle">
@@ -432,17 +437,17 @@ function VoteDetail() {
           {!details.voted ? (
             <div className="commentShare">
               <div></div>
-              <KakaoShareButton details={details}/>
+              <div className="shareRight"><KakaoShareButton details={details}/></div>
             </div>
           ) : details.commentable ? (
             <div className="commentShare">
               <div>댓글 {commentCount()}</div>
-              <KakaoShareButton details={details}/>
+              <div className="shareRight"><KakaoShareButton details={details}/></div>
             </div>
           ) : (
             <div className="commentShare">
               <div>댓글을 작성할 수 없는 게시글입니다</div>
-              <KakaoShareButton details={details}/>
+              <div className="shareRight"><KakaoShareButton details={details}/></div>
             </div>
           )}
           {

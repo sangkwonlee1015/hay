@@ -57,7 +57,6 @@ function MainPage() {
         },
       })
       .then(({ data }) => {
-        console.log(data);
         setBestVote(data.response.bestVote);
         setVoteList(data.response.votes);
       })
