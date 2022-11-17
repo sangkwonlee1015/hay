@@ -23,6 +23,7 @@ import React, { useEffect, useState } from "react";
 import "./VoteDetail.css";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
+import PieGraph from './PieGraph';
 import api from "../../api/api";
 import { Button, FormControlLabel, Radio, RadioGroup } from "@mui/material";
 import HeaderTextAndNavigate from "../../components/HeaderTextAndNavigate";
@@ -227,6 +228,7 @@ function VoteDetail() {
                   }}
                 ></div>
               </div>
+              <PieGraph /*vision="false"*/ selectionId={selection.id} />
             </div>
           ))}
         </div>
