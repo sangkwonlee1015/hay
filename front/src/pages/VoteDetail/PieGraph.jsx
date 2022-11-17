@@ -119,7 +119,4 @@ class Graph extends React.Component {
   }
 }
 
-const rootElement = document.getElementById("root");
-ReactDOM.render(<PieGraph />, rootElement);
-
 export default PieGraph;
