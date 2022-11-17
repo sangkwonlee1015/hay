@@ -3,7 +3,8 @@ import ReactDOM from "react-dom";
 import C3Chart from "react-c3js";
 import "c3/c3.css";
 import axios from 'axios';
-import api from '../../api/api';
+import api from '../../api/api'
+import './PieGraph.css'
 
 // import "./styles.css";
 
@@ -40,6 +41,7 @@ const donut = {
 };
 
 function PieGraph(props) {
+  const { open, close, header } = props;
   // const [loading, setLoading] = useState(true);
   // const [toggle, setToggle] = useState(true);
   const [data, setData] = useState([["data1", 30], ["data2", 120]]);
@@ -57,16 +59,20 @@ function PieGraph(props) {
 
 
   return (
-    <div>
-      {/* <button onClick={changeData}>change data</button> */}
-      <Graph
-        data={data}
-        tooltip={{
-          data1: data[0][0] + ":" + data[0][1],
-          data2: data[1][0] + ":" + data[1][1]
-        }}
-        title={{ title: donut.donut.title }}
-      />
+    <div className={open ? 'openModal modal' : 'modal'}>
+      {open ? (
+        <>
+          <Graph
+            data={data}
+            tooltip={{
+              data1: data[0][0] + ":" + data[0][1],
+              data2: data[1][0] + ":" + data[1][1]
+            }}
+            title={{ title: donut.donut.title }}
+            />
+          <button className="modalCloseButton" onClick={close}>x</button>
+        </>
+      ) : null}
     </div>
   );
 }
