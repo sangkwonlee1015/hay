@@ -2,13 +2,13 @@
 
 ## 개발 환경
 
-### 프론트
+### 프론트엔드
 
 - Nodejs v16.16.0
 - npm v8.14.0
 - react v18.2.0
 
-### 백
+### 백엔드
 
 - JDK 1.8
 - SpringBoot v2.7.5
@@ -25,9 +25,22 @@
     ```
 
 ### 백엔드 빌드 및 배포 진행
-
+```
+    cd /home/ubuntu/S07P31A603/front/
+    git pull origin be/develop
+    // git stash && git pull origin be/develop && git stash pop
+    npm run build
+    sudo systemctl restart nginx
+```
 
 ### 프론트엔드 빌드 및 배포 진행
+```
+    cd /home/ubuntu/S07P31A603/back/
+    ./gradlew --debug build
+    cd /home/ubuntu/S07P31A603/back/build/libs/
+    sudo kill -9 `ps -ef | grep jar|awk '{print $2}'`
+    sudo nohup java -jar hay-0.0.1-SNAPSHOT.jar &
+```
 
 ## 외부 라이브러리
 
